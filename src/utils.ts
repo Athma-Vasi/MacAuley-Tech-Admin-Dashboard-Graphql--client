@@ -1,6 +1,16 @@
 import type { Option } from "ts-results";
 import { Err, None, Ok, Some } from "ts-results";
-import z from "zod";
+import z, {
+    ZodArray,
+    ZodBoolean,
+    ZodCustom,
+    ZodLiteral,
+    ZodNullable,
+    ZodNumber,
+    ZodObject,
+    ZodString,
+} from "zod";
+import type { $strip } from "zod/v4/core";
 import {
     AbortError,
     type AppErrorBase,
@@ -149,4 +159,58 @@ function parseSyncSafe<Output = unknown>(
     }
 }
 
-export { createSafeErrorResult, createSafeSuccessResult, parseSyncSafe };
+function parseDispatchAndSetState<
+    Payload extends
+        | ZodString
+        | ZodBoolean
+        | ZodNumber
+        | ZodArray
+        | ZodNullable<ZodCustom<Worker, Worker>>
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        | ZodObject = any,
+    Dispatch extends { action: string; payload: unknown } = {
+        action: string;
+        payload: unknown;
+    },
+    State extends Record<PropertyKey, unknown> = Record<PropertyKey, unknown>,
+>(
+    { dispatch, key, state, zSchema }: {
+        dispatch: Dispatch;
+        zSchema: ZodObject<
+            {
+                action: ZodLiteral<string>;
+                payload: Payload;
+            },
+            $strip
+        >;
+        state: State;
+        key: keyof State;
+    },
+): State {
+    const parsedDispatchResult = parseSyncSafe(
+        {
+            object: dispatch,
+            zSchema,
+        },
+    );
+    if (parsedDispatchResult.err) {
+        return state;
+    }
+    const parsedDispatchMaybe = parsedDispatchResult.safeUnwrap();
+    if (parsedDispatchMaybe.none) {
+        return state;
+    }
+    const parsedDispatch = parsedDispatchMaybe.safeUnwrap();
+
+    return {
+        ...state,
+        [key]: parsedDispatch.payload as State[typeof key],
+    };
+}
+
+export {
+    createSafeErrorResult,
+    createSafeSuccessResult,
+    parseDispatchAndSetState,
+    parseSyncSafe,
+};

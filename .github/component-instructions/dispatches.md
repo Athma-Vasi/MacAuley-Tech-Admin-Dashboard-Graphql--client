@@ -7,16 +7,33 @@ state variable to the existing dispatch functions.
 
 ### dispatch output definition
 
-example: given a state of { username: string}, generate dispatch functions and
-export the dispatch type:
+example: given a state of { username: string, isLoading: boolean,
+repairMetricsWorker: Worker | null}, generate dispatch functions and export the
+dispatch type:
 
 ```typescript
+import { z } from "zod";
+import { loginAction } from "./actions";
+
 const setUsernameLoginDispatchZod = z.object({
     action: z.literal(loginAction.setUsername),
     payload: z.string(),
 });
 
-type LoginDispatch = z.infer<typeof setUsernameLoginDispatchZod>;
+const setIsLoadingLoginDispatchZod = z.object({
+    action: z.literal(loginAction.setIsLoading),
+    payload: z.boolean(),
+});
+
+const setRepairMetricsWorkerLoginDispatchZod = z.object({
+    action: z.literal(loginAction.setRepairMetricsWorker),
+    payload: z.instanceof(Worker),
+});
+
+type LoginDispatch =
+    | z.infer<typeof setUsernameLoginDispatchZod>
+    | z.infer<typeof setIsLoadingLoginDispatchZod>
+    | z.infer<typeof setRepairMetricsWorkerLoginDispatchZod>;
 
 export { setUsernameLoginDispatchZod };
 export type { LoginDispatch };

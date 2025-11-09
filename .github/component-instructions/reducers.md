@@ -8,8 +8,9 @@ structure shown in the example.
 
 ### reducer output definition
 
-example: given a state of { username: string}, generate a reducer function, a
-reducers map, and a specific reducer function and export them:
+example: given a state of { username: string, isLoading: boolean,
+repairMetricsWorker: Worker | null}, generate a reducer function, a reducers
+map, and a specific reducer function and export them:
 
 ```typescript
 function loginReducer(
@@ -28,31 +29,47 @@ const loginReducersMap: Map<
         loginAction.setUsername,
         loginReducer_setUsername,
     ],
+    [loginAction.setIsLoading, loginReducer_setIsLoading],
+    [
+        loginAction.setRepairMetricsWorker,
+        loginReducer_setRepairMetricsWorker,
+    ],
 ]);
 
 function loginReducer_setUsername(
     state: LoginState,
     dispatch: LoginDispatch,
 ): LoginState {
-    const parsedResult = parseSyncSafe(
-        {
-            object: dispatch,
-            zSchema: setUsernameLoginDispatchZod,
-        },
-    );
-    if (parsedResult.err) {
-        return state;
-    }
+    return parseDispatchAndSetState({
+        dispatch,
+        key: "username",
+        state,
+        zSchema: setUsernameLoginDispatchZod,
+    });
+}
 
-    const parsedMaybe = parsedResult.safeUnwrap();
-    if (parsedMaybe.none) {
-        return state;
-    }
+function loginReducer_setIsLoading(
+    state: LoginState,
+    dispatch: LoginDispatch,
+): LoginState {
+    return parseDispatchAndSetState({
+        dispatch,
+        key: "isLoading",
+        state,
+        zSchema: setIsLoadingLoginDispatchZod,
+    });
+}
 
-    return {
-        ...state,
-        username: parsedMaybe.safeUnwrap().payload as string,
-    };
+function loginReducer_setRepairMetricsWorker(
+    state: LoginState,
+    dispatch: LoginDispatch,
+): LoginState {
+    return parseDispatchAndSetState({
+        dispatch,
+        key: "repairMetricsWorker",
+        state,
+        zSchema: setRepairMetricsWorkerLoginDispatchZod,
+    });
 }
 
 export { loginReducer, loginReducer_setUsername, loginReducersMap };

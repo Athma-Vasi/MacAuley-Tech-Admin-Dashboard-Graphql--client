@@ -8,7 +8,9 @@ state variable to the existing test cases.
 ### test output definition
 
 example: given a state of { username: string}, generate vitest test cases
-similar to the examples below, and export them:
+similar to the examples below, and export them. If the value is of another type,
+such as number, boolean, array, or object, adjust the test cases accordingly to
+validate that type:
 
 ```typescript
 import { describe, expect, it } from "vitest";
@@ -18,34 +20,67 @@ import { setUsernameLoginDispatchZod } from "./dispatches";
 import { INVALID_STRINGS, VALID_STRINGS } from "../../constants.ts";
 import { loginAction } from "./actions";
 
-describe(loginAction.setUsername, () => {
-    it("should allow valid string values", () => {
-        VALID_STRINGS.forEach((value) => {
-            const dispatch = {
-                action: loginAction.setUsername,
-                payload: value,
-            };
-            const state = loginReducer_setUsername(
-                initialLoginState,
-                dispatch,
-            );
-            expect(state.username).toBe(value);
+describe("loginReducer", () => {
+    describe(loginAction.setUsername, () => {
+        it("should allow valid string values", () => {
+            VALID_STRINGS.forEach((value) => {
+                const dispatch = {
+                    action: loginAction.setUsername,
+                    payload: value,
+                };
+                const state = loginReducer_setUsername(
+                    initialLoginState,
+                    dispatch,
+                );
+                expect(state.username).toBe(value);
+            });
+        });
+
+        it("should not allow invalid string values", () => {
+            const initialUsername = initialLoginState.username;
+
+            INVALID_STRINGS.forEach((value) => {
+                const dispatch = {
+                    action: loginAction.setUsername,
+                    payload: value,
+                };
+                const state = loginReducer_setUsername(
+                    initialLoginState,
+                    dispatch as any,
+                );
+                expect(state.username).toBe(initialUsername);
+            });
         });
     });
 
-    it("should not allow invalid string values", () => {
-        const initialUsername = initialLoginState.username;
+    describe(loginAction.setIsLoading, () => {
+        it("should allow valid boolean values", () => {
+            VALID_BOOLEANS.forEach((value) => {
+                const dispatch = {
+                    action: loginAction.setIsLoading,
+                    payload: value,
+                };
+                const state = loginReducer_setIsLoading(
+                    initialLoginState,
+                    dispatch,
+                );
+                expect(state.isLoading).toBe(value);
+            });
+        });
 
-        INVALID_STRINGS.forEach((value) => {
-            const dispatch = {
-                action: loginAction.setUsername,
-                payload: value,
-            };
-            const state = loginReducer_setUsername(
-                initialLoginState,
-                dispatch as any,
-            );
-            expect(state.username).toBe(initialUsername);
+        it("should not allow invalid boolean values", () => {
+            const initialIsLoading = initialLoginState.isLoading;
+            INVALID_BOOLEANS.forEach((value) => {
+                const dispatch = {
+                    action: loginAction.setIsLoading,
+                    payload: value,
+                };
+                const state = loginReducer_setIsLoading(
+                    initialLoginState,
+                    dispatch as any,
+                );
+                expect(state.isLoading).toBe(initialIsLoading);
+            });
         });
     });
 });

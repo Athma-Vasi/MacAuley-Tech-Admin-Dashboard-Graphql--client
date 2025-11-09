@@ -7,8 +7,9 @@ provided state variable to the existing type and constant object.
 
 ### action output definition
 
-example: given a state of { username: string}, generate an action type, action
-field inside object and export them:
+example: given a state of { username: string, isLoading: boolean,
+repairMetricsWorker: Worker | null}, generate an action type, action field
+inside object and export them:
 
 ```typescript
 type LoginActions = {
@@ -19,6 +20,8 @@ type LoginActions = {
 
 const loginActions: LoginActions = {
     setUsername: "setUsername",
+    setIsLoading: "setIsLoading",
+    setRepairMetricsWorker: "setRepairMetricsWorker",
 };
 
 export { loginActions };

@@ -6,16 +6,21 @@ output definition'.
 
 ### state output definition
 
-example: given a state of { username: string}, generate a state type and an
-initial state object and export them:
+example: given a state of { username: string, isLoading: boolean,
+repairMetricsWorker: Worker | null}, generate a state type and an initial state
+object and export them:
 
 ```typescript
 type LoginState = {
     username: string;
+    isLoading: boolean;
+    repairMetricsWorker: Worker | null;
 };
 
 const initialLoginState: LoginState = {
     username: "",
+    isLoading: false,
+    repairMetricsWorker: null,
 };
 
 export { initialLoginState };
