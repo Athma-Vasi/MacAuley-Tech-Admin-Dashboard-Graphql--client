@@ -1,10 +1,11 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import type React from "react";
 
 import { AccessibleSelectInput } from "../accessibleInputs/AccessibleSelectInput";
-import { QueryAction, queryAction } from "./actions";
+import { type QueryAction, queryAction } from "./actions";
 import { SORT_DIRECTION_DATA } from "./constants";
-import { QueryDispatch } from "./schemas";
-import { type QueryState, type QueryTemplate, SortDirection } from "./types";
+import { type QueryDispatch } from "./schemas";
+import type { QueryState, QueryTemplate, SortDirection } from "./types";
 import {
     removeProjectionExclusionFields,
     returnSortableQueryFields,

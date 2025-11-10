@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { Group, Stack, Text, Timeline } from "@mantine/core";
 import type React from "react";
 import { TbLink, TbLogicNot } from "react-icons/tb";
@@ -12,7 +13,7 @@ import {
     splitCamelCase,
 } from "../../utils";
 import { queryAction } from "./actions";
-import { QueryDispatch } from "./schemas";
+import type { QueryDispatch } from "./schemas";
 import type {
     LogicalOperator,
     QueryChain,

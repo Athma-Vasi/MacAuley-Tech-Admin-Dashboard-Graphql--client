@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useEffect } from "react";
 
 import { Chain } from "./Chain";
@@ -9,12 +11,12 @@ import { Group, Modal, Text } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import { AccessibleButton } from "../accessibleInputs/AccessibleButton";
 import { AccessibleSelectInput } from "../accessibleInputs/AccessibleSelectInput";
-import { QueryAction, queryAction } from "./actions";
+import { type QueryAction, queryAction } from "./actions";
 import { LIMIT_PER_PAGE_DATA, QUERY_KIND_DATA } from "./constants";
 import { QueryFilter } from "./QueryFilter";
 import { QuerySort } from "./QuerySort";
 import { initialQueryState } from "./state";
-import { LimitPerPage, QueryKind, QueryTemplate } from "./types";
+import type { LimitPerPage, QueryKind, QueryTemplate } from "./types";
 import {
     createQueryString,
     FILTER_HELP_MODAL_CONTENT,

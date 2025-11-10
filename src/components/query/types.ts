@@ -1,8 +1,8 @@
-import { CheckboxRadioSelectData } from "../../types";
-import { ValidationKey } from "../../validations";
-import { AccessibleDateTimeInputAttributes } from "../accessibleInputs/AccessibleDateTimeInput";
-import { AccessibleSelectInputAttributes } from "../accessibleInputs/AccessibleSelectInput";
-import { AccessibleTextInputAttributes } from "../accessibleInputs/AccessibleTextInput";
+import type { CheckboxRadioSelectData } from "../../types";
+import type { ValidationKey } from "../../validations";
+import type { AccessibleDateTimeInputAttributes } from "../accessibleInputs/AccessibleDateTimeInput";
+import type { AccessibleSelectInputAttributes } from "../accessibleInputs/AccessibleSelectInput";
+import type { AccessibleTextInputAttributes } from "../accessibleInputs/AccessibleTextInput";
 
 type InputKind =
     | "date"

@@ -1,8 +1,9 @@
-import { parseSyncSafe } from "../../utils";
-import { QueryAction, queryAction } from "./actions";
+/* eslint-disable @typescript-eslint/no-unused-vars */
+import { parseDispatchAndSetState, parseSyncSafe } from "../../utils";
+import { type QueryAction, queryAction } from "./actions";
 import {
     modifyQueryChainsDispatchZod,
-    QueryDispatch,
+    type QueryDispatch,
     resetToInitialDispatchZod,
     setFilterComparisonOperatorDispatchZod,
     setFilterFieldDispatchZod,
@@ -20,16 +21,11 @@ import {
     setSortFieldDispatchZod,
 } from "./schemas";
 import type {
-    GeneralSearchCase,
-    LimitPerPage,
     LogicalOperator,
     ModifyQueryChainPayload,
     QueryChain,
     QueryChainKind,
-    QueryKind,
-    QueryOperator,
     QueryState,
-    SortDirection,
 } from "./types";
 
 function queryReducer(state: QueryState, dispatch: QueryDispatch): QueryState {
@@ -91,19 +87,12 @@ function queryReducer_setProjectionFields(
     state: QueryState,
     dispatch: QueryDispatch,
 ): QueryState {
-    const parsedResult = parseSyncSafe({
-        object: dispatch,
+    return parseDispatchAndSetState({
+        dispatch,
+        key: "projectionFields",
+        state,
         zSchema: setProjectionFieldsDispatchZod,
     });
-
-    if (parsedResult.err || parsedResult.val.none) {
-        return state;
-    }
-
-    return {
-        ...state,
-        projectionFields: parsedResult.val.val.payload as string[],
-    };
 }
 
 function queryReducer_modifyQueryChains(
@@ -276,252 +265,156 @@ function queryReducer_setFilterField(
     state: QueryState,
     dispatch: QueryDispatch,
 ): QueryState {
-    const parsedResult = parseSyncSafe({
-        object: dispatch,
+    return parseDispatchAndSetState({
+        dispatch,
+        key: "filterField",
+        state,
         zSchema: setFilterFieldDispatchZod,
     });
-
-    if (parsedResult.err || parsedResult.val.none) {
-        return state;
-    }
-
-    return {
-        ...state,
-        filterField: parsedResult.val.val.payload as string,
-    };
 }
 
 function queryReducer_setFilterComparisonOperator(
     state: QueryState,
     dispatch: QueryDispatch,
 ): QueryState {
-    const parsedResult = parseSyncSafe({
-        object: dispatch,
+    return parseDispatchAndSetState({
+        dispatch,
+        key: "filterComparisonOperator",
+        state,
         zSchema: setFilterComparisonOperatorDispatchZod,
     });
-
-    if (parsedResult.err || parsedResult.val.none) {
-        return state;
-    }
-
-    return {
-        ...state,
-        filterComparisonOperator: parsedResult.val.val
-            .payload as QueryOperator,
-    };
 }
 
 function queryReducer_setFilterLogicalOperator(
     state: QueryState,
     dispatch: QueryDispatch,
 ): QueryState {
-    const parsedResult = parseSyncSafe({
-        object: dispatch,
+    return parseDispatchAndSetState({
+        dispatch,
+        key: "filterLogicalOperator",
+        state,
         zSchema: setFilterLogicalOperatorDispatchZod,
     });
-
-    if (parsedResult.err || parsedResult.val.none) {
-        return state;
-    }
-
-    return {
-        ...state,
-        filterLogicalOperator: parsedResult.val.val
-            .payload as LogicalOperator,
-    };
 }
 
 function queryReducer_setFilterValue(
     state: QueryState,
     dispatch: QueryDispatch,
 ): QueryState {
-    const parsedResult = parseSyncSafe({
-        object: dispatch,
+    return parseDispatchAndSetState({
+        dispatch,
+        key: "filterValue",
+        state,
         zSchema: setFilterValueDispatchZod,
     });
-
-    if (parsedResult.err || parsedResult.val.none) {
-        return state;
-    }
-
-    return {
-        ...state,
-        filterValue: parsedResult.val.val.payload as string,
-    };
 }
 
 function queryReducer_setGeneralSearchCase(
     state: QueryState,
     dispatch: QueryDispatch,
 ): QueryState {
-    const parsedResult = parseSyncSafe({
-        object: dispatch,
+    return parseDispatchAndSetState({
+        dispatch,
+        key: "generalSearchCase",
+        state,
         zSchema: setGeneralSearchCaseDispatchZod,
     });
-
-    if (parsedResult.err || parsedResult.val.none) {
-        return state;
-    }
-
-    return {
-        ...state,
-        generalSearchCase: parsedResult.val.val
-            .payload as GeneralSearchCase,
-    };
 }
 
 function queryReducer_setGeneralSearchExclusionValue(
     state: QueryState,
     dispatch: QueryDispatch,
 ): QueryState {
-    const parsedResult = parseSyncSafe({
-        object: dispatch,
+    return parseDispatchAndSetState({
+        dispatch,
+        key: "generalSearchExclusionValue",
+        state,
         zSchema: setGeneralSearchExclusionValueDispatchZod,
     });
-
-    if (parsedResult.err || parsedResult.val.none) {
-        return state;
-    }
-
-    return {
-        ...state,
-        generalSearchExclusionValue: parsedResult.val.val
-            .payload as string,
-    };
 }
 
 function queryReducer_setGeneralSearchInclusionValue(
     state: QueryState,
     dispatch: QueryDispatch,
 ): QueryState {
-    const parsedResult = parseSyncSafe({
-        object: dispatch,
+    return parseDispatchAndSetState({
+        dispatch,
+        key: "generalSearchInclusionValue",
+        state,
         zSchema: setGeneralSearchInclusionValueDispatchZod,
     });
-
-    if (parsedResult.err || parsedResult.val.none) {
-        return state;
-    }
-
-    return {
-        ...state,
-        generalSearchInclusionValue: parsedResult.val.val
-            .payload as string,
-    };
 }
 
 function queryReducer_setIsError(
     state: QueryState,
     dispatch: QueryDispatch,
 ): QueryState {
-    const parsedResult = parseSyncSafe({
-        object: dispatch,
+    return parseDispatchAndSetState({
+        dispatch,
+        key: "isError",
+        state,
         zSchema: setIsErrorDispatchZod,
     });
-
-    if (parsedResult.err || parsedResult.val.none) {
-        return state;
-    }
-
-    return {
-        ...state,
-        isError: parsedResult.val.val.payload as boolean,
-    };
 }
 
 function queryReducer_setIsSearchDisabled(
     state: QueryState,
     dispatch: QueryDispatch,
 ): QueryState {
-    const parsedResult = parseSyncSafe({
-        object: dispatch,
+    return parseDispatchAndSetState({
+        dispatch,
+        key: "isSearchDisabled",
+        state,
         zSchema: setIsSearchDisabledDispatchZod,
     });
-
-    if (parsedResult.err || parsedResult.val.none) {
-        return state;
-    }
-
-    return {
-        ...state,
-        isSearchDisabled: parsedResult.val.val.payload as boolean,
-    };
 }
 
 function queryReducer_setLimitPerPage(
     state: QueryState,
     dispatch: QueryDispatch,
 ): QueryState {
-    const parsedResult = parseSyncSafe({
-        object: dispatch,
+    return parseDispatchAndSetState({
+        dispatch,
+        key: "limitPerPage",
+        state,
         zSchema: setLimitPerPageDispatchZod,
     });
-
-    if (parsedResult.err || parsedResult.val.none) {
-        return state;
-    }
-
-    return {
-        ...state,
-        limitPerPage: parsedResult.val.val.payload as LimitPerPage,
-    };
 }
 
 function queryReducer_setSortDirection(
     state: QueryState,
     dispatch: QueryDispatch,
 ): QueryState {
-    const parsedResult = parseSyncSafe({
-        object: dispatch,
+    return parseDispatchAndSetState({
+        dispatch,
+        key: "sortDirection",
+        state,
         zSchema: setSortDirectionDispatchZod,
     });
-
-    if (parsedResult.err || parsedResult.val.none) {
-        return state;
-    }
-
-    return {
-        ...state,
-        sortDirection: parsedResult.val.val.payload as SortDirection,
-    };
 }
 
 function queryReducer_setSortField(
     state: QueryState,
     dispatch: QueryDispatch,
 ): QueryState {
-    const parsedResult = parseSyncSafe({
-        object: dispatch,
+    return parseDispatchAndSetState({
+        dispatch,
+        key: "sortField",
+        state,
         zSchema: setSortFieldDispatchZod,
     });
-
-    if (parsedResult.err || parsedResult.val.none) {
-        return state;
-    }
-
-    return {
-        ...state,
-        sortField: parsedResult.val.val.payload as string,
-    };
 }
 
 function queryReducer_setQueryKind(
     state: QueryState,
     dispatch: QueryDispatch,
 ): QueryState {
-    const parsedResult = parseSyncSafe({
-        object: dispatch,
+    return parseDispatchAndSetState({
+        dispatch,
+        key: "queryKind",
+        state,
         zSchema: setQueryKindDispatchZod,
     });
-
-    if (parsedResult.err || parsedResult.val.none) {
-        return state;
-    }
-
-    return {
-        ...state,
-        queryKind: parsedResult.val.val.payload as QueryKind,
-    };
 }
 
 export {

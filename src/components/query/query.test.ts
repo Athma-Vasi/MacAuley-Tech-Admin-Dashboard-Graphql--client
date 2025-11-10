@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { describe, expect, it } from "vitest";
 import {
     INVALID_BOOLEANS,
@@ -22,9 +23,9 @@ import {
     queryReducer_setSortDirection,
     queryReducer_setSortField,
 } from "./reducers";
-import { QueryDispatch } from "./schemas";
+import type { QueryDispatch } from "./schemas";
 import { initialQueryState } from "./state";
-import {
+import type {
     GeneralSearchCase,
     LimitPerPage,
     LogicalOperator,

@@ -1,5 +1,5 @@
-import { Prettify } from "../../types";
-import { QueryState } from "./types";
+import type { Prettify } from "../../types";
+import type { QueryState } from "./types";
 
 type QueryAction = Prettify<
     & {

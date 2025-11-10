@@ -1,18 +1,18 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import type React from "react";
 
-import { useDisclosure } from "@mantine/hooks";
 import { useEffect } from "react";
 import {
     AccessibleSelectInput,
 } from "../accessibleInputs/AccessibleSelectInput";
-import { QueryAction, queryAction } from "./actions";
+import { type QueryAction, queryAction } from "./actions";
 import { LOGICAL_OPERATORS_DATA } from "./constants";
-import { QueryDispatch } from "./schemas";
-import {
+import { type QueryDispatch } from "./schemas";
+import type {
     LogicalOperator,
-    type QueryChains,
-    type QueryState,
-    type QueryTemplate,
+    QueryChains,
+    QueryState,
+    QueryTemplate,
 } from "./types";
 import {
     createDynamicInput,

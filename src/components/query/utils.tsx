@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import {
     Blockquote,
     Code,
@@ -10,16 +11,16 @@ import {
 } from "@mantine/core";
 
 import type { CheckboxRadioSelectData, Validation } from "../../types";
-import { ValidationKey } from "../../validations";
+import type { ValidationKey } from "../../validations";
 
 import { TbLogicAnd, TbLogicNor, TbLogicOr } from "react-icons/tb";
 import { splitCamelCase } from "../../utils";
 import { AccessibleDateTimeInput } from "../accessibleInputs/AccessibleDateTimeInput";
 import { AccessibleSelectInput } from "../accessibleInputs/AccessibleSelectInput";
 import { AccessibleTextInput } from "../accessibleInputs/AccessibleTextInput";
-import { QueryAction } from "./actions";
-import { QueryDispatch } from "./schemas";
-import {
+import type { QueryAction } from "./actions";
+import type { QueryDispatch } from "./schemas";
+import type {
     InputKind,
     LogicalOperator,
     MongoQueryOperator,

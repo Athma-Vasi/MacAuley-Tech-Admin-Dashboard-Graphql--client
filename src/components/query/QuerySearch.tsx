@@ -3,9 +3,9 @@ import React from "react";
 
 import { AccessibleSegmentedControl } from "../accessibleInputs/AccessibleSegmentedControl";
 import { AccessibleTextInput } from "../accessibleInputs/AccessibleTextInput";
-import { QueryAction, queryAction } from "./actions";
+import { type QueryAction, queryAction } from "./actions";
 import { QUERY_SEARCH_CASE_DATA } from "./constants";
-import { QueryDispatch } from "./schemas";
+import { type QueryDispatch } from "./schemas";
 import type { GeneralSearchCase, QueryState } from "./types";
 
 type QuerySearchProps = {

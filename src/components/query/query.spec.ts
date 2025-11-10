@@ -1,11 +1,12 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { expect, test } from "@playwright/test";
 import { shuffle } from "simple-statistics";
-import { UserDocument } from "../../types";
+import type { UserDocument } from "../../types";
 import {
     SAMPLE_USER_DOCUMENT,
     USER_QUERY_TEMPLATES,
 } from "../usersQuery/constants";
-import {
+import type {
     GeneralSearchCase,
     LogicalOperator,
     QueryChainKind,

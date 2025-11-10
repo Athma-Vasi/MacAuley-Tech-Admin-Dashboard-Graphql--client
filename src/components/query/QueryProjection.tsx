@@ -1,6 +1,6 @@
 import { AccessibleCheckboxInputGroup } from "../accessibleInputs/AccessibleCheckboxInput";
 import { queryAction } from "./actions";
-import { QueryDispatch } from "./schemas";
+import type { QueryDispatch } from "./schemas";
 import type { QueryState, QueryTemplate } from "./types";
 import { excludeSelectedProjectionFields } from "./utils";
 
