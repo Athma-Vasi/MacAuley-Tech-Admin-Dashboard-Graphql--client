@@ -1,5 +1,5 @@
-import { CheckboxRadioSelectData } from "../../../types";
-import {
+import type { CheckboxRadioSelectData } from "../../../types";
+import type {
   NivoAxisLegendPosition,
   NivoBarGroupMode,
   NivoBarLayout,

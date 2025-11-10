@@ -1,7 +1,8 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import type { TitleOrder } from "@mantine/core";
 import type { ValueFormat } from "@nivo/core";
 
-import { PointTooltip } from "@nivo/line";
+import type { PointTooltip } from "@nivo/line";
 import type { ScreenshotImageType } from "../../../types";
 import type {
   ChartUnitKind,

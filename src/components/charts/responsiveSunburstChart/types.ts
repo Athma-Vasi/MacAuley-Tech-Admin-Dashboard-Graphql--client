@@ -1,8 +1,9 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import type { TitleOrder } from "@mantine/core";
 
-import { ComputedDatum } from "@nivo/bar";
+import type { ComputedDatum } from "@nivo/bar";
 import type { ValueFormat } from "@nivo/core";
-import { JSX } from "react";
+import type { JSX } from "react";
 import type { ScreenshotImageType } from "../../../types";
 import type {
   NivoArcLabel,

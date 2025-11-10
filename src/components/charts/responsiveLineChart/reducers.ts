@@ -16,7 +16,6 @@ import type {
   NivoMotionConfig,
 } from "../types";
 import { responsiveLineChartAction } from "./actions";
-import { initialResponsiveLineChartState } from "./state";
 import type {
   ResponsiveLineChartAction,
   ResponsiveLineChartDispatch,

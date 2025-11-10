@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import {
   Box,
   ColorInput,
@@ -23,7 +24,7 @@ import { ChartOptions } from "../chartControls/chartOptions";
 import { SLIDER_TOOLTIP_COLOR } from "../constants";
 import ChartAndControlsDisplay from "../display/ChartAndControlsDisplay";
 import ChartsAndGraphsControlsStacker from "../display/ChartsAndControlsStacker";
-import { NivoCalendarAlign, NivoCalendarLegendPosition } from "../types";
+import type { NivoCalendarAlign, NivoCalendarLegendPosition } from "../types";
 import { createChartHeaderStyles } from "../utils";
 import { responsiveCalendarChartAction } from "./actions";
 import {

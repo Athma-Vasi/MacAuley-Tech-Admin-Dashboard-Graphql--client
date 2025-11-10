@@ -1,6 +1,6 @@
 import type { TitleOrder } from "@mantine/core";
 
-import { PieTooltipProps } from "@nivo/pie";
+import type { PieTooltipProps } from "@nivo/pie";
 import type { ScreenshotImageType } from "../../../types";
 import type {
   ChartUnitKind,

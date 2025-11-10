@@ -1,6 +1,6 @@
 import type { TitleOrder } from "@mantine/core";
 
-import { BarTooltipProps } from "@nivo/bar";
+import type { BarTooltipProps } from "@nivo/bar";
 import type { ScreenshotImageType } from "../../../types";
 import type {
   ChartUnitKind,

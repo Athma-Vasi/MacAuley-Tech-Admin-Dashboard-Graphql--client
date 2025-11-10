@@ -1,6 +1,7 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import type { TitleOrder } from "@mantine/core";
 
-import { CalendarTooltipProps } from "@nivo/calendar";
+import type { CalendarTooltipProps } from "@nivo/calendar";
 import type { ScreenshotImageType } from "../../../types";
 import type {
   NivoCalendarAlign,

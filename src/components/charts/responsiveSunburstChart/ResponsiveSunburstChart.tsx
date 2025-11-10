@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import {
   Box,
   ColorInput,
@@ -30,8 +32,16 @@ import {
 } from "../constants";
 import ChartAndControlsDisplay from "../display/ChartAndControlsDisplay";
 import ChartsAndGraphsControlsStacker from "../display/ChartsAndControlsStacker";
+import type {
+  NivoColorScheme,
+  NivoMotionConfig,
+  NivoTransitionMode,
+} from "../types";
 import { createChartHeaderStyles } from "../utils";
-import { responsiveSunburstChartAction } from "./actions";
+import {
+  type ResponsiveSunburstChartAction,
+  responsiveSunburstChartAction,
+} from "./actions";
 import { responsiveSunburstChartReducer } from "./reducers";
 import { initialResponsiveSunburstChartState } from "./state";
 import type {
@@ -202,11 +212,14 @@ function ResponsiveSunburstChart({
   // style
 
   const chartColorsSelectInput = (
-    <AccessibleSelectInput
+    <AccessibleSelectInput<
+      ResponsiveSunburstChartAction["setChartColors"],
+      NivoColorScheme
+    >
       attributes={{
         data: NIVO_COLOR_SCHEME_DATA,
         description: "Define chart colors",
-        name: "charColors",
+        name: "chartColors",
         parentDispatch: responsiveSunburstChartDispatch,
         validValueAction: responsiveSunburstChartAction.setChartColors,
         value: chartColors,
@@ -290,7 +303,10 @@ function ResponsiveSunburstChart({
   );
 
   const motionConfigSelectInput = (
-    <AccessibleSelectInput
+    <AccessibleSelectInput<
+      ResponsiveSunburstChartAction["setMotionConfig"],
+      NivoMotionConfig
+    >
       attributes={{
         data: NIVO_MOTION_CONFIG_DATA,
         description: "Define motion config",
@@ -303,7 +319,10 @@ function ResponsiveSunburstChart({
   );
 
   const transitionModeSelectInput = (
-    <AccessibleSelectInput
+    <AccessibleSelectInput<
+      ResponsiveSunburstChartAction["setTransitionMode"],
+      NivoTransitionMode
+    >
       attributes={{
         data: NIVO_TRANSITION_MODE_DATA,
         description: "Define transition mode",

@@ -1,6 +1,6 @@
 import type { TitleOrder } from "@mantine/core";
 
-import { RadialBarTooltipComponent } from "@nivo/radial-bar";
+import type { RadialBarTooltipComponent } from "@nivo/radial-bar";
 import type { ScreenshotImageType } from "../../../types";
 import type {
   NivoChartTitlePosition,

@@ -30,10 +30,10 @@ import { ChartMargin } from "../chartControls/chartMargin";
 import { ChartOptions } from "../chartControls/chartOptions";
 import ChartAndControlsDisplay from "../display/ChartAndControlsDisplay";
 import ChartsAndGraphsControlsStacker from "../display/ChartsAndControlsStacker";
-import { NivoMotionConfig, NivoTransitionMode } from "../types";
+import type { NivoMotionConfig, NivoTransitionMode } from "../types";
 import { createChartHeaderStyles } from "../utils";
 import {
-  ResponsiveRadialBarChartAction,
+  type ResponsiveRadialBarChartAction,
   responsiveRadialBarChartAction,
 } from "./actions";
 import { responsiveRadialBarChartReducer } from "./reducers";

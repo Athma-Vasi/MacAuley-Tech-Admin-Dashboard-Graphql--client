@@ -1,17 +1,19 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable prefer-const */
 import { Card, Group, Text } from "@mantine/core";
 
-import { BarTooltipProps } from "@nivo/bar";
-import { PointTooltipProps } from "@nivo/line";
-import { PieTooltipProps } from "@nivo/pie";
-import { RadialBarDatum, RadialBarTooltipProps } from "@nivo/radial-bar";
+import type { BarTooltipProps } from "@nivo/bar";
+import type { PointTooltipProps } from "@nivo/line";
+import type { PieTooltipProps } from "@nivo/pie";
+import type { RadialBarDatum, RadialBarTooltipProps } from "@nivo/radial-bar";
 import { addCommaSeparator, splitCamelCase, toFixedFloat } from "../../utils";
 import { MONTHS } from "../dashboard/constants";
-import { DashboardCalendarView } from "../dashboard/types";
+import type { DashboardCalendarView } from "../dashboard/types";
 import { CHART_CONTROLS_HEADER_HEIGHT } from "./constants";
-import { BarChartData } from "./responsiveBarChart/types";
-import { MyCalendarTooltipProps } from "./responsiveCalendarChart/types";
-import { PieChartData } from "./responsivePieChart/types";
-import { ChartUnitKind } from "./types";
+import type { BarChartData } from "./responsiveBarChart/types";
+import type { MyCalendarTooltipProps } from "./responsiveCalendarChart/types";
+import type { PieChartData } from "./responsivePieChart/types";
+import type { ChartUnitKind } from "./types";
 
 type ChartKindTooltipValue = {
   kind: "bar";

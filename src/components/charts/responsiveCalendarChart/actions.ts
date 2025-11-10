@@ -1,5 +1,5 @@
-import { Prettify } from "../../../types";
-import { ResponsiveCalendarChartState } from "./types";
+import type { Prettify } from "../../../types";
+import type { ResponsiveCalendarChartState } from "./types";
 
 type ResponsiveCalendarChartAction = Prettify<
   {

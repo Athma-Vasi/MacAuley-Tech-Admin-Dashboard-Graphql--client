@@ -1,5 +1,5 @@
-import { Prettify } from "../../../types";
-import { ResponsivePieChartState } from "./types";
+import type { Prettify } from "../../../types";
+import type { ResponsivePieChartState } from "./types";
 
 type ResponsivePieChartAction = Prettify<
   {

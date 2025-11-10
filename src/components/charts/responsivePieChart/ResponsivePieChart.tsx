@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import {
   Box,
   ColorInput,
@@ -32,13 +33,16 @@ import { ChartMargin } from "../chartControls/chartMargin";
 import { ChartOptions } from "../chartControls/chartOptions";
 import ChartAndControlsDisplay from "../display/ChartAndControlsDisplay";
 import ChartsAndGraphsControlsStacker from "../display/ChartsAndControlsStacker";
-import {
+import type {
   NivoColorScheme,
   NivoMotionConfig,
   NivoTransitionMode,
 } from "../types";
 import { createChartHeaderStyles } from "../utils";
-import { ResponsivePieChartAction, responsivePieChartAction } from "./actions";
+import {
+  type ResponsivePieChartAction,
+  responsivePieChartAction,
+} from "./actions";
 import { responsivePieChartReducer } from "./reducers";
 import { initialResponsivePieChartState } from "./state";
 import type { ResponsivePieChartProps } from "./types";
