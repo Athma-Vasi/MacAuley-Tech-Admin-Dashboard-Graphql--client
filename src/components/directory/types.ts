@@ -1,6 +1,6 @@
-import { Orientation } from "react-d3-tree";
-import { Department, StoreLocation } from "../../types";
-import { DirectoryAction } from "./actions";
+import type { Orientation } from "react-d3-tree";
+import type { Department, StoreLocation } from "../../types";
+import type { DirectoryAction } from "./actions";
 
 type DirectoryClickedInput = "department" | "storeLocation" | "";
 

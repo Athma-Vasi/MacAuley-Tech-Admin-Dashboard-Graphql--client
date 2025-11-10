@@ -1,6 +1,6 @@
-import { Orientation } from "react-d3-tree";
-import { CheckboxRadioSelectData, Department } from "../../types";
-import { DepartmentsWithDefaultKey } from "./types";
+import type { Orientation } from "react-d3-tree";
+import type { CheckboxRadioSelectData, Department } from "../../types";
+import type { DepartmentsWithDefaultKey } from "./types";
 
 const DEPARTMENTS_DATA: CheckboxRadioSelectData<Department> = [
   { value: "Executive Management", label: "Executive Management" },

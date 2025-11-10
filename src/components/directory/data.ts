@@ -1,4 +1,4 @@
-import { UserDocument } from "../../types";
+import type { UserDocument } from "../../types";
 
 const DIRECTORY_USER_DOCUMENTS: Array<Omit<UserDocument, "password">> = [
   {

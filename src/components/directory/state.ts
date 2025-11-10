@@ -1,4 +1,4 @@
-import { DirectoryState } from "./types";
+import { type DirectoryState } from "./types";
 
 const initialDirectoryState: DirectoryState = {
   clickedInput: "",

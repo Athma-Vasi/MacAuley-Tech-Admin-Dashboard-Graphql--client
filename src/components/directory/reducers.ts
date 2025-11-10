@@ -1,5 +1,4 @@
-import { Orientation } from "react-d3-tree";
-import { parseSyncSafe } from "../../utils";
+import { parseDispatchAndSetState } from "../../utils";
 import { directoryAction } from "./actions";
 import {
   setClickedInputDirectoryDispatchZod,
@@ -9,12 +8,10 @@ import {
   setOrientationDirectoryDispatchZod,
   setStoreLocationDirectoryDispatchZod,
 } from "./schemas";
-import {
-  DepartmentsWithDefaultKey,
+import type {
   DirectoryAction,
   DirectoryDispatch,
   DirectoryState,
-  StoreLocationsWithDefaultKey,
 } from "./types";
 
 function directoryReducer(
@@ -44,117 +41,72 @@ function directoryReducer_setClickedInput(
   state: DirectoryState,
   dispatch: DirectoryDispatch,
 ): DirectoryState {
-  const parsedResult = parseSyncSafe({
-    object: dispatch,
+  return parseDispatchAndSetState({
+    dispatch,
+    key: "clickedInput",
+    state,
     zSchema: setClickedInputDirectoryDispatchZod,
   });
-
-  if (parsedResult.err || parsedResult.val.none) {
-    return state;
-  }
-
-  return {
-    ...state,
-    clickedInput: parsedResult.val.val
-      .payload as DirectoryState["clickedInput"],
-  };
 }
 
 function directoryReducer_setDepartment(
   state: DirectoryState,
   dispatch: DirectoryDispatch,
 ): DirectoryState {
-  const parsedResult = parseSyncSafe({
-    object: dispatch,
+  return parseDispatchAndSetState({
+    dispatch,
+    key: "department",
+    state,
     zSchema: setDepartmentDirectoryDispatchZod,
   });
-
-  if (parsedResult.err || parsedResult.val.none) {
-    return state;
-  }
-
-  return {
-    ...state,
-    department: parsedResult.val.val
-      .payload as DepartmentsWithDefaultKey,
-  };
 }
 
 function directoryReducer_setDirectoryFetchWorker(
   state: DirectoryState,
   dispatch: DirectoryDispatch,
 ): DirectoryState {
-  const parsedResult = parseSyncSafe({
-    object: dispatch,
+  return parseDispatchAndSetState({
+    dispatch,
+    key: "directoryFetchWorker",
+    state,
     zSchema: setDirectoryFetchWorkerDirectoryDispatchZod,
   });
-
-  if (parsedResult.err || parsedResult.val.none) {
-    return state;
-  }
-
-  return {
-    ...state,
-    directoryFetchWorker: parsedResult.val.val.payload as Worker,
-  };
 }
 
 function directoryReducer_setIsLoading(
   state: DirectoryState,
   dispatch: DirectoryDispatch,
 ): DirectoryState {
-  const parsedResult = parseSyncSafe({
-    object: dispatch,
+  return parseDispatchAndSetState({
+    dispatch,
+    key: "isLoading",
+    state,
     zSchema: setIsLoadingDirectoryDispatchZod,
   });
-
-  if (parsedResult.err || parsedResult.val.none) {
-    return state;
-  }
-
-  return {
-    ...state,
-    isLoading: parsedResult.val.val.payload as boolean,
-  };
 }
 
 function directoryReducer_setOrientation(
   state: DirectoryState,
   dispatch: DirectoryDispatch,
 ): DirectoryState {
-  const parsedResult = parseSyncSafe({
-    object: dispatch,
+  return parseDispatchAndSetState({
+    dispatch,
+    key: "orientation",
+    state,
     zSchema: setOrientationDirectoryDispatchZod,
   });
-
-  if (parsedResult.err || parsedResult.val.none) {
-    return state;
-  }
-
-  return {
-    ...state,
-    orientation: parsedResult.val.val.payload as Orientation,
-  };
 }
 
 function directoryReducer_setStoreLocation(
   state: DirectoryState,
   dispatch: DirectoryDispatch,
 ): DirectoryState {
-  const parsedResult = parseSyncSafe({
-    object: dispatch,
+  return parseDispatchAndSetState({
+    dispatch,
+    key: "storeLocation",
+    state,
     zSchema: setStoreLocationDirectoryDispatchZod,
   });
-
-  if (parsedResult.err || parsedResult.val.none) {
-    return state;
-  }
-
-  return {
-    ...state,
-    storeLocation: parsedResult.val.val
-      .payload as StoreLocationsWithDefaultKey,
-  };
 }
 
 export {

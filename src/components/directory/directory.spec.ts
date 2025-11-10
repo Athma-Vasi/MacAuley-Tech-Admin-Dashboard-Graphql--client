@@ -1,9 +1,9 @@
 import { expect, test } from "@playwright/test";
-import { Orientation } from "react-d3-tree";
+import type { Orientation } from "react-d3-tree";
 import { shuffle } from "simple-statistics";
-import { UserDocument } from "../../types";
+import type { UserDocument } from "../../types";
 import { DIRECTORY_USER_DOCUMENTS } from "./data";
-import {
+import type {
     DepartmentsWithDefaultKey,
     StoreLocationsWithDefaultKey,
 } from "./types";

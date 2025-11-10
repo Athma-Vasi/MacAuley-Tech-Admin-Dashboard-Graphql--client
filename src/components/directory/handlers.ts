@@ -1,14 +1,14 @@
-import { SafeResult } from "../../types";
+import type { SafeResult } from "../../types";
 import {
     catchHandlerErrorSafe,
     createSafeErrorResult,
     parseSyncSafe,
 } from "../../utils";
-import { AllStoreLocations } from "../dashboard/types";
-import { InvariantError } from "../error";
+import { type AllStoreLocations } from "../dashboard/types";
+import { InvariantError } from "../error/classes";
 import { directoryAction } from "./actions";
 import { handleDirectoryDepartmentAndLocationClicksInputZod } from "./schemas";
-import { DepartmentsWithDefaultKey, DirectoryDispatch } from "./types";
+import type { DepartmentsWithDefaultKey, DirectoryDispatch } from "./types";
 import { createDirectoryURLCacheKey } from "./utils";
 
 async function handleDirectoryDepartmentAndLocationClicks(

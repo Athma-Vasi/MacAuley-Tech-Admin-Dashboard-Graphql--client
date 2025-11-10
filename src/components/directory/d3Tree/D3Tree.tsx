@@ -1,7 +1,8 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Card, Flex, Group, Stack, Text } from "@mantine/core";
 import Tree, {
   type CustomNodeElementProps,
-  Orientation,
+  type Orientation,
   type Point,
 } from "react-d3-tree";
 

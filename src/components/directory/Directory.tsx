@@ -1,7 +1,7 @@
 import { Box, Group, Loader, Stack, Text } from "@mantine/core";
 import { useEffect, useReducer } from "react";
 
-import { Orientation } from "react-d3-tree";
+import type { Orientation } from "react-d3-tree";
 import { useErrorBoundary } from "react-error-boundary";
 import { API_URL, COLORS_SWATCHES, STORE_LOCATIONS } from "../../constants";
 import { useMountedRef } from "../../hooks";
@@ -10,7 +10,7 @@ import { useGlobalState } from "../../hooks/useGlobalState";
 import type { CheckboxRadioSelectData } from "../../types";
 import { returnThemeColors } from "../../utils";
 import { AccessibleSelectInput } from "../accessibleInputs/AccessibleSelectInput";
-import { AllStoreLocations } from "../dashboard/types";
+import { type AllStoreLocations } from "../dashboard/types";
 import {
   handleMessageEventDirectoryFetchWorkerToMain,
 } from "../sidebar/handlers";
@@ -18,7 +18,7 @@ import { directoryAction } from "./actions";
 import { ALL_DEPARTMENTS_DATA, ORIENTATIONS_DATA } from "./constants";
 import { D3Tree } from "./d3Tree/D3Tree";
 import { buildD3Tree } from "./d3Tree/utils";
-import { MessageEventDirectoryFetchWorkerToMain } from "./fetchWorker";
+import type { MessageEventDirectoryFetchWorkerToMain } from "./fetchWorker";
 import DirectoryFetchWorker from "./fetchWorker?worker";
 import { handleDirectoryDepartmentAndLocationClicks } from "./handlers";
 import { directoryReducer } from "./reducers";

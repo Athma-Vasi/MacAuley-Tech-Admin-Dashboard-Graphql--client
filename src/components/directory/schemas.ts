@@ -35,18 +35,18 @@ const setClickedInputDirectoryDispatchZod = z.object({
 const handleDirectoryDepartmentAndLocationClicksInputZod = z.object({
     accessToken: z.string().min(1),
     department: allDepartmentsZod,
-    directoryDispatch: z.function().args(z.any()).returns(z.void()),
+    directoryDispatch: z.function(),
     directoryFetchWorker: z.instanceof(Worker),
-    directoryUrl: z.string().url(),
+    directoryUrl: z.string(),
     isComponentMountedRef: z.object({ current: z.boolean() }),
-    showBoundary: z.function().args(z.any()).returns(z.void()),
+    showBoundary: z.function(),
     storeLocation: allStoreLocationsZod,
 });
 
 const messageEventDirectoryFetchMainToWorkerZod = z.object({
     requestInit: z.any(),
     routesZodSchemaMapKey: z.string(),
-    url: z.string().url(),
+    url: z.string(),
 });
 
 export {

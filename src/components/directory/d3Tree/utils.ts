@@ -1,4 +1,4 @@
-import { UserDocument } from "../../../types";
+import type { UserDocument } from "../../../types";
 
 type D3TreeInput = {
   attributes: Record<string, string | number>;

@@ -1,6 +1,9 @@
 import { None, Option } from "ts-results";
-import { FETCH_REQUEST_TIMEOUT, RoutesZodSchemasMapKey } from "../../constants";
 import {
+    FETCH_REQUEST_TIMEOUT,
+    type RoutesZodSchemasMapKey,
+} from "../../constants";
+import type {
     DecodedToken,
     ResponsePayloadSafe,
     SafeResult,
@@ -16,7 +19,7 @@ import {
     retryFetchSafe,
     setCachedItemAsyncSafe,
 } from "../../utils";
-import { InvariantError } from "../error";
+import { InvariantError } from "../error/classes";
 import { messageEventDirectoryFetchMainToWorkerZod } from "./schemas";
 
 type MessageEventDirectoryFetchWorkerToMain = MessageEvent<

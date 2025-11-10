@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import "@vitest/web-worker";
 import { describe, expect, it } from "vitest";
 import { ALL_STORE_LOCATIONS_DATA, INVALID_STRINGS } from "../../constants";
@@ -13,7 +14,7 @@ import {
     directoryReducer_setStoreLocation,
 } from "./reducers";
 import { initialDirectoryState } from "./state";
-import { DirectoryDispatch } from "./types";
+import type { DirectoryDispatch } from "./types";
 
 describe("Directory Reducers", () => {
     describe(directoryAction.setDepartment, () => {

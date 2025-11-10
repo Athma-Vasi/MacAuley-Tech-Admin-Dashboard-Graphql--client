@@ -1,5 +1,5 @@
-import { AllStoreLocations } from "../dashboard/types";
-import { DepartmentsWithDefaultKey } from "./types";
+import type { AllStoreLocations } from "../dashboard/types";
+import type { DepartmentsWithDefaultKey } from "./types";
 
 function returnIsStoreLocationDisabled(department: DepartmentsWithDefaultKey) {
   const disabledSet = new Set<DepartmentsWithDefaultKey>([

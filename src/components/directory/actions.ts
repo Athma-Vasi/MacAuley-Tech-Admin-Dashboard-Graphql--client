@@ -1,5 +1,5 @@
-import { Prettify } from "../../types";
-import { DirectoryState } from "./types";
+import type { Prettify } from "../../types";
+import type { DirectoryState } from "./types";
 
 type DirectoryAction = Prettify<
   {
