@@ -1,7 +1,7 @@
 import { useEffect, useRef } from "react";
 
 function useMountedRef() {
-    let mounted = useRef(false);
+    const mounted = useRef(false);
 
     useEffect(() => {
         mounted.current = true;

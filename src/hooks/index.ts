@@ -5,7 +5,7 @@ import { useMountedRef } from "./useMountedRef";
 import { useCenteredTree } from "./userCenteredTree";
 import { useUnload } from "./useUnload";
 import { useWindowErrorHandler } from "./useWindowErrorHandler";
-import { useWindowSize, WindowSize } from "./useWindowSize";
+import { useWindowSize, type WindowSize } from "./useWindowSize";
 
 export {
     useAuth,

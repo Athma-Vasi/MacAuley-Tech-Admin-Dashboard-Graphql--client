@@ -2,6 +2,7 @@ import { useCallback, useState } from "react";
 
 const useCenteredTree = () => {
   const [translate, setTranslate] = useState({ x: 0, y: 0 });
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const containerRef = useCallback((containerElem: any) => {
     if (containerElem !== null) {
       const { width, height } = containerElem.getBoundingClientRect();
