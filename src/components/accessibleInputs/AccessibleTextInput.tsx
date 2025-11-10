@@ -1,12 +1,17 @@
-import { Box, Text, TextInput, TextInputProps } from "@mantine/core";
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/no-unused-vars */
+import { Box, Text, TextInput, type TextInputProps } from "@mantine/core";
 
 import React from "react";
 import { TbCheck, TbX } from "react-icons/tb";
 import { COLORS_SWATCHES } from "../../constants";
 import { useGlobalState } from "../../hooks";
-import { ThemeObject } from "../../types";
+import type { ThemeObject } from "../../types";
 import { returnThemeColors, splitCamelCase } from "../../utils";
-import { VALIDATION_FUNCTIONS_TABLE, ValidationKey } from "../../validations";
+import {
+    VALIDATION_FUNCTIONS_TABLE,
+    type ValidationKey,
+} from "../../validations";
 import { returnValidationTexts } from "./utils";
 
 type AccessibleTextInputAttributes<

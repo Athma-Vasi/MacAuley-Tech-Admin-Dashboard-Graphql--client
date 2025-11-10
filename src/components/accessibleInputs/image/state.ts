@@ -1,5 +1,5 @@
 import { MAX_IMAGES } from "./constants";
-import { AccessibleImageInputState } from "./types";
+import { type AccessibleImageInputState } from "./types";
 
 const initialAccessibleImageInputState: AccessibleImageInputState = {
     currentImageIndex: 0,

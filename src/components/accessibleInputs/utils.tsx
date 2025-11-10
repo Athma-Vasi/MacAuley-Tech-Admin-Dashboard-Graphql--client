@@ -1,8 +1,11 @@
 import { splitCamelCase } from "../../utils";
-import { VALIDATION_FUNCTIONS_TABLE, ValidationKey } from "../../validations";
+import {
+  VALIDATION_FUNCTIONS_TABLE,
+  type ValidationKey,
+} from "../../validations";
 import {
   AccessibleButton,
-  AccessibleButtonAttributes,
+  type AccessibleButtonAttributes,
 } from "./AccessibleButton";
 
 function returnValidationTexts(

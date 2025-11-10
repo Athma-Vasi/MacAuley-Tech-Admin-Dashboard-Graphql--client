@@ -1,4 +1,4 @@
-import { Box, NativeSelect, NativeSelectProps, Text } from "@mantine/core";
+import { Box, NativeSelect, type NativeSelectProps, Text } from "@mantine/core";
 import { useGlobalState } from "../../hooks";
 import { splitCamelCase } from "../../utils";
 

@@ -1,4 +1,4 @@
-import { Grid, GridProps } from "@mantine/core";
+import { Grid, type GridProps } from "@mantine/core";
 
 type GoldenGridProps = GridProps & {
   /** must be a tuple: [left side, right side] */

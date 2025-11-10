@@ -1,4 +1,4 @@
-import { Card, Image, ImageProps } from "@mantine/core";
+import { Card, Image, type ImageProps } from "@mantine/core";
 import React, { useState } from "react";
 import { TbPhotoOff } from "react-icons/tb";
 

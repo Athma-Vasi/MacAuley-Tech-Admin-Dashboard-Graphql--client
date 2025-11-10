@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import {
     Card,
     Divider,
@@ -18,11 +19,11 @@ import { useGlobalState } from "../../../hooks/useGlobalState";
 import { useMountedRef } from "../../../hooks/useMountedRef";
 import { addCommaSeparator, returnThemeColors } from "../../../utils";
 import { GoldenGrid } from "../../goldenGrid";
-import { AccessibleFileInput, ModifiedFile } from "../AccessibleFileInput";
+import { AccessibleFileInput, type ModifiedFile } from "../AccessibleFileInput";
 import { AccessibleSliderInput } from "../AccessibleSliderInput";
 import { createAccessibleButtons } from "../utils";
 import {
-    AccessibleImageInputAction,
+    type AccessibleImageInputAction,
     accessibleImageInputAction,
 } from "./actions";
 import {
@@ -40,7 +41,7 @@ import {
     handleResetImageClick,
 } from "./handlers";
 import { accessibleImageInputReducer } from "./reducers";
-import { MessageEventRetrieveImagesWorkerToMain } from "./retrieveImagesWorker";
+import { type MessageEventRetrieveImagesWorkerToMain } from "./retrieveImagesWorker";
 import RetrieveImagesWorker from "./retrieveImagesWorker?worker";
 import { initialAccessibleImageInputState } from "./state";
 import type { AccessibleImageInputProps } from "./types";

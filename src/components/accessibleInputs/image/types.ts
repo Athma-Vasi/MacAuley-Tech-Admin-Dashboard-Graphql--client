@@ -1,6 +1,6 @@
-import { Dispatch } from "react";
-import { ModifiedFile, OriginalFile } from "../AccessibleFileInput";
-import { AccessibleImageInputAction } from "./actions";
+import type { Dispatch } from "react";
+import type { ModifiedFile, OriginalFile } from "../AccessibleFileInput";
+import type { AccessibleImageInputAction } from "./actions";
 
 type AccessibleImageInputAttributes<
     ValidValueAction extends string = string,

@@ -1,4 +1,4 @@
-import { NavLink, NavLinkProps } from "@mantine/core";
+import { NavLink, type NavLinkProps } from "@mantine/core";
 import { TbChevronDownRight } from "react-icons/tb";
 import { COLORS_SWATCHES } from "../../constants";
 import { useGlobalState } from "../../hooks/useGlobalState";

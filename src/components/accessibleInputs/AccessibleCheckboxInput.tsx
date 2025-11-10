@@ -1,7 +1,7 @@
 import {
     Box,
     Checkbox,
-    CheckboxGroupProps,
+    type CheckboxGroupProps,
     Group,
     Space,
     Stack,
@@ -9,7 +9,7 @@ import {
 } from "@mantine/core";
 import type { ReactNode, RefObject } from "react";
 
-import { CheckboxRadioSelectData } from "../../types";
+import { type CheckboxRadioSelectData } from "../../types";
 import { capitalizeJoinWithAnd, splitCamelCase } from "../../utils";
 
 type AccessibleCheckboxInputGroupAttributes<

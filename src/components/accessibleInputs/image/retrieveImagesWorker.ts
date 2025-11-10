@@ -1,11 +1,11 @@
-import { SafeResult } from "../../../types";
+import type { SafeResult } from "../../../types";
 import {
     createSafeErrorResult,
     createSafeSuccessResult,
     getCachedItemAsyncSafe,
     parseSyncSafe,
 } from "../../../utils";
-import { ModifiedFile } from "../AccessibleFileInput";
+import { type ModifiedFile } from "../AccessibleFileInput";
 import { MAX_IMAGES } from "./constants";
 import { messageEventRetrieveImagesMainToWorkerInputZod } from "./schemas";
 import { createImageInputForageKeys } from "./utils";

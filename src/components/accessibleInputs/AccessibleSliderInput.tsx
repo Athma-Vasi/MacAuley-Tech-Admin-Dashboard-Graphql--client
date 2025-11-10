@@ -1,8 +1,13 @@
-import { Box, Slider, SliderProps, Text } from "@mantine/core";
+import { Box, Slider, type SliderProps, Text } from "@mantine/core";
 import { INPUT_WIDTH } from "../../constants";
 import { useGlobalState } from "../../hooks";
 import { splitCamelCase } from "../../utils";
 import { displayOrientationLabel } from "./image/constants";
+
+type DynamicSliderInputPayload = {
+    index: number;
+    value: number;
+};
 
 type AccessibleSliderInputAttributes<
     ValidValueAction extends string = string,
@@ -167,3 +172,8 @@ function createAccessibleSliderScreenreaderTextElements({
 }
 
 export { AccessibleSliderInput };
+export type {
+    AccessibleSliderInputAttributes,
+    AccessibleSliderInputProps,
+    DynamicSliderInputPayload,
+};

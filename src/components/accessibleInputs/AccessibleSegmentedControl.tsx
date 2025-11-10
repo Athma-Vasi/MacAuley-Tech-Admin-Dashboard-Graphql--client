@@ -1,7 +1,7 @@
 import {
   Box,
   SegmentedControl,
-  SegmentedControlProps,
+  type SegmentedControlProps,
   Text,
 } from "@mantine/core";
 import { useGlobalState } from "../../hooks";

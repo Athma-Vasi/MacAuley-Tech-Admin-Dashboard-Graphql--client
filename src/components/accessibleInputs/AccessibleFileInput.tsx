@@ -1,7 +1,7 @@
-import { Box, FileInput, FileInputProps, Text } from "@mantine/core";
-import { Dispatch } from "react";
+import { Box, FileInput, type FileInputProps, Text } from "@mantine/core";
+import { type Dispatch } from "react";
 
-import { SafeResult } from "../../types";
+import { type SafeResult } from "../../types";
 import {
     catchHandlerErrorSafe,
     createSafeSuccessResult,

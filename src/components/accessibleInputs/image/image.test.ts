@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { describe, expect, it } from "vitest";
 import {
   INVALID_BOOLEANS,
@@ -19,7 +20,7 @@ import {
   accessibleImageInputReducer_setQuality,
 } from "./reducers";
 import { initialAccessibleImageInputState } from "./state";
-import { AccessibleImageInputDispatch } from "./types";
+import type { AccessibleImageInputDispatch } from "./types";
 
 const sampleBlobs = [
   new Blob(["sample"], { type: "image/png" }),

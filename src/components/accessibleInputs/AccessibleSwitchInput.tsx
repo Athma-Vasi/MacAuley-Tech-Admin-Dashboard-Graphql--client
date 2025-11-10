@@ -1,7 +1,7 @@
-import { Box, Switch, SwitchProps, Text } from "@mantine/core";
+import { Box, Switch, type SwitchProps, Text } from "@mantine/core";
 import { COLORS_SWATCHES } from "../../constants";
 import { useGlobalState } from "../../hooks";
-import { ThemeObject } from "../../types";
+import { type ThemeObject } from "../../types";
 import { returnThemeColors, splitCamelCase } from "../../utils";
 
 type AccessibleSwitchInputAttributes<

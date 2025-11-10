@@ -1,8 +1,8 @@
-import { parseSyncSafe } from "../../../utils";
-import { ModifiedFile, OriginalFile } from "../AccessibleFileInput";
-import { DynamicSliderInputPayload } from "../AccessibleSliderInput";
+import { parseDispatchAndSetState, parseSyncSafe } from "../../../utils";
+import type { ModifiedFile, OriginalFile } from "../AccessibleFileInput";
+import type { DynamicSliderInputPayload } from "../AccessibleSliderInput";
 import {
-    AccessibleImageInputAction,
+    type AccessibleImageInputAction,
     accessibleImageInputAction,
 } from "./actions";
 import {
@@ -20,7 +20,7 @@ import {
     setQualityImageDispatchZod,
     setRetrieveImagesWorkerDispatchZod,
 } from "./schemas";
-import {
+import type {
     AccessibleImageInputDispatch,
     AccessibleImageInputState,
 } from "./types";
@@ -155,19 +155,12 @@ function accessibleImageInputReducer_setCurrentImageIndex(
     state: AccessibleImageInputState,
     dispatch: AccessibleImageInputDispatch,
 ): AccessibleImageInputState {
-    const parsedResult = parseSyncSafe({
-        object: dispatch,
+    return parseDispatchAndSetState({
+        dispatch,
+        key: "currentImageIndex",
+        state,
         zSchema: setCurrentImageIndexDispatchZod,
     });
-
-    if (parsedResult.err || parsedResult.val.none) {
-        return state;
-    }
-
-    return {
-        ...state,
-        currentImageIndex: parsedResult.val.val.payload as number,
-    };
 }
 
 function accessibleImageInputReducer_removeImageFileBlob(
@@ -244,18 +237,6 @@ function accessibleImageInputReducer_setImageFileBlob(
     state: AccessibleImageInputState,
     dispatch: AccessibleImageInputDispatch,
 ): AccessibleImageInputState {
-    // const { fileBlob, index } = dispatch.payload as {
-    //     index: number;
-    //     fileBlob: ModifiedFile;
-    // };
-
-    // const imageFileBlobs = structuredClone(state.imageFileBlobs);
-    // imageFileBlobs[index] = fileBlob;
-
-    // return {
-    //     ...state,
-    //     imageFileBlobs,
-    // };
     const parsedResult = parseSyncSafe({
         object: dispatch,
         zSchema: setImageFileBlobDispatchZod,
@@ -284,38 +265,24 @@ function accessibleImageInputReducer_setModifyImagesWorker(
     state: AccessibleImageInputState,
     dispatch: AccessibleImageInputDispatch,
 ): AccessibleImageInputState {
-    const parsedResult = parseSyncSafe({
-        object: dispatch,
+    return parseDispatchAndSetState({
+        dispatch,
+        key: "modifyImagesWorker",
+        state,
         zSchema: setModifyImagesWorkerDispatchZod,
     });
-
-    if (parsedResult.err || parsedResult.val.none) {
-        return state;
-    }
-
-    return {
-        ...state,
-        modifyImagesWorker: parsedResult.val.val.payload as Worker,
-    };
 }
 
 function accessibleImageInputReducer_setRetrieveImagesWorker(
     state: AccessibleImageInputState,
     dispatch: AccessibleImageInputDispatch,
 ): AccessibleImageInputState {
-    const parsedResult = parseSyncSafe({
-        object: dispatch,
+    return parseDispatchAndSetState({
+        dispatch,
+        key: "retrieveImagesWorker",
+        state,
         zSchema: setRetrieveImagesWorkerDispatchZod,
     });
-
-    if (parsedResult.err || parsedResult.val.none) {
-        return state;
-    }
-
-    return {
-        ...state,
-        retrieveImagesWorker: parsedResult.val.val.payload as Worker,
-    };
 }
 
 function accessibleImageInputReducer_setIsErrors(
@@ -348,38 +315,24 @@ function accessibleImageInputReducer_setIsLoading(
     state: AccessibleImageInputState,
     dispatch: AccessibleImageInputDispatch,
 ): AccessibleImageInputState {
-    const parsedResult = parseSyncSafe({
-        object: dispatch,
+    return parseDispatchAndSetState({
+        dispatch,
+        key: "isLoading",
+        state,
         zSchema: setIsLoadingImageDispatchZod,
     });
-
-    if (parsedResult.err || parsedResult.val.none) {
-        return state;
-    }
-
-    return {
-        ...state,
-        isLoading: parsedResult.val.val.payload as boolean,
-    };
 }
 
 function accessibleImageInputReducer_setIsModalOpen(
     state: AccessibleImageInputState,
     dispatch: AccessibleImageInputDispatch,
 ): AccessibleImageInputState {
-    const parsedResult = parseSyncSafe({
-        object: dispatch,
+    return parseDispatchAndSetState({
+        dispatch,
+        key: "isModalOpen",
+        state,
         zSchema: setIsModalOpenImageDispatchZod,
     });
-
-    if (parsedResult.err || parsedResult.val.none) {
-        return state;
-    }
-
-    return {
-        ...state,
-        isModalOpen: parsedResult.val.val.payload as boolean,
-    };
 }
 
 function accessibleImageInputReducer_setQuality(

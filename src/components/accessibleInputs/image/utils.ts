@@ -1,12 +1,12 @@
-import { SafeResult } from "../../../types";
+import type { SafeResult } from "../../../types";
 import {
     catchHandlerErrorSafe,
     createSafeErrorResult,
     createSafeSuccessResult,
 } from "../../../utils";
-import { ModifiedFile } from "../AccessibleFileInput";
+import type { ModifiedFile } from "../AccessibleFileInput";
 import { ALLOWED_FILE_EXTENSIONS_REGEX } from "./constants";
-import { SetFilesInErrorPayload } from "./types";
+import type { SetFilesInErrorPayload } from "./types";
 
 function validateImages({
     allowedFileExtensionsRegex,

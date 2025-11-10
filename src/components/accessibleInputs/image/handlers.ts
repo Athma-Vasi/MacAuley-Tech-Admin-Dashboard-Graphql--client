@@ -1,5 +1,5 @@
 import { EImageType } from "image-conversion";
-import { SafeResult } from "../../../types";
+import { type SafeResult } from "../../../types";
 import {
     catchHandlerErrorSafe,
     createSafeErrorResult,
@@ -9,12 +9,12 @@ import {
     parseSyncSafe,
     setCachedItemAsyncSafe,
 } from "../../../utils";
-import { InvariantError } from "../../error";
-import { ModifiedFile, OriginalFile } from "../AccessibleFileInput";
+import { InvariantError } from "../../error/classes";
+import type { ModifiedFile, OriginalFile } from "../AccessibleFileInput";
 import { accessibleImageInputAction } from "./actions";
 import { ALLOWED_FILE_EXTENSIONS_REGEX } from "./constants";
-import { MessageEventModifyImagesWorkerToMain } from "./modifyImagesWorker";
-import { MessageEventRetrieveImagesWorkerToMain } from "./retrieveImagesWorker";
+import type { MessageEventModifyImagesWorkerToMain } from "./modifyImagesWorker";
+import type { MessageEventRetrieveImagesWorkerToMain } from "./retrieveImagesWorker";
 import {
     handleImageQualityOrientationSliderChangeInputZod,
     handleMessageEventModifyImagesWorkerToMainInputZod,
@@ -22,7 +22,10 @@ import {
     handleRemoveImageClickInputZod,
     handleResetImageClickInputZod,
 } from "./schemas";
-import { AccessibleImageInputDispatch, SetFilesInErrorPayload } from "./types";
+import type {
+    AccessibleImageInputDispatch,
+    SetFilesInErrorPayload,
+} from "./types";
 import { createImageInputForageKeys, validateImages } from "./utils";
 
 async function handleResetImageClick(
