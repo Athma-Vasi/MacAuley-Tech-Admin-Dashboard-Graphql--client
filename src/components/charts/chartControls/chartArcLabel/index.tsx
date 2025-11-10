@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { ColorInput, Group, Stack, Text, Title } from "@mantine/core";
 
 import { COLORS_SWATCHES, INPUT_WIDTH } from "../../../../constants";

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Flex, Group, Stack, Text, Title } from "@mantine/core";
 import { COLORS_SWATCHES } from "../../../../constants";
 import { useGlobalState } from "../../../../hooks/useGlobalState";
@@ -12,7 +13,7 @@ import {
 } from "../../constants";
 import ChartsAndGraphsControlsStacker from "../../display/ChartsAndControlsStacker";
 import { NIVO_BAR_AXIS_LEGEND_POSITION_DATA } from "../../responsiveBarChart/constants";
-import { NivoAxisLegendPosition } from "../../types";
+import type { NivoAxisLegendPosition } from "../../types";
 import { createChartHeaderStyles } from "../../utils";
 
 type ChartAxisAction = {

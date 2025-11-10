@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Group, Stack, Text, Title } from "@mantine/core";
 import { COLORS_SWATCHES } from "../../../../constants";
 import { useGlobalState } from "../../../../hooks/useGlobalState";

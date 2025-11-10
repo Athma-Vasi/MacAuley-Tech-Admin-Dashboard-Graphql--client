@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { ColorInput, Group, Stack, Text, Title } from "@mantine/core";
 import { COLORS_SWATCHES, INPUT_WIDTH } from "../../../../constants";
 import { useGlobalState } from "../../../../hooks/useGlobalState";
@@ -13,7 +14,7 @@ import {
   SLIDER_TOOLTIP_COLOR,
 } from "../../constants";
 import ChartsAndGraphsControlsStacker from "../../display/ChartsAndControlsStacker";
-import {
+import type {
   NivoLegendAnchor,
   NivoLegendDirection,
   NivoLegendItemDirection,

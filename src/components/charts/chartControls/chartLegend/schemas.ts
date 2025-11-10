@@ -1,24 +1,3 @@
-/**
- * enableLegend: boolean; // default: false
-  enableLegendJustify: boolean; // default: false
-  legendAnchor: NivoLegendAnchor; // default: bottom-right
-  legendDirection: NivoLegendDirection; // default: column
-  legendItemBackground: string; // default: 'rgba(255, 255, 255, 0)'
-  legendItemDirection: NivoLegendItemDirection; // default: left-to-right
-  legendItemHeight: number; // 10px - 200px default: 20 step: 1
-  legendItemOpacity: number; // 0 - 1 default: 1 step: 0.05
-  legendItemTextColor: string; // default: '#FFF'
-  legendItemWidth: number; // 10px - 200px default: 60 step: 1
-  legendItemsSpacing: number; // 0px - 60px default: 2 step: 1
-  legendSymbolBorderColor: string; // default: '#FFF'
-  legendSymbolBorderWidth: number; // 0px - 10px default: 1 step: 1
-  legendSymbolShape: NivoLegendSymbolShape; // default: circle
-  legendSymbolSize: number; // 2px - 60px default: 12 step: 1
-  legendSymbolSpacing: number; // 0px - 60px default: 8 step: 1
-  legendTranslateX: number; // -200px - 200px default: 0 step: 1
-  legendTranslateY: number; // -200px - 200px default: 0 step: 1
- */
-
 import { z } from "zod";
 
 const setEnableLegendDispatchZod = z.object({

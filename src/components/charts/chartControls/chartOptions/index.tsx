@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import {
   ColorInput,
   Flex,
@@ -5,7 +6,7 @@ import {
   Stack,
   Text,
   Title,
-  TitleOrder,
+  type TitleOrder,
   Tooltip,
 } from "@mantine/core";
 import { useEffect } from "react";
@@ -16,7 +17,7 @@ import {
   SCREENSHOT_IMAGE_TYPE_DATA,
 } from "../../../../constants";
 import { useGlobalState } from "../../../../hooks/useGlobalState";
-import { ScreenshotImageType } from "../../../../types";
+import type { ScreenshotImageType } from "../../../../types";
 import { captureScreenshot, returnThemeColors } from "../../../../utils";
 import { AccessibleButton } from "../../../accessibleInputs/AccessibleButton";
 import { AccessibleSelectInput } from "../../../accessibleInputs/AccessibleSelectInput";
@@ -28,7 +29,7 @@ import {
   SLIDER_TOOLTIP_COLOR,
 } from "../../constants";
 import ChartsAndGraphsControlsStacker from "../../display/ChartsAndControlsStacker";
-import { NivoChartTitlePosition } from "../../types";
+import type { NivoChartTitlePosition } from "../../types";
 import { createChartHeaderStyles } from "../../utils";
 
 type ChartOptionsAction = {

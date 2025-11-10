@@ -1,10 +1,3 @@
-/**
- * marginBottom: number; // 0px - 200px default: 60 step: 1
-  marginLeft: number; // 0px - 200px default: 60 step: 1
-  marginRight: number; // 0px - 200px default: 60 step: 1
-  marginTop: number; // 0px - 200px default: 60 step: 1
- */
-
 import { z } from "zod";
 
 const setMarginBottomDispatchZod = z.object({

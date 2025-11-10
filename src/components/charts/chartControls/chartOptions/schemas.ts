@@ -1,13 +1,3 @@
-/**
- * chartTitle: string;
-  chartTitleColor: string; // default: #ffffff
-  chartTitlePosition: NivoChartTitlePosition; // default: center
-  chartTitleSize: TitleOrder; // 1 - 6 px default: 3 step: 1
-  screenshotFilename: string;
-  screenshotImageQuality: number; // 0 - 1 default: 1 step: 0.05
-  screenshotImageType: ScreenshotImageType;
- */
-
 import { z } from "zod";
 
 const setChartTitleDispatchZod = z.object({
