@@ -1,5 +1,7 @@
+import LoginWrapper from "./components/login";
+
 function App() {
-  return <h1>Hi Athma!!</h1>;
+  return <LoginWrapper />;
 }
 
 export default App;

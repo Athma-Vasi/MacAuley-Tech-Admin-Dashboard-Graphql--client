@@ -18,6 +18,7 @@ async function fetchGraphQL(
     console.log(`Making request to: ${endpoint}`, {
         request: request.name,
         variables,
+        metadata: cacheConfig?.metadata,
     });
 
     const response = await fetch(endpoint, {
@@ -43,34 +44,4 @@ const relayEnvironment = new Environment({
     network: Network.create(fetchGraphQL),
 });
 
-// Create a separate environment specifically for auth requests
-async function fetchAuth(request: RequestParameters, variables: Variables) {
-    console.log(`Making auth request to: ${AUTH_ENDPOINT}`, {
-        request: request.name,
-        variables,
-    });
-
-    const response = await fetch(AUTH_ENDPOINT, {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-            query: request.text,
-            variables,
-        }),
-    });
-
-    if (!response.ok) {
-        throw new Error(
-            `Auth network error: ${response.status} - ${response.statusText}`,
-        );
-    }
-    return await response.json();
-}
-
-const authEnvironment = new Environment({
-    network: Network.create(fetchAuth),
-});
-
-export { authEnvironment, relayEnvironment };
+export { relayEnvironment };

@@ -17,6 +17,7 @@
     "dotenv": "^17.2.3",
     "react": "^19.1.1",
     "react-dom": "^19.1.1",
+    "react-error-boundary": "^6.0.0",
     "react-relay": "^20.1.1",
     "relay-runtime": "^20.1.1",
     "ts-results": "^3.3.0",

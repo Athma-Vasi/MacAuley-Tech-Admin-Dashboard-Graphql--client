@@ -19,4 +19,42 @@ type SafeResult<Data = unknown> = Result<
     SafeError
 >;
 
-export type { SafeError, SafeResult };
+type ServerSuccessResponseGraphQL<Data = unknown> = {
+    accessToken: string;
+    dataBox: Array<Data>;
+    message: string;
+    statusCode: number;
+    timestamp: Date;
+    totalDocuments?: number;
+    totalPages?: number;
+    // requestId?: string;
+    // extensions?: Record<string, unknown>;
+    // path?: string[];
+};
+
+type ServerErrorResponseGraphQL = {
+    accessToken: string;
+    dataBox: [];
+    message: string;
+    statusCode: number;
+    timestamp: Date;
+    totalDocuments?: number;
+    totalPages?: number;
+    // requestId?: string;
+    // errors?: GraphQLFormattedError[];
+    // extensions?: Record<string, unknown>;
+    // path?: string[];
+};
+
+type ServerResponseGraphQL<Data = unknown> =
+    | ServerSuccessResponseGraphQL<Data>
+    | ServerErrorResponseGraphQL;
+
+export type {
+    SafeError,
+    SafeResult,
+    SafeSuccess,
+    ServerErrorResponseGraphQL,
+    ServerResponseGraphQL,
+    ServerSuccessResponseGraphQL,
+};

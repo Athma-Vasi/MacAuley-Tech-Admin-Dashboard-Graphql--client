@@ -24,7 +24,7 @@ import {
     TimeoutError,
     TokenDecodeError,
     UnknownError,
-} from "./errors";
+} from "./components/error/classes";
 import type { SafeError, SafeResult } from "./types";
 
 function createSafeSuccessResult<Data = unknown>(
