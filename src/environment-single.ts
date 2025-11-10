@@ -3,6 +3,7 @@ import { Environment, Network } from "relay-runtime";
 
 const GRAPHQL_ENDPOINT = "http://localhost:5000/graphql";
 const AUTH_ENDPOINT = "http://localhost:5000/auth";
+const REGISTER_ENDPOINT = "http://localhost:5000/register";
 
 // TODO: improve async safety
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -13,7 +14,12 @@ async function fetchGraphQL(
 ) {
     // Check if this is an auth request via metadata
     const isAuthRequest = cacheConfig?.metadata?.endpoint === "auth";
-    const endpoint = isAuthRequest ? AUTH_ENDPOINT : GRAPHQL_ENDPOINT;
+    const isRegisterRequest = cacheConfig?.metadata?.endpoint === "register";
+    const endpoint = isAuthRequest
+        ? AUTH_ENDPOINT
+        : isRegisterRequest
+        ? REGISTER_ENDPOINT
+        : GRAPHQL_ENDPOINT;
 
     console.log(`Making request to: ${endpoint}`, {
         request: request.name,
