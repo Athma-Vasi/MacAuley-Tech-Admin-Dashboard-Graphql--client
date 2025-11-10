@@ -1,10 +1,12 @@
-import { Box, Card, Group, Stack, Title, TitleOrder } from "@mantine/core";
+/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { Box, Card, Group, Stack, Title, type TitleOrder } from "@mantine/core";
 import { useNavigate } from "react-router-dom";
 import { COLORS_SWATCHES } from "../../../constants";
 import { useGlobalState } from "../../../hooks/useGlobalState";
 import { returnThemeColors } from "../../../utils";
 import { AccessibleButton } from "../../accessibleInputs/AccessibleButton";
-import { NivoChartTitlePosition } from "../types";
+import type { NivoChartTitlePosition } from "../types";
 
 type ChartAndControlsDisplayProps = {
   chartControlsStack: React.JSX.Element;

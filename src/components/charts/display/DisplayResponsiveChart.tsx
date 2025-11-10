@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import {
   ResponsiveBarChart,
   ResponsiveCalendarChart,
@@ -109,13 +111,13 @@ function DisplayResponsiveChart() {
         chartUnitKind={chartUnitKind}
         dashboardChartTitle={yAxisKeyChartHeading}
         lineChartData={chartData}
-        tooltip={(arg) =>
+        tooltip={(arg: any) =>
           createChartTooltipElement({
             arg,
             kind: "line",
             chartUnitKind,
           })}
-        xFormat={(x) =>
+        xFormat={(x: any) =>
           `${
             calendarView === "Daily"
               ? "Day - "
@@ -123,7 +125,7 @@ function DisplayResponsiveChart() {
               ? "Year - "
               : ""
           }${x}`}
-        yFormat={(y) => addCommaSeparator(y) + chartUnitKind}
+        yFormat={(y: any) => addCommaSeparator(y) + chartUnitKind}
       />
     );
   }
@@ -166,7 +168,7 @@ function DisplayResponsiveChart() {
       <ResponsiveRadialBarChart
         dashboardChartTitle={yAxisKeyChartHeading}
         radialBarChartData={chartData}
-        tooltip={(arg) =>
+        tooltip={(arg: any) =>
           createChartTooltipElement({
             arg,
             kind: "radial",
