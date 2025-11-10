@@ -1,5 +1,4 @@
-import type { DecodedToken, UserDocument } from "../../types";
-import { parseSyncSafe } from "../../utils";
+import { parseDispatchAndSetState } from "../../utils";
 import { type AuthAction, authAction } from "./actions";
 import {
   setAccessTokenAuthDispatchZod,
@@ -28,76 +27,48 @@ function authReducer_setAccessToken(
   state: AuthState,
   dispatch: AuthDispatch,
 ): AuthState {
-  const parsedResult = parseSyncSafe({
-    object: dispatch,
+  return parseDispatchAndSetState({
+    dispatch,
+    key: "accessToken",
+    state,
     zSchema: setAccessTokenAuthDispatchZod,
   });
-
-  if (parsedResult.err || parsedResult.val.none) {
-    return state;
-  }
-
-  return {
-    ...state,
-    accessToken: parsedResult.val.val.payload as string,
-  };
 }
 
 function authReducer_setDecodedToken(
   state: AuthState,
   dispatch: AuthDispatch,
 ): AuthState {
-  const parsedResult = parseSyncSafe({
-    object: dispatch,
+  return parseDispatchAndSetState({
+    dispatch,
+    key: "decodedToken",
+    state,
     zSchema: setDecodedTokenAuthDispatchZod,
   });
-
-  if (parsedResult.err || parsedResult.val.none) {
-    return state;
-  }
-
-  return {
-    ...state,
-    decodedToken: parsedResult.val.val.payload as DecodedToken,
-  };
 }
 
 function authReducer_setIsLoggedIn(
   state: AuthState,
   dispatch: AuthDispatch,
 ): AuthState {
-  const parsedResult = parseSyncSafe({
-    object: dispatch,
+  return parseDispatchAndSetState({
+    dispatch,
+    key: "isLoggedIn",
+    state,
     zSchema: setIsLoggedInAuthDispatchZod,
   });
-
-  if (parsedResult.err || parsedResult.val.none) {
-    return state;
-  }
-
-  return {
-    ...state,
-    isLoggedIn: parsedResult.val.val.payload as boolean,
-  };
 }
 
 function authReducer_setUserDocument(
   state: AuthState,
   dispatch: AuthDispatch,
 ): AuthState {
-  const parsedResult = parseSyncSafe({
-    object: dispatch,
+  return parseDispatchAndSetState({
+    dispatch,
+    key: "userDocument",
+    state,
     zSchema: setUserDocumentAuthDispatchZod,
   });
-
-  if (parsedResult.err || parsedResult.val.none) {
-    return state;
-  }
-
-  return {
-    ...state,
-    userDocument: parsedResult.val.val.payload as UserDocument,
-  };
 }
 
 export {

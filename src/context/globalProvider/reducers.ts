@@ -1,21 +1,6 @@
-import { MantineColor } from "@mantine/core";
-import { CustomerMetricsCategory } from "../../components/dashboard/customer/types";
-import { FinancialMetricCategory } from "../../components/dashboard/financial/types";
-import {
-  ProductMetricCategory,
-  ProductSubMetric,
-} from "../../components/dashboard/product/types";
-import { RepairMetricCategory } from "../../components/dashboard/repair/types";
-import { AllStoreLocations } from "../../components/dashboard/types";
-import {
-  CustomerMetricsDocument,
-  FinancialMetricsDocument,
-  FontFamily,
-  ProductMetricsDocument,
-  RepairMetricsDocument,
-  UserDocument,
-} from "../../types";
-import { parseSyncSafe } from "../../utils";
+import type { MantineColor } from "@mantine/core";
+import type { FontFamily } from "../../types";
+import { parseDispatchAndSetState, parseSyncSafe } from "../../utils";
 import { type GlobalAction, globalAction } from "./actions";
 import {
   setColorSchemeGlobalDispatchZod,
@@ -145,199 +130,120 @@ function globalReducer_setDirectory(
   state: GlobalState,
   dispatch: GlobalDispatch,
 ): GlobalState {
-  const parsedResult = parseSyncSafe({
-    object: dispatch,
+  return parseDispatchAndSetState({
+    dispatch,
+    key: "directory",
+    state,
     zSchema: setDirectoryGlobalDispatchZod,
   });
-
-  if (parsedResult.err || parsedResult.val.none) {
-    return state;
-  }
-
-  return {
-    ...state,
-    directory: parsedResult.val.val.payload as UserDocument[],
-  };
 }
 
 function globalReducer_setProductMetricCategory(
   state: GlobalState,
   dispatch: GlobalDispatch,
 ): GlobalState {
-  const parsedResult = parseSyncSafe({
-    object: dispatch,
+  return parseDispatchAndSetState({
+    dispatch,
+    key: "productMetricCategory",
+    state,
     zSchema: setProductMetricCategoryGlobalDispatchZod,
   });
-
-  if (parsedResult.err || parsedResult.val.none) {
-    return state;
-  }
-
-  return {
-    ...state,
-    productMetricCategory: parsedResult.val.val
-      .payload as ProductMetricCategory,
-  };
 }
 
 function globalReducer_setProductSubMetricCategory(
   state: GlobalState,
   dispatch: GlobalDispatch,
 ): GlobalState {
-  const parsedResult = parseSyncSafe({
-    object: dispatch,
+  return parseDispatchAndSetState({
+    dispatch,
+    key: "productSubMetricCategory",
+    state,
     zSchema: setProductSubMetricCategoryGlobalDispatchZod,
   });
-
-  if (parsedResult.err || parsedResult.val.none) {
-    return state;
-  }
-
-  return {
-    ...state,
-    productSubMetricCategory: parsedResult.val.val
-      .payload as ProductSubMetric,
-  };
 }
 
 function globalReducer_setRepairMetricCategory(
   state: GlobalState,
   dispatch: GlobalDispatch,
 ): GlobalState {
-  const parsedResult = parseSyncSafe({
-    object: dispatch,
+  return parseDispatchAndSetState({
+    dispatch,
+    key: "repairMetricCategory",
+    state,
     zSchema: setRepairMetricCategoryGlobalDispatchZod,
   });
-
-  if (parsedResult.err || parsedResult.val.none) {
-    return state;
-  }
-
-  return {
-    ...state,
-    repairMetricCategory: parsedResult.val.val
-      .payload as RepairMetricCategory,
-  };
 }
 
 function globalReducer_setFinancialMetricCategory(
   state: GlobalState,
   dispatch: GlobalDispatch,
 ): GlobalState {
-  const parsedResult = parseSyncSafe({
-    object: dispatch,
+  return parseDispatchAndSetState({
+    dispatch,
+    key: "financialMetricCategory",
+    state,
     zSchema: setFinancialMetricCategoryGlobalDispatchZod,
   });
-
-  if (parsedResult.err || parsedResult.val.none) {
-    return state;
-  }
-
-  return {
-    ...state,
-    financialMetricCategory: parsedResult.val.val
-      .payload as FinancialMetricCategory,
-  };
 }
 
 function globalReducer_setCustomerMetricsCategory(
   state: GlobalState,
   dispatch: GlobalDispatch,
 ): GlobalState {
-  const parsedResult = parseSyncSafe({
-    object: dispatch,
+  return parseDispatchAndSetState({
+    dispatch,
+    key: "customerMetricsCategory",
+    state,
     zSchema: setCustomerMetricsCategoryGlobalDispatchZod,
   });
-
-  if (parsedResult.err || parsedResult.val.none) {
-    return state;
-  }
-
-  return {
-    ...state,
-    customerMetricsCategory: parsedResult.val.val
-      .payload as CustomerMetricsCategory,
-  };
 }
 
 function globalReducer_setFinancialMetricsDocument(
   state: GlobalState,
   dispatch: GlobalDispatch,
 ): GlobalState {
-  const parsedResult = parseSyncSafe({
-    object: dispatch,
+  return parseDispatchAndSetState({
+    dispatch,
+    key: "financialMetricsDocument",
+    state,
     zSchema: setFinancialMetricsDocumentGlobalDispatchZod,
   });
-
-  if (parsedResult.err || parsedResult.val.none) {
-    return state;
-  }
-
-  return {
-    ...state,
-    financialMetricsDocument: parsedResult.val.val
-      .payload as FinancialMetricsDocument,
-  };
 }
 
 function globalReducer_setProductMetricsDocument(
   state: GlobalState,
   dispatch: GlobalDispatch,
 ): GlobalState {
-  const parsedResult = parseSyncSafe({
-    object: dispatch,
+  return parseDispatchAndSetState({
+    dispatch,
+    key: "productMetricsDocument",
+    state,
     zSchema: setProductMetricsDocumentGlobalDispatchZod,
   });
-
-  if (parsedResult.err || parsedResult.val.none) {
-    return state;
-  }
-
-  return {
-    ...state,
-    productMetricsDocument: parsedResult.val.val
-      .payload as ProductMetricsDocument,
-  };
 }
 
 function globalReducer_setCustomerMetricsDocument(
   state: GlobalState,
   dispatch: GlobalDispatch,
 ): GlobalState {
-  const parsedResult = parseSyncSafe({
-    object: dispatch,
+  return parseDispatchAndSetState({
+    dispatch,
+    key: "customerMetricsDocument",
+    state,
     zSchema: setCustomerMetricsDocumentGlobalDispatchZod,
   });
-
-  if (parsedResult.err || parsedResult.val.none) {
-    return state;
-  }
-
-  return {
-    ...state,
-    customerMetricsDocument: parsedResult.val.val
-      .payload as CustomerMetricsDocument,
-  };
 }
 
 function globalReducer_setRepairMetricsDocument(
   state: GlobalState,
   dispatch: GlobalDispatch,
 ): GlobalState {
-  const parsedResult = parseSyncSafe({
-    object: dispatch,
+  return parseDispatchAndSetState({
+    dispatch,
+    key: "repairMetricsDocument",
+    state,
     zSchema: setRepairMetricsDocumentGlobalDispatchZod,
   });
-
-  if (parsedResult.err || parsedResult.val.none) {
-    return state;
-  }
-
-  return {
-    ...state,
-    repairMetricsDocument: parsedResult.val.val
-      .payload as RepairMetricsDocument,
-  };
 }
 
 function globalReducer_setColorScheme(
@@ -406,19 +312,12 @@ function globalReducer_setSelectedYYYYMMDD(
   state: GlobalState,
   dispatch: GlobalDispatch,
 ): GlobalState {
-  const parsedResult = parseSyncSafe({
-    object: dispatch,
+  return parseDispatchAndSetState({
+    dispatch,
+    key: "selectedYYYYMMDD",
+    state,
     zSchema: setSelectedYYYYMMDDGlobalDispatchZod,
   });
-
-  if (parsedResult.err || parsedResult.val.none) {
-    return state;
-  }
-
-  return {
-    ...state,
-    selectedYYYYMMDD: parsedResult.val.val.payload as string,
-  };
 }
 
 function globalReducer_setDefaultGradient(
@@ -464,20 +363,12 @@ function globalReducer_setPrefersReducedMotion(
   state: GlobalState,
   dispatch: GlobalDispatch,
 ): GlobalState {
-  const parsedResult = parseSyncSafe({
-    object: dispatch,
+  return parseDispatchAndSetState({
+    dispatch,
+    key: "isPrefersReducedMotion",
+    state,
     zSchema: setPrefersReducedMotionGlobalDispatchZod,
   });
-
-  if (parsedResult.err || parsedResult.val.none) {
-    return state;
-  }
-
-  return {
-    ...state,
-    isPrefersReducedMotion: parsedResult.val.val
-      .payload as boolean,
-  };
 }
 
 function globalReducer_setPrimaryColor(
@@ -580,38 +471,24 @@ function globalReducer_setIsError(
   state: GlobalState,
   dispatch: GlobalDispatch,
 ): GlobalState {
-  const parsedResult = parseSyncSafe({
-    object: dispatch,
+  return parseDispatchAndSetState({
+    dispatch,
+    key: "isError",
+    state,
     zSchema: setIsErrorGlobalDispatchZod,
   });
-
-  if (parsedResult.err || parsedResult.val.none) {
-    return state;
-  }
-
-  return {
-    ...state,
-    isError: parsedResult.val.val.payload as boolean,
-  };
 }
 
 function globalReducer_setIsFetching(
   state: GlobalState,
   dispatch: GlobalDispatch,
 ): GlobalState {
-  const parsedResult = parseSyncSafe({
-    object: dispatch,
+  return parseDispatchAndSetState({
+    dispatch,
+    key: "isFetching",
+    state,
     zSchema: setIsFetchingGlobalDispatchZod,
   });
-
-  if (parsedResult.err || parsedResult.val.none) {
-    return state;
-  }
-
-  return {
-    ...state,
-    isFetching: parsedResult.val.val.payload as boolean,
-  };
 }
 
 function globalReducer_setExpandBarChartData(
@@ -716,20 +593,12 @@ function globalReducer_setStoreLocationView(
   state: GlobalState,
   dispatch: GlobalDispatch,
 ): GlobalState {
-  const parsedResult = parseSyncSafe({
-    object: dispatch,
+  return parseDispatchAndSetState({
+    dispatch,
+    key: "storeLocation",
+    state,
     zSchema: setStoreLocationViewGlobalDispatchZod,
   });
-
-  if (parsedResult.err || parsedResult.val.none) {
-    return state;
-  }
-
-  return {
-    ...state,
-    storeLocation: parsedResult.val.val
-      .payload as AllStoreLocations,
-  };
 }
 
 export {

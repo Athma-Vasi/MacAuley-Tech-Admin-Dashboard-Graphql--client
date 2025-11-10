@@ -1,4 +1,5 @@
-import { MantineColor } from "@mantine/core";
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import type { MantineColor } from "@mantine/core";
 import { describe, expect, it } from "vitest";
 import {
     PRODUCT_METRICS_DATA,
@@ -37,7 +38,7 @@ import {
     globalReducer_setStoreLocationView,
 } from "./reducers";
 import { initialGlobalState } from "./state";
-import { ColorScheme, GlobalDispatch, Shade } from "./types";
+import type { ColorScheme, GlobalDispatch, Shade } from "./types";
 
 describe("globalReducer", () => {
     describe("setProductMetricCategory", () => {

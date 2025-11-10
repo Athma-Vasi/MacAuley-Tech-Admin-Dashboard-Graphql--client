@@ -32,7 +32,7 @@ const initialThemeObject: ThemeObject = {
   },
 };
 
-const yesterday= new Date();
+const yesterday = new Date();
 yesterday.setDate(yesterday.getDate() - 1);
 
 const initialGlobalState: GlobalState = {

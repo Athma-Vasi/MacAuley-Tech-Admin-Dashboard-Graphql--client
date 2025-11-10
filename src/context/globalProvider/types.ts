@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import type {
   ContextStylesParams,
   CSSObject,
@@ -14,16 +15,16 @@ import type { PieChartData } from "../../components/charts/responsivePieChart/ty
 import type { RadialBarChartData } from "../../components/charts/responsiveRadialBarChart/types";
 import type { SunburstChartData } from "../../components/charts/responsiveSunburstChart/types";
 import type { ChartUnitKind } from "../../components/charts/types";
-import { CustomerMetricsCategory } from "../../components/dashboard/customer/types";
-import { FinancialMetricCategory } from "../../components/dashboard/financial/types";
-import { ProductSubMetric } from "../../components/dashboard/product/types";
-import { RepairMetricCategory } from "../../components/dashboard/repair/types";
-import {
+import type { CustomerMetricsCategory } from "../../components/dashboard/customer/types";
+import type { FinancialMetricCategory } from "../../components/dashboard/financial/types";
+import type { ProductSubMetric } from "../../components/dashboard/product/types";
+import type { RepairMetricCategory } from "../../components/dashboard/repair/types";
+import type {
   AllStoreLocations,
   DashboardCalendarView,
   ProductCategory,
 } from "../../components/dashboard/types";
-import {
+import type {
   CustomerMetricsDocument,
   FinancialMetricsDocument,
   FontFamily,

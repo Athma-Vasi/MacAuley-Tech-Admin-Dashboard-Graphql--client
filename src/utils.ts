@@ -4,6 +4,7 @@ import z, {
     ZodArray,
     ZodBoolean,
     ZodCustom,
+    ZodEnum,
     ZodLiteral,
     ZodNullable,
     ZodNumber,
@@ -165,6 +166,7 @@ function parseDispatchAndSetState<
         | ZodBoolean
         | ZodNumber
         | ZodArray
+        | ZodEnum
         | ZodNullable<ZodCustom<Worker, Worker>>
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         | ZodObject = any,

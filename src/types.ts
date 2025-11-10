@@ -1,4 +1,31 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import type {
+    ContextStylesParams,
+    CSSObject,
+    MantineColor,
+    MantineTheme,
+    MantineThemeOverride,
+} from "@mantine/core";
 import type { Option, Result } from "ts-results";
+import type { ProductMetricCategory } from "./components/dashboard/product/types";
+import type { RepairMetricCategory } from "./components/dashboard/repair/types";
+import type {
+    AllStoreLocations,
+    CustomerMetrics,
+    DashboardMetricsView,
+    ProductCategory,
+    ProductYearlyMetric,
+    RepairCategory,
+    RepairYearlyMetric,
+    YearlyFinancialMetric,
+} from "./components/dashboard/types";
+import type { ValidationKey } from "./validations";
+
+type NonNullableObject<T> = {
+    [K in keyof T as T[K] extends null | undefined ? never : K]: T[K] extends
+        object ? NonNullableObject<T[K]>
+        : T[K];
+};
 
 // gives the final flattened type after mapping, intersecting, or conditional logic
 type Prettify<T> =
@@ -7,55 +34,106 @@ type Prettify<T> =
     }
     & {};
 
-type SafeError = {
-    columnNumber: Option<number>;
-    fileName: Option<string>;
-    lineNumber: Option<number>;
-    message: string;
-    name: string;
-    original: Option<string>;
-    stack: Option<string>;
-    status: Option<number>;
-    timestamp: number;
+type CheckboxRadioSelectData<Payload extends string = string> = Array<{
+    label: string;
+    value: Payload;
+}>;
+
+type SliderMarksData = Array<{
+    label: string;
+    value: number;
+}>;
+
+type ScreenshotImageType = "image/png" | "image/jpeg" | "image/webp";
+
+type SliderInputData = {
+    marks?: SliderMarksData;
+    max: number;
+    min: number;
 };
 
-type SafeSuccess<Data = unknown> = Option<Data>;
-
-type SafeResult<Data = unknown> = Result<
-    SafeSuccess<Data>,
-    SafeError
->;
-
-type ServerSuccessResponseGraphQL<Data = unknown> = {
-    accessToken: string;
-    dataBox: Array<Data>;
-    message: string;
-    statusCode: number;
-    timestamp: Date;
-    totalDocuments?: number;
-    totalPages?: number;
-    // requestId?: string;
-    // extensions?: Record<string, unknown>;
-    // path?: string[];
+type SetStepInErrorPayload = {
+    kind: "add" | "delete";
+    step: number;
 };
 
-type ServerErrorResponseGraphQL = {
-    accessToken: string;
-    dataBox: [];
-    message: string;
-    statusCode: number;
-    timestamp: Date;
-    totalDocuments?: number;
-    totalPages?: number;
-    // requestId?: string;
-    // errors?: GraphQLFormattedError[];
-    // extensions?: Record<string, unknown>;
-    // path?: string[];
+type SetStepWithEmptyInputsPayload = {
+    kind: "add" | "delete";
+    step: number;
 };
 
-type ServerResponseGraphQL<Data = unknown> =
-    | ServerSuccessResponseGraphQL<Data>
-    | ServerErrorResponseGraphQL;
+type SetInputsInErrorPayload = {
+    kind: "add" | "delete";
+    name: ValidationKey;
+};
+
+type ColorScheme = "light" | "dark";
+type Shade = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9;
+
+interface ThemeComponent {
+    defaultProps?:
+        | Record<string, any>
+        | ((theme: MantineTheme) => Record<string, any>);
+    classNames?: Record<string, string>;
+    styles?:
+        | Record<string, CSSObject>
+        | ((
+            theme: MantineTheme,
+            params: any,
+            context: ContextStylesParams,
+        ) => Record<string, CSSObject>);
+    variants?: Record<
+        PropertyKey,
+        (
+            theme: MantineTheme,
+            params: any,
+            context: ContextStylesParams,
+        ) => Record<string, CSSObject>
+    >;
+    sizes?: Record<
+        PropertyKey,
+        (
+            theme: MantineTheme,
+            params: any,
+            context: ContextStylesParams,
+        ) => Record<string, CSSObject>
+    >;
+}
+
+interface ThemeObject extends MantineThemeOverride {
+    // Defines color scheme for all components, defaults to "light"
+    colorScheme: ColorScheme;
+
+    // Determines whether motion based animations should be disabled for
+    // users who prefer to reduce motion in their OS settings
+    respectReducedMotion: boolean;
+
+    // White and black colors, defaults to '#fff' and '#000'
+    white: string;
+    black: string;
+
+    // Key of theme.colors
+    primaryColor: string;
+
+    // Index of color from theme.colors that is considered primary
+    primaryShade: { light: Shade; dark: Shade };
+
+    // Default gradient used in components that support `variant="gradient"` (Button, ThemeIcon, etc.)
+    defaultGradient: { deg: number; from: MantineColor; to: MantineColor };
+
+    fontFamily: string;
+
+    components: {
+        [x: string]: ThemeComponent;
+    };
+}
+
+type ValidationFunctionsTable = Record<ValidationKey, Validation>;
+
+/** input popover error messages are determined by partials tests */
+type Validation = [RegExp | ((value: string) => boolean), string][];
+
+type StoreLocation = "Calgary" | "Edmonton" | "Vancouver";
 
 type DecodedToken = {
     userId: string;
@@ -96,9 +174,136 @@ type UserDocument = UserSchema & {
     __v: number;
 };
 
-type StoreLocation = "Edmonton" | "Calgary" | "Vancouver";
-type AllStoreLocations = StoreLocation | "All Locations";
+type FileExtension = "jpeg" | "png" | "jpg" | "webp";
+
+type FileUploadSchema = {
+    // empty string is used as a placeholder for the model name
+    associatedDocumentId: string;
+    userId: string;
+    uploadedFile: Buffer;
+    username: string;
+    fileExtension: FileExtension;
+    fileName: string;
+    fileSize: number;
+    fileMimeType: string;
+    fileEncoding: string;
+};
+
+type FileUploadDocument = FileUploadSchema & {
+    _id: string;
+    createdAt: string;
+    updatedAt: string;
+    __v: number;
+};
+
+type RepairMetricsSchema = {
+    metricCategory: RepairCategory | "All Repairs";
+    storeLocation: AllStoreLocations;
+    yearlyMetrics: RepairYearlyMetric[];
+};
+
+type RepairMetricsDocument = RepairMetricsSchema & {
+    _id: string;
+    createdAt: string;
+    updatedAt: string;
+    __v: number;
+};
+
+type ProductMetricsSchema = {
+    metricCategory: ProductCategory | "All Products";
+    storeLocation: AllStoreLocations;
+    yearlyMetrics: ProductYearlyMetric[];
+};
+
+type ProductMetricsDocument = ProductMetricsSchema & {
+    _id: string;
+    createdAt: string;
+    updatedAt: string;
+    __v: number;
+};
+
+type FinancialMetricsSchema = {
+    storeLocation: AllStoreLocations;
+    financialMetrics: YearlyFinancialMetric[];
+};
+
+type FinancialMetricsDocument = FinancialMetricsSchema & {
+    _id: string;
+    createdAt: string;
+    updatedAt: string;
+    __v: number;
+};
+
+type CustomerMetricsSchema = {
+    storeLocation: AllStoreLocations;
+    customerMetrics: CustomerMetrics;
+};
+
+type CustomerMetricsDocument = CustomerMetricsSchema & {
+    _id: string;
+    createdAt: string;
+    updatedAt: string;
+    __v: number;
+};
+
+type BusinessMetricsDocument =
+    | FinancialMetricsDocument
+    | ProductMetricsDocument
+    | RepairMetricsDocument
+    | CustomerMetricsDocument;
+
 type UserRoles = ("Admin" | "Employee" | "Manager")[];
+
+type SafeError = {
+    columnNumber: Option<number>;
+    fileName: Option<string>;
+    lineNumber: Option<number>;
+    message: string;
+    name: string;
+    original: Option<string>;
+    stack: Option<string>;
+    status: Option<number>;
+    timestamp: number;
+};
+
+type ResponseKind = "error" | "success";
+type OptionalPayload = {
+    accessToken?: string;
+    message?: string;
+    pages?: number;
+    status?: number;
+    totalDocuments?: number;
+    triggerLogout?: boolean;
+};
+type SuccessPayload<Data = unknown> = Prettify<
+    OptionalPayload & {
+        data: Array<Data>;
+        kind: "success"; // or "empty": data = []
+    }
+>;
+type ErrorPayload = Prettify<
+    OptionalPayload & {
+        data: [];
+        kind: "error";
+        message: string;
+    }
+>;
+type ResponsePayload<Data = unknown> =
+    | SuccessPayload<Data>
+    | ErrorPayload;
+
+type ResponsePayloadSafe<Data = unknown> = {
+    accessToken: Option<string>;
+    data: Array<Data>;
+    kind: ResponseKind;
+    message: Option<string>;
+    pages: Option<number>;
+    status: Option<number>;
+    totalDocuments: Option<number>;
+    triggerLogout: Option<boolean>;
+};
+
+type FontFamily = "Work Sans" | "sans-serif" | "serif" | "Open-Dyslexic";
 
 type Province =
     | "Not Applicable"
@@ -290,24 +495,108 @@ type JobPosition =
     | Accounting
     | Maintenance;
 
+type FormReview<
+    State extends Record<string, unknown> = Record<string, unknown>,
+> = Record<string, Record<keyof State, State[keyof State]>>;
+
+type LocalForageKeys = `${DashboardMetricsView}-${AllStoreLocations}-${
+    | ProductMetricCategory
+    | RepairMetricCategory}`;
+
+type SafeSuccess<Data = unknown> = Option<Data>;
+
+type SafeResult<Data = unknown> = Result<
+    SafeSuccess<Data>,
+    SafeError
+>;
+
+type ServerSuccessResponseGraphQL<Data = unknown> = {
+    accessToken: string;
+    dataBox: Array<Data>;
+    message: string;
+    statusCode: number;
+    timestamp: Date;
+    totalDocuments?: number;
+    totalPages?: number;
+};
+
+type ServerErrorResponseGraphQL = {
+    accessToken: string;
+    dataBox: [];
+    message: string;
+    statusCode: number;
+    timestamp: Date;
+    totalDocuments?: number;
+    totalPages?: number;
+};
+
+type ServerResponseGraphQL<Data = unknown> =
+    | ServerSuccessResponseGraphQL<Data>
+    | ServerErrorResponseGraphQL;
+
 export type {
+    Accounting,
     AllStoreLocations,
+    BusinessMetricsDocument,
+    CanadianPostalCode,
+    CheckboxRadioSelectData,
+    ColorScheme,
     Country,
+    CustomerMetricsDocument,
+    CustomerService,
     DecodedToken,
     Department,
+    ErrorPayload,
+    ExecutiveManagement,
+    FieldServiceTechnicians,
+    FileExtension,
+    FileUploadDocument,
+    FileUploadSchema,
+    FinancialMetricsDocument,
+    FontFamily,
+    FormReview,
+    HumanResources,
+    InformationTechnology,
     JobPosition,
+    LocalForageKeys,
+    LogisticsAndInventory,
+    Maintenance,
+    Marketing,
+    NonNullableObject,
+    OfficeAdministration,
     PostalCode,
     Prettify,
+    ProductMetricsDocument,
     Province,
+    RepairMetricsDocument,
+    RepairTechnicians,
+    ResponseKind,
+    ResponsePayload,
+    ResponsePayloadSafe,
     SafeError,
     SafeResult,
     SafeSuccess,
+    Sales,
+    ScreenshotImageType,
     ServerErrorResponseGraphQL,
     ServerResponseGraphQL,
     ServerSuccessResponseGraphQL,
+    SetInputsInErrorPayload,
+    SetStepInErrorPayload,
+    SetStepWithEmptyInputsPayload,
+    Shade,
+    SliderInputData,
+    SliderMarksData,
     StatesUS,
+    StoreAdministration,
     StoreLocation,
+    SuccessPayload,
+    ThemeComponent,
+    ThemeObject,
     UserDocument,
     UserRoles,
     UserSchema,
+    USPostalCode,
+    Validation,
+    ValidationFunctionsTable,
 };

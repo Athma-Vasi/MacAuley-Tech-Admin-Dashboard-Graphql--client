@@ -1,7 +1,7 @@
 import { GlobalProvider } from "./GlobalProvider";
 import type { GlobalAction } from "./actions";
 import { globalAction } from "./actions";
-import {
+import type {
     ChartKind,
     ColorScheme,
     CustomizeChartsData,
