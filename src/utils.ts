@@ -210,7 +210,7 @@ function parseDispatchAndSetState<
         | ZodEnum
         | ZodNullable<ZodCustom<Worker, Worker>>
         | ZodCustom<Worker, Worker>
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        | ZodCustom<FormData, FormData>
         | ZodObject = any,
     Dispatch extends { action: string; payload: unknown } = {
         action: string;
