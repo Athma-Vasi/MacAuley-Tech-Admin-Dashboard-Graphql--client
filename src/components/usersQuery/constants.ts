@@ -6,11 +6,11 @@ import {
     PROVINCES,
     STATES_US,
 } from "../../constants";
-import { UserDocument } from "../../types";
-import { AccessibleDateTimeInputAttributes } from "../accessibleInputs/AccessibleDateTimeInput";
-import { AccessibleSelectInputAttributes } from "../accessibleInputs/AccessibleSelectInput";
-import { AccessibleTextInputAttributes } from "../accessibleInputs/AccessibleTextInput";
-import { QueryTemplate } from "../query/types";
+import type { UserDocument } from "../../types";
+import type { AccessibleDateTimeInputAttributes } from "../accessibleInputs/AccessibleDateTimeInput";
+import type { AccessibleSelectInputAttributes } from "../accessibleInputs/AccessibleSelectInput";
+import type { AccessibleTextInputAttributes } from "../accessibleInputs/AccessibleTextInput";
+import type { QueryTemplate } from "../query/types";
 
 /**
  * type UserSchema = {
@@ -163,7 +163,9 @@ const USER_QUERY_TEMPLATES: QueryTemplate[] = [
         name: "state",
     },
     {
-        attributes: { inputKind: "date" } as AccessibleDateTimeInputAttributes,
+        attributes: {
+            inputKind: "date",
+        } as unknown as AccessibleDateTimeInputAttributes,
         comparisonOperators: new Set([
             "equal to",
             "greater than or equal to",
@@ -175,7 +177,9 @@ const USER_QUERY_TEMPLATES: QueryTemplate[] = [
         name: "createdAt",
     },
     {
-        attributes: { inputKind: "date" } as AccessibleDateTimeInputAttributes,
+        attributes: {
+            inputKind: "date",
+        } as unknown as AccessibleDateTimeInputAttributes,
         comparisonOperators: new Set([
             "equal to",
             "greater than or equal to",
