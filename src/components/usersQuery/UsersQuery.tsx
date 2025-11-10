@@ -8,14 +8,14 @@ import { useAuth } from "../../hooks/useAuth";
 import { useGlobalState } from "../../hooks/useGlobalState";
 import { useWindowSize } from "../../hooks/useWindowSize";
 import { returnThemeColors } from "../../utils";
-import { MessageEventPrefetchAndCacheWorkerToMain } from "../../workers/prefetchAndCacheWorker";
+import type { MessageEventPrefetchAndCacheWorkerToMain } from "../../workers/prefetchAndCacheWorker";
 import PrefetchAndCacheWorker from "../../workers/prefetchAndCacheWorker?worker";
 import { AccessibleButton } from "../accessibleInputs/AccessibleButton";
 import { Query } from "../query/Query";
 import { usersQueryAction } from "./actions";
 import { USER_QUERY_TEMPLATES } from "./constants";
 import DisplayResource from "./DisplayResource";
-import { MessageEventUsersFetchWorkerToMain } from "./fetchWorker";
+import type { MessageEventUsersFetchWorkerToMain } from "./fetchWorker";
 import UsersFetchWorker from "./fetchWorker?worker";
 import {
     handleMessageEventUsersFetchWorkerToMain,
@@ -101,6 +101,7 @@ function UsersQuery() {
         currentPage,
         newQueryFlag,
         usersFetchWorker,
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         isError,
         isLoading,
         queryString,

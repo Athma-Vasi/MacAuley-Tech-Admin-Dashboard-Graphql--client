@@ -1,9 +1,13 @@
 import localforage from "localforage";
-import { NavigateFunction } from "react-router-dom";
+import type { NavigateFunction } from "react-router-dom";
 import { INVALID_CREDENTIALS } from "../../constants";
 import { authAction } from "../../context/authProvider";
-import { AuthDispatch } from "../../context/authProvider/types";
-import { ResponsePayloadSafe, SafeResult, UserDocument } from "../../types";
+import type { AuthDispatch } from "../../context/authProvider/types";
+import type {
+    ResponsePayloadSafe,
+    SafeResult,
+    UserDocument,
+} from "../../types";
 import {
     catchHandlerErrorSafe,
     createSafeErrorResult,
@@ -12,17 +16,17 @@ import {
     makeTransition,
     parseSyncSafe,
 } from "../../utils";
-import { MessageEventPrefetchAndCacheWorkerToMain } from "../../workers/prefetchAndCacheWorker";
-import { AuthError, InvariantError, UnknownError } from "../error";
-import { SortDirection } from "../query/types";
-import { UsersQueryAction, usersQueryAction } from "./actions";
-import { MessageEventUsersFetchWorkerToMain } from "./fetchWorker";
+import type { MessageEventPrefetchAndCacheWorkerToMain } from "../../workers/prefetchAndCacheWorker";
+import { AuthError, InvariantError, UnknownError } from "../error/classes";
+import type { SortDirection } from "../query/types";
+import { type UsersQueryAction, usersQueryAction } from "./actions";
+import type { MessageEventUsersFetchWorkerToMain } from "./fetchWorker";
 import {
     handleMessageEventUsersFetchWorkerToMainInputZod,
     handleMessageEventUsersPrefetchAndCacheWorkerToMainInputZod,
     triggerMessageEventFetchMainToWorkerUsersQueryInputZod,
     triggerMessageEventUsersPrefetchAndCacheMainToWorkerInputZod,
-    UsersQueryDispatch,
+    type UsersQueryDispatch,
 } from "./schemas";
 
 async function triggerMessageEventUsersPrefetchAndCacheMainToWorker(

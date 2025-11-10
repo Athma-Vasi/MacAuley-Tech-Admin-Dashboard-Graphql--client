@@ -222,20 +222,20 @@ const triggerMessageEventFetchMainToWorkerUsersQueryInputZod = z.object({
     isComponentMountedRef: z.object({ current: z.boolean() }),
     newQueryFlag: z.boolean(),
     queryString: z.string(),
-    showBoundary: z.function().args(z.any()).returns(z.void()),
+    showBoundary: z.function(),
     totalDocuments: z.number().min(0),
-    url: z.string().url(),
+    url: z.string(),
     usersFetchWorker: z.instanceof(Worker),
-    usersQueryDispatch: z.function().args(z.any()).returns(z.void()),
+    usersQueryDispatch: z.function(),
 });
 
 const handleMessageEventUsersFetchWorkerToMainInputZod = z.object({
-    authDispatch: z.function().args(z.any()).returns(z.void()),
+    authDispatch: z.function(),
     event: z.instanceof(MessageEvent),
     isComponentMountedRef: z.object({ current: z.boolean() }),
-    navigate: z.function().args(z.any()).returns(z.void()),
-    showBoundary: z.function().args(z.any()).returns(z.void()),
-    usersQueryDispatch: z.function().args(z.any()).returns(z.void()),
+    navigate: z.function(),
+    showBoundary: z.function(),
+    usersQueryDispatch: z.function(),
 });
 
 const setPrefetchAndCacheWorkerUsersQueryDispatchZod = z.object({
@@ -252,17 +252,17 @@ const triggerMessageEventUsersPrefetchAndCacheMainToWorkerInputZod = z
         isComponentMountedRef: z.object({ current: z.boolean() }),
         newQueryFlag: z.boolean(),
         queryString: z.string(),
-        showBoundary: z.function().args(z.any()).returns(z.void()),
+        showBoundary: z.function(),
         totalDocuments: z.number().min(0),
-        url: z.string().url(),
+        url: z.string(),
         prefetchAndCacheWorker: z.instanceof(Worker),
     });
 
 const handleMessageEventUsersPrefetchAndCacheWorkerToMainInputZod = z.object({
-    authDispatch: z.function().args(z.any()).returns(z.void()),
+    authDispatch: z.function(),
     event: z.instanceof(MessageEvent),
     isComponentMountedRef: z.object({ current: z.boolean() }),
-    showBoundary: z.function().args(z.any()).returns(z.void()),
+    showBoundary: z.function(),
 });
 
 type UsersQueryDispatch =
@@ -285,7 +285,7 @@ const messageEventUsersFetchMainToWorkerZod = z.object({
     arrangeByField: arrangeByFieldZod,
     requestInit: z.any(),
     routesZodSchemaMapKey: z.string(),
-    url: z.string().url(),
+    url: z.string(),
 });
 
 export {

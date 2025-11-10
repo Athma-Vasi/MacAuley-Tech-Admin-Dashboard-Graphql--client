@@ -1,4 +1,6 @@
-import { Group, ImageProps, Text, Tooltip } from "@mantine/core";
+/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { Group, type ImageProps, Text, Tooltip } from "@mantine/core";
 import {
     TbArrowDown,
     TbArrowUp,
@@ -11,7 +13,7 @@ import {
 } from "../../constants";
 import { formatDate, splitCamelCase } from "../../utils";
 import AccessibleImage from "../accessibleInputs/AccessibleImage";
-import { SortDirection } from "../query/types";
+import type { SortDirection } from "../query/types";
 
 function returnArrangeByIconsElement(
     {

@@ -1,4 +1,4 @@
-import { UsersQueryState } from "./types";
+import type { UsersQueryState } from "./types";
 
 const initialUsersQueryState: UsersQueryState = {
     arrangeByDirection: "ascending",

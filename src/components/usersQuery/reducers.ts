@@ -1,7 +1,7 @@
-import { UserDocument } from "../../types";
-import { parseSyncSafe } from "../../utils";
-import { SortDirection } from "../query/types";
-import { UsersQueryAction, usersQueryAction } from "./actions";
+import type { UserDocument } from "../../types";
+import { parseDispatchAndSetState, parseSyncSafe } from "../../utils";
+import type { SortDirection } from "../query/types";
+import { type UsersQueryAction, usersQueryAction } from "./actions";
 import {
     resetToInitialUsersQueryDispatchZod,
     setArrangeByDirectionUsersQueryDispatchZod,
@@ -16,9 +16,9 @@ import {
     setResourceDataUsersQueryDispatchZod,
     setTotalDocumentsUsersQueryDispatchZod,
     setUsersFetchWorkerUsersQueryDispatchZod,
-    UsersQueryDispatch,
+    type UsersQueryDispatch,
 } from "./schemas";
-import { UsersQueryState } from "./types";
+import type { UsersQueryState } from "./types";
 
 function usersQueryReducer(
     state: UsersQueryState,
@@ -140,19 +140,12 @@ function usersQueryReducer_setCurrentPage(
     state: UsersQueryState,
     dispatch: UsersQueryDispatch,
 ): UsersQueryState {
-    const parsedResult = parseSyncSafe({
-        object: dispatch,
+    return parseDispatchAndSetState({
+        dispatch,
+        key: "currentPage",
+        state,
         zSchema: setCurrentPageUsersQueryDispatchZod,
     });
-
-    if (parsedResult.err || parsedResult.val.none) {
-        return state;
-    }
-
-    return {
-        ...state,
-        currentPage: parsedResult.val.val.payload as number,
-    };
 }
 
 function usersQueryReducer_setUsersFetchWorker(
@@ -180,154 +173,96 @@ function usersQueryReducer_setIsError(
     state: UsersQueryState,
     dispatch: UsersQueryDispatch,
 ): UsersQueryState {
-    const parsedResult = parseSyncSafe({
-        object: dispatch,
+    return parseDispatchAndSetState({
+        dispatch,
+        key: "isError",
+        state,
         zSchema: setIsErrorUsersQueryDispatchZod,
     });
-
-    if (parsedResult.err || parsedResult.val.none) {
-        return state;
-    }
-
-    return {
-        ...state,
-        isError: parsedResult.val.val.payload as boolean,
-    };
 }
 
 function usersQueryReducer_setIsLoading(
     state: UsersQueryState,
     dispatch: UsersQueryDispatch,
 ): UsersQueryState {
-    const parsedResult = parseSyncSafe({
-        object: dispatch,
+    return parseDispatchAndSetState({
+        dispatch,
+        key: "isLoading",
+        state,
         zSchema: setIsLoadingUsersQueryDispatchZod,
     });
-
-    if (parsedResult.err || parsedResult.val.none) {
-        return state;
-    }
-
-    return {
-        ...state,
-        isLoading: parsedResult.val.val.payload as boolean,
-    };
 }
 
 function usersQueryReducer_setNewQueryFlag(
     state: UsersQueryState,
     dispatch: UsersQueryDispatch,
 ): UsersQueryState {
-    const parsedResult = parseSyncSafe({
-        object: dispatch,
+    return parseDispatchAndSetState({
+        dispatch,
+        key: "newQueryFlag",
+        state,
         zSchema: setNewQueryFlagUsersQueryDispatchZod,
     });
-
-    if (parsedResult.err || parsedResult.val.none) {
-        return state;
-    }
-
-    return {
-        ...state,
-        newQueryFlag: parsedResult.val.val.payload as boolean,
-    };
 }
 
 function usersQueryReducer_setPages(
     state: UsersQueryState,
     dispatch: UsersQueryDispatch,
 ): UsersQueryState {
-    const parsedResult = parseSyncSafe({
-        object: dispatch,
+    return parseDispatchAndSetState({
+        dispatch,
+        key: "pages",
+        state,
         zSchema: setPagesUsersQueryDispatchZod,
     });
-
-    if (parsedResult.err || parsedResult.val.none) {
-        return state;
-    }
-
-    return {
-        ...state,
-        pages: parsedResult.val.val.payload as number,
-    };
 }
 
 function usersQueryReducer_setPrefetchAndCacheWorker(
     state: UsersQueryState,
     dispatch: UsersQueryDispatch,
 ): UsersQueryState {
-    const parsedResult = parseSyncSafe({
-        object: dispatch,
+    return parseDispatchAndSetState({
+        dispatch,
+        key: "prefetchAndCacheWorker",
+        state,
         zSchema: setPrefetchAndCacheWorkerUsersQueryDispatchZod,
     });
-
-    if (parsedResult.err || parsedResult.val.none) {
-        return state;
-    }
-
-    return {
-        ...state,
-        prefetchAndCacheWorker: parsedResult.val.val.payload as Worker,
-    };
 }
 
 function usersQueryReducer_setQueryString(
     state: UsersQueryState,
     dispatch: UsersQueryDispatch,
 ): UsersQueryState {
-    const parsedResult = parseSyncSafe({
-        object: dispatch,
+    return parseDispatchAndSetState({
+        dispatch,
+        key: "queryString",
+        state,
         zSchema: setQueryStringUsersQueryDispatchZod,
     });
-
-    if (parsedResult.err || parsedResult.val.none) {
-        return state;
-    }
-
-    return {
-        ...state,
-        queryString: parsedResult.val.val.payload as string,
-    };
 }
 
 function usersQueryReducer_setResourceData(
     state: UsersQueryState,
     dispatch: UsersQueryDispatch,
 ): UsersQueryState {
-    const parsedResult = parseSyncSafe({
-        object: dispatch,
+    return parseDispatchAndSetState({
+        dispatch,
+        key: "resourceData",
+        state,
         zSchema: setResourceDataUsersQueryDispatchZod,
     });
-
-    if (parsedResult.err || parsedResult.val.none) {
-        return state;
-    }
-
-    return {
-        ...state,
-        resourceData: parsedResult.val.val.payload as Array<
-            UserDocument
-        >,
-    };
 }
 
 function usersQueryReducer_setTotalDocuments(
     state: UsersQueryState,
     dispatch: UsersQueryDispatch,
 ): UsersQueryState {
-    const parsedResult = parseSyncSafe({
-        object: dispatch,
+    return parseDispatchAndSetState({
+        dispatch,
+        key: "totalDocuments",
+        state,
         zSchema: setTotalDocumentsUsersQueryDispatchZod,
     });
-
-    if (parsedResult.err || parsedResult.val.none) {
-        return state;
-    }
-
-    return {
-        ...state,
-        totalDocuments: parsedResult.val.val.payload as number,
-    };
 }
 
 export {

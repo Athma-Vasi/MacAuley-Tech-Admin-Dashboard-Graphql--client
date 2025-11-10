@@ -8,7 +8,7 @@ import {
 import { useGlobalState } from "../../hooks/useGlobalState";
 import { useWindowSize } from "../../hooks/useWindowSize";
 import { formatDate, returnThemeColors, splitCamelCase } from "../../utils";
-import { SortDirection } from "../query/types";
+import type { SortDirection } from "../query/types";
 import {
     returnArrangeByIconsElement,
     returnImageDropdown,
@@ -20,6 +20,7 @@ type DisplayResourceProps = {
     arrangeByField: string;
     isLoading: boolean;
     parentAction: Record<string, string>;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     parentDispatch: React.Dispatch<any>;
     resourceData: Array<Record<string, unknown>>;
     resourceName: string;

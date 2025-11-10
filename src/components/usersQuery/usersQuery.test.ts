@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { describe, expect, it } from "vitest";
 import {
     ARRANGE_BY_DIRECTIONS,
@@ -6,7 +7,7 @@ import {
     INVALID_STRINGS,
     VALID_BOOLEANS,
 } from "../../constants";
-import { UserDocument } from "../../types";
+import type { UserDocument } from "../../types";
 import { usersQueryAction } from "./actions";
 import { SAMPLE_USER_DOCUMENT } from "./constants";
 import {
@@ -24,7 +25,7 @@ import {
     usersQueryReducer_setTotalDocuments,
     usersQueryReducer_setUsersFetchWorker,
 } from "./reducers";
-import { UsersQueryDispatch } from "./schemas";
+import type { UsersQueryDispatch } from "./schemas";
 import { initialUsersQueryState } from "./state";
 
 describe("usersQueryReducer", () => {

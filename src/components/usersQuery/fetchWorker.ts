@@ -2,9 +2,9 @@ import { None, Option } from "ts-results";
 import {
     FETCH_REQUEST_TIMEOUT,
     PROPERTY_DESCRIPTOR,
-    RoutesZodSchemasMapKey,
+    type RoutesZodSchemasMapKey,
 } from "../../constants";
-import {
+import type {
     DecodedToken,
     ResponsePayloadSafe,
     SafeResult,
@@ -20,8 +20,8 @@ import {
     retryFetchSafe,
     setCachedItemAsyncSafe,
 } from "../../utils";
-import { InvariantError } from "../error";
-import { SortDirection } from "../query/types";
+import { InvariantError } from "../error/classes";
+import type { SortDirection } from "../query/types";
 import { messageEventUsersFetchMainToWorkerZod } from "./schemas";
 
 type MessageEventUsersFetchWorkerToMain = MessageEvent<

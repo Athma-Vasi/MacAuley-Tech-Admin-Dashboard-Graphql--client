@@ -1,4 +1,4 @@
-import { UserDocument } from "../../types";
+import type { UserDocument } from "../../types";
 
 const USER_DOCUMENT_SAMPLE = {
     "_id": "6801a9426f9c9056d944398e",

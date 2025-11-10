@@ -1,5 +1,5 @@
-import { UserDocument } from "../../types";
-import { SortDirection } from "../query/types";
+import type { UserDocument } from "../../types";
+import type { SortDirection } from "../query/types";
 
 type UsersQueryState = {
     arrangeByDirection: SortDirection;
