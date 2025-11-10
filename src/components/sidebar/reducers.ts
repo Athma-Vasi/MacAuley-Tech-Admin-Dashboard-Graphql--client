@@ -1,5 +1,5 @@
-import { parseSyncSafe } from "../../utils";
-import { SidebarAction, sidebarAction } from "./actions";
+import { parseDispatchAndSetState } from "../../utils";
+import { type SidebarAction, sidebarAction } from "./actions";
 import {
     setClickedNavlinkSidebarDispatchZod,
     setDirectoryFetchWorkerSidebarDispatchZod,
@@ -7,7 +7,7 @@ import {
     setMetricsCacheWorkerSidebarDispatchZod,
     setPrefetchAndCacheWorkerSidebarDispatchZod,
 } from "./schemas";
-import { SidebarDispatch, SidebarNavlinks, SidebarState } from "./types";
+import type { SidebarDispatch, SidebarState } from "./types";
 
 function sidebarReducer(state: SidebarState, dispatch: SidebarDispatch) {
     const reducer = reducersMap.get(dispatch.action);
@@ -35,96 +35,60 @@ function sidebarReducer_setClickedNavlink(
     state: SidebarState,
     dispatch: SidebarDispatch,
 ) {
-    const parsedResult = parseSyncSafe({
-        object: dispatch,
+    return parseDispatchAndSetState({
+        dispatch,
+        key: "clickedNavlink",
+        state,
         zSchema: setClickedNavlinkSidebarDispatchZod,
     });
-
-    if (parsedResult.err || parsedResult.val.none) {
-        return state;
-    }
-
-    return {
-        ...state,
-        clickedNavlink: parsedResult.val.val
-            .payload as SidebarNavlinks,
-    };
 }
 
 function sidebarReducer_setDirectoryFetchWorker(
     state: SidebarState,
     dispatch: SidebarDispatch,
 ) {
-    const parsedResult = parseSyncSafe({
-        object: dispatch,
+    return parseDispatchAndSetState({
+        dispatch,
+        key: "directoryFetchWorker",
+        state,
         zSchema: setDirectoryFetchWorkerSidebarDispatchZod,
     });
-
-    if (parsedResult.err || parsedResult.val.none) {
-        return state;
-    }
-
-    return {
-        ...state,
-        directoryFetchWorker: parsedResult.val.val.payload as Worker,
-    };
 }
 
 function sidebarReducer_setLogoutFetchWorker(
     state: SidebarState,
     dispatch: SidebarDispatch,
 ) {
-    const parsedResult = parseSyncSafe({
-        object: dispatch,
+    return parseDispatchAndSetState({
+        dispatch,
+        key: "logoutFetchWorker",
+        state,
         zSchema: setLogoutFetchWorkerSidebarDispatchZod,
     });
-
-    if (parsedResult.err || parsedResult.val.none) {
-        return state;
-    }
-
-    return {
-        ...state,
-        logoutFetchWorker: parsedResult.val.val.payload as Worker,
-    };
 }
 
 function sidebarReducer_setMetricsCacheWorker(
     state: SidebarState,
     dispatch: SidebarDispatch,
 ) {
-    const parsedResult = parseSyncSafe({
-        object: dispatch,
+    return parseDispatchAndSetState({
+        dispatch,
+        key: "metricsCacheWorker",
+        state,
         zSchema: setMetricsCacheWorkerSidebarDispatchZod,
     });
-
-    if (parsedResult.err || parsedResult.val.none) {
-        return state;
-    }
-
-    return {
-        ...state,
-        metricsCacheWorker: parsedResult.val.val.payload as Worker,
-    };
 }
 
 function sidebarReducer_setPrefetchAndCacheWorker(
     state: SidebarState,
     dispatch: SidebarDispatch,
 ) {
-    const parsedResult = parseSyncSafe({
-        object: dispatch,
+    return parseDispatchAndSetState({
+        dispatch,
+        key: "prefetchAndCacheWorker",
+        state,
         zSchema: setPrefetchAndCacheWorkerSidebarDispatchZod,
     });
-
-    if (parsedResult.err || parsedResult.val.none) {
-        return state;
-    }
-
-    return {
-        ...state,
-        prefetchAndCacheWorker: parsedResult.val.val.payload as Worker,
-    };
 }
 
 export {

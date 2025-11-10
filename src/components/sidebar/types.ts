@@ -1,5 +1,5 @@
-import { DashboardMetricsView } from "../dashboard/types";
-import { SidebarAction } from "./actions";
+import type { DashboardMetricsView } from "../dashboard/types";
+import type { SidebarAction } from "./actions";
 
 type SidebarNavlinks =
     | Lowercase<DashboardMetricsView>

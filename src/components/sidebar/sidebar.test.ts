@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import "@vitest/web-worker";
 import { describe, expect, it } from "vitest";
 import { INVALID_STRINGS } from "../../constants";
@@ -10,7 +11,7 @@ import {
     sidebarReducer_setPrefetchAndCacheWorker,
 } from "./reducers";
 import { initialSidebarState } from "./state";
-import { SidebarDispatch, SidebarNavlinks } from "./types";
+import type { SidebarDispatch, SidebarNavlinks } from "./types";
 
 describe("Sidebar", () => {
     describe("sidebarReducer", () => {

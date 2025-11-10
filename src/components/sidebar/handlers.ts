@@ -1,10 +1,10 @@
 import localforage from "localforage";
-import { NavigateFunction } from "react-router-dom";
+import type { NavigateFunction } from "react-router-dom";
 import { authAction } from "../../context/authProvider";
-import { AuthDispatch } from "../../context/authProvider/types";
+import type { AuthDispatch } from "../../context/authProvider/types";
 import { globalAction } from "../../context/globalProvider/actions";
-import { GlobalDispatch } from "../../context/globalProvider/types";
-import {
+import { type GlobalDispatch } from "../../context/globalProvider/types";
+import type {
   CustomerMetricsDocument,
   FinancialMetricsDocument,
   ProductMetricsDocument,
@@ -19,14 +19,17 @@ import {
   makeTransition,
   parseSyncSafe,
 } from "../../utils";
-import { MessageEventFetchWorkerToMain } from "../../workers/fetchParseWorker";
-import { MessageEventDashboardCacheWorkerToMain } from "../dashboard/cacheWorker";
-import { ProductMetricCategory } from "../dashboard/product/types";
-import { RepairMetricCategory } from "../dashboard/repair/types";
-import { AllStoreLocations, DashboardMetricsView } from "../dashboard/types";
-import { MessageEventDirectoryFetchWorkerToMain } from "../directory/fetchWorker";
-import { DepartmentsWithDefaultKey } from "../directory/types";
-import { AuthError, InvariantError, UnknownError } from "../error";
+import type { MessageEventFetchWorkerToMain } from "../../workers/fetchParseWorker";
+import type { MessageEventDashboardCacheWorkerToMain } from "../dashboard/cacheWorker";
+import type { ProductMetricCategory } from "../dashboard/product/types";
+import type { RepairMetricCategory } from "../dashboard/repair/types";
+import type {
+  AllStoreLocations,
+  DashboardMetricsView,
+} from "../dashboard/types";
+import type { MessageEventDirectoryFetchWorkerToMain } from "../directory/fetchWorker";
+import type { DepartmentsWithDefaultKey } from "../directory/types";
+import { AuthError, InvariantError, UnknownError } from "../error/classes";
 import {
   handleDirectoryNavClickInputZod,
   handleLogoutClickInputZod,

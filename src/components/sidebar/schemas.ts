@@ -38,19 +38,19 @@ const setLogoutFetchWorkerSidebarDispatchZod = z.object({
 
 const handleLogoutClickInputZod = z.object({
     accessToken: z.string().min(1).max(1000),
-    globalDispatch: z.function().args(z.any()).returns(z.any()),
+    globalDispatch: z.function(),
     isComponentMountedRef: z.object({ current: z.boolean() }),
     logoutFetchWorker: z.instanceof(Worker),
-    logoutUrl: z.string().url(),
-    showBoundary: z.function().args(z.any()).returns(z.void()),
+    logoutUrl: z.string(),
+    showBoundary: z.function(),
 });
 
 const handleMessageEventLogoutFetchWorkerToMainInputZod = z.object({
     event: z.instanceof(MessageEvent),
-    globalDispatch: z.function().args(z.any()).returns(z.void()),
+    globalDispatch: z.function(),
     isComponentMountedRef: z.object({ current: z.boolean() }),
-    navigate: z.function().args(z.any()).returns(z.any()),
-    showBoundary: z.function().args(z.any()).returns(z.void()),
+    navigate: z.function(),
+    showBoundary: z.function(),
 });
 
 const handleDirectoryNavClickInputZod = z.object({
@@ -72,10 +72,10 @@ const handleDirectoryNavClickInputZod = z.object({
         "Maintenance",
     ]),
     directoryFetchWorker: z.instanceof(Worker),
-    directoryUrl: z.string().url(),
-    globalDispatch: z.function().args(z.any()).returns(z.void()),
+    directoryUrl: z.string(),
+    globalDispatch: z.function(),
     isComponentMountedRef: z.object({ current: z.boolean() }),
-    showBoundary: z.function().args(z.any()).returns(z.void()),
+    showBoundary: z.function(),
     storeLocation: z.enum([
         "All Locations",
         "Edmonton",
@@ -85,32 +85,32 @@ const handleDirectoryNavClickInputZod = z.object({
 });
 
 const handleMessageEventDirectoryFetchWorkerToMainInputZod = z.object({
-    authDispatch: z.function().args(z.any()).returns(z.void()),
+    authDispatch: z.function(),
     event: z.instanceof(MessageEvent),
-    globalDispatch: z.function().args(z.any()).returns(z.void()),
+    globalDispatch: z.function(),
     isComponentMountedRef: z.object({ current: z.boolean() }),
-    navigate: z.function().args(z.any()).returns(z.void()).optional(),
-    showBoundary: z.function().args(z.any()).returns(z.void()),
+    navigate: z.function().optional(),
+    showBoundary: z.function(),
     toLocation: z.string().min(1).max(1000).optional(),
 });
 
 const handleMessageEventMetricsCacheWorkerToMainInputZod = z.object({
     event: z.instanceof(MessageEvent),
-    globalDispatch: z.function().args(z.any()).returns(z.void()),
+    globalDispatch: z.function(),
     isComponentMountedRef: z.object({ current: z.boolean() }),
-    navigate: z.function().args(z.any()).returns(z.void()),
-    showBoundary: z.function().args(z.any()).returns(z.void()),
+    navigate: z.function(),
+    showBoundary: z.function(),
 });
 
 const handleMetricCategoryNavClickInputZod = z.object({
     metricsCacheWorker: z.instanceof(Worker).nullable(),
-    globalDispatch: z.function().args(z.any()).returns(z.any()),
+    globalDispatch: z.function(),
     isComponentMountedRef: z.object({ current: z.boolean() }),
-    metricsUrl: z.string().url(),
+    metricsUrl: z.string(),
     metricsView: metricsViewZod,
     productMetricCategory: productMetricCategoryZod,
     repairMetricCategory: repairMetricCategoryZod,
-    showBoundary: z.function().args(z.any()).returns(z.void()),
+    showBoundary: z.function(),
     storeLocation: allStoreLocationsZod,
 });
 
@@ -123,10 +123,10 @@ const triggerMessageEventDirectoryPrefetchAndCacheMainToWorkerInputZod = z
     .object({
         accessToken: z.string().min(1).max(1000),
         department: allDepartmentsZod,
-        directoryUrl: z.string().url(),
+        directoryUrl: z.string(),
         isComponentMountedRef: z.object({ current: z.boolean() }),
         prefetchAndCacheWorker: z.instanceof(Worker),
-        showBoundary: z.function().args(z.any()).returns(z.void()),
+        showBoundary: z.function(),
         storeLocation: allStoreLocationsZod,
     });
 

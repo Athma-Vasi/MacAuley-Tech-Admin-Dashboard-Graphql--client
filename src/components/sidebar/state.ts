@@ -1,4 +1,4 @@
-import { SidebarState } from "./types";
+import type { SidebarState } from "./types";
 
 const initialSidebarState: SidebarState = {
     clickedNavlink: "financials",

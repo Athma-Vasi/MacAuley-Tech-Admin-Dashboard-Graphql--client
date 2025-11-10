@@ -1,5 +1,5 @@
-import { Prettify } from "../../types";
-import { SidebarState } from "./types";
+import type { Prettify } from "../../types";
+import type { SidebarState } from "./types";
 
 type SidebarAction = Prettify<
     {

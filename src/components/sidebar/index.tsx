@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { Group, Loader, Space, Stack, Text } from "@mantine/core";
 import React, { useEffect } from "react";
 import { useErrorBoundary } from "react-error-boundary";
@@ -22,15 +23,15 @@ import { useMountedRef } from "../../hooks";
 import { useAuth } from "../../hooks/useAuth";
 import { useGlobalState } from "../../hooks/useGlobalState";
 import { returnThemeColors } from "../../utils";
-import { MessageEventFetchWorkerToMain } from "../../workers/fetchParseWorker";
+import type { MessageEventFetchWorkerToMain } from "../../workers/fetchParseWorker";
 import FetchParseWorker from "../../workers/fetchParseWorker?worker";
-import { MessageEventPrefetchAndCacheWorkerToMain } from "../../workers/prefetchAndCacheWorker";
+import { type MessageEventPrefetchAndCacheWorkerToMain } from "../../workers/prefetchAndCacheWorker";
 import PrefetchAndCacheWorker from "../../workers/prefetchAndCacheWorker?worker";
 import { AccessibleButton } from "../accessibleInputs/AccessibleButton";
 import { AccessibleNavLink } from "../accessibleInputs/AccessibleNavLink";
-import { MessageEventDashboardCacheWorkerToMain } from "../dashboard/cacheWorker";
+import { type MessageEventDashboardCacheWorkerToMain } from "../dashboard/cacheWorker";
 import MetricsCacheWorker from "../dashboard/cacheWorker?worker";
-import { MessageEventDirectoryFetchWorkerToMain } from "../directory/fetchWorker";
+import { type MessageEventDirectoryFetchWorkerToMain } from "../directory/fetchWorker";
 import DirectoryFetchWorker from "../directory/fetchWorker?worker";
 import { handleMessageEventUsersPrefetchAndCacheWorkerToMain } from "../usersQuery/handlers";
 import { sidebarAction } from "./actions";
