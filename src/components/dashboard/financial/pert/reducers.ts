@@ -1,8 +1,7 @@
-import { parseSyncSafe } from "../../../../utils";
-import { FinancialYAxisKey } from "../../types";
-import { PERTAction, pertAction } from "./actions";
+import { parseDispatchAndSetState } from "../../../../utils";
+import { type PERTAction, pertAction } from "./actions";
 import { setYAxisKeyPERTDispatchZod } from "./schemas";
-import { PERTDispatch, PERTState } from "./types";
+import type { PERTDispatch, PERTState } from "./types";
 
 function pertReducer(state: PERTState, dispatch: PERTDispatch): PERTState {
   const reducer = pertReducers.get(dispatch.action);
@@ -20,19 +19,12 @@ function pertReducer_setYAxisKey(
   state: PERTState,
   dispatch: PERTDispatch,
 ): PERTState {
-  const parsedResult = parseSyncSafe({
-    object: dispatch,
+  return parseDispatchAndSetState({
+    dispatch,
+    key: "yAxisKey",
+    state,
     zSchema: setYAxisKeyPERTDispatchZod,
   });
-
-  if (parsedResult.err || parsedResult.val.none) {
-    return state;
-  }
-
-  return {
-    ...state,
-    yAxisKey: parsedResult.val.val.payload as FinancialYAxisKey,
-  };
 }
 
 export { pertReducer, pertReducer_setYAxisKey };

@@ -1,10 +1,11 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { useEffect, useReducer } from "react";
 import { useErrorBoundary } from "react-error-boundary";
 
 import { COLORS_SWATCHES } from "../../../constants";
 import { useMountedRef } from "../../../hooks";
 import { useGlobalState } from "../../../hooks/useGlobalState";
-import { FinancialMetricsDocument } from "../../../types";
+import type { FinancialMetricsDocument } from "../../../types";
 import { returnThemeColors } from "../../../utils";
 import type {
   AllStoreLocations,
@@ -13,7 +14,7 @@ import type {
   Year,
 } from "../types";
 import { financialMetricsAction } from "./actions";
-import { MessageEventFinancialChartsWorkerToMain } from "./chartsWorker";
+import type { MessageEventFinancialChartsWorkerToMain } from "./chartsWorker";
 import FinancialChartsWorker from "./chartsWorker?worker";
 import { PERT_SET } from "./constants";
 import { handleMessageEventFinancialChartsWorkerToMain } from "./handlers";
@@ -21,7 +22,7 @@ import OtherMetrics from "./otherMetrics/OtherMetrics";
 import PERT from "./pert/PERT";
 import { financialMetricsReducer } from "./reducers";
 import { initialFinancialMetricsState } from "./state";
-import { FinancialMetricCategory } from "./types";
+import type { FinancialMetricCategory } from "./types";
 import {
   returnFinancialMetricsOverviewCards,
   returnOverviewFinancialMetrics,

@@ -1,17 +1,14 @@
-import { parseSyncSafe } from "../../../utils";
-import { FinancialMetricsAction, financialMetricsAction } from "./actions";
-import { FinancialMetricsCards } from "./cards";
-import {
-  FinancialMetricsCalendarCharts,
-  FinancialMetricsCharts,
-} from "./chartsData";
+import { parseDispatchAndSetState, parseSyncSafe } from "../../../utils";
+import { type FinancialMetricsAction, financialMetricsAction } from "./actions";
+import type { FinancialMetricsCards } from "./cards";
+import type { FinancialMetricsCalendarCharts } from "./chartsData";
 import {
   setCalendarChartsFinancialMetricsDispatchZod,
   setChartsFinancialMetricsDispatchZod,
   setChartsWorkerFinancialMetricsDispatchZod,
   setIsGeneratingFinancialMetricsDispatchZod,
 } from "./schemas";
-import { FinancialMetricsDispatch, FinancialMetricsState } from "./types";
+import type { FinancialMetricsDispatch, FinancialMetricsState } from "./types";
 
 function financialMetricsReducer(
   state: FinancialMetricsState,
@@ -84,57 +81,36 @@ function financialMetricsReducer_setCharts(
   state: FinancialMetricsState,
   dispatch: FinancialMetricsDispatch,
 ): FinancialMetricsState {
-  const parsedResult = parseSyncSafe({
-    object: dispatch,
+  return parseDispatchAndSetState({
+    dispatch,
+    key: "charts",
+    state,
     zSchema: setChartsFinancialMetricsDispatchZod,
   });
-
-  if (parsedResult.err || parsedResult.val.none) {
-    return state;
-  }
-
-  return {
-    ...state,
-    charts: parsedResult.val.val.payload as FinancialMetricsCharts,
-  };
 }
 
 function financialMetricsReducer_setFinancialChartsWorker(
   state: FinancialMetricsState,
   dispatch: FinancialMetricsDispatch,
 ): FinancialMetricsState {
-  const parsedResult = parseSyncSafe({
-    object: dispatch,
+  return parseDispatchAndSetState({
+    dispatch,
+    key: "financialChartsWorker",
+    state,
     zSchema: setChartsWorkerFinancialMetricsDispatchZod,
   });
-
-  if (parsedResult.err || parsedResult.val.none) {
-    return state;
-  }
-
-  return {
-    ...state,
-    financialChartsWorker: parsedResult.val.val.payload as Worker,
-  };
 }
 
 function financialMetricsReducer_setIsGenerating(
   state: FinancialMetricsState,
   dispatch: FinancialMetricsDispatch,
 ): FinancialMetricsState {
-  const parsedResult = parseSyncSafe({
-    object: dispatch,
+  return parseDispatchAndSetState({
+    dispatch,
+    key: "isGenerating",
+    state,
     zSchema: setIsGeneratingFinancialMetricsDispatchZod,
   });
-
-  if (parsedResult.err || parsedResult.val.none) {
-    return state;
-  }
-
-  return {
-    ...state,
-    isGenerating: parsedResult.val.val.payload as boolean,
-  };
 }
 
 export {

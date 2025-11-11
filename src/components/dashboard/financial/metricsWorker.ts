@@ -1,5 +1,5 @@
 import { ALL_STORE_LOCATIONS_DATA, METRICS_URL } from "../../../constants";
-import {
+import type {
     FinancialMetricsDocument,
     SafeResult,
     StoreLocation,
@@ -14,7 +14,7 @@ import {
     removeCachedItemAsyncSafe,
     setCachedItemAsyncSafe,
 } from "../../../utils";
-import {
+import type {
     AllStoreLocations,
     BusinessMetric,
     CustomerMetrics,

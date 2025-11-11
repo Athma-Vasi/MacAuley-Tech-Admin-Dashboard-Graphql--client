@@ -1,4 +1,4 @@
-import { OtherMetricsState } from "./types";
+import type { OtherMetricsState } from "./types";
 
 const initialOtherMetricsState: OtherMetricsState = {
   yAxisKey: "netProfitMargin",

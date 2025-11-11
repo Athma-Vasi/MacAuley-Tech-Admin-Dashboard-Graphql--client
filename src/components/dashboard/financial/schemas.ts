@@ -429,8 +429,8 @@ const setChartsWorkerFinancialMetricsDispatchZod = z.object({
 const handleMessageEventFinancialWorkerToMainInputZod = z.object({
     event: z.instanceof(MessageEvent),
     isComponentMountedRef: z.object({ current: z.boolean() }),
-    financialMetricsDispatch: z.function().args(z.any()).returns(z.void()),
-    showBoundary: z.function().args(z.any()).returns(z.void()),
+    financialMetricsDispatch: z.function(),
+    showBoundary: z.function(),
 });
 
 const messageEventFinancialChartsMainToWorkerZod = z.object({

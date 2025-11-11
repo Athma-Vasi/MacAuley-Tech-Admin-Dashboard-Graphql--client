@@ -1,12 +1,12 @@
-import { CheckboxRadioSelectData } from "../../../types";
-import { ChartsToYAxisKeysMap } from "../types";
-import {
+import type { CheckboxRadioSelectData } from "../../../types";
+import type { ChartsToYAxisKeysMap } from "../types";
+import type {
   FinancialMetricsBarLineChartsKey,
   FinancialMetricsCalendarChartsKeyPERT,
   FinancialMetricsOtherMetricsChartsKey,
   FinancialMetricsPieChartsKey,
 } from "./chartsData";
-import { FinancialMetricCategory } from "./types";
+import type { FinancialMetricCategory } from "./types";
 
 const FINANCIAL_PERT_PIE_Y_AXIS_DATA: CheckboxRadioSelectData<
   FinancialMetricsPieChartsKey

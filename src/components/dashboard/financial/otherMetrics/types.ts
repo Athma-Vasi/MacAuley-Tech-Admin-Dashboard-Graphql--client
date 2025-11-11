@@ -1,5 +1,5 @@
-import { FinancialMetricsOtherMetricsChartsKey } from "../chartsData";
-import { OtherMetricsAction } from "./actions";
+import type { FinancialMetricsOtherMetricsChartsKey } from "../chartsData";
+import type { OtherMetricsAction } from "./actions";
 
 type OtherMetricsState = {
   yAxisKey: FinancialMetricsOtherMetricsChartsKey;

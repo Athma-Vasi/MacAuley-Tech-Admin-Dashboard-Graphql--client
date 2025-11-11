@@ -1,5 +1,5 @@
-import { Prettify } from "../../../../types";
-import { PERTState } from "./types";
+import type { Prettify } from "../../../../types";
+import type { PERTState } from "./types";
 
 type PERTAction = Prettify<
   {

@@ -1,6 +1,6 @@
-import { FinancialMetricsDocument } from "../../../types";
+import type { FinancialMetricsDocument } from "../../../types";
 import { MONTHS } from "../constants";
-import { AllStoreLocations, DashboardCalendarView } from "../types";
+import type { AllStoreLocations, DashboardCalendarView } from "../types";
 import { createOverviewMetricCard } from "../utilsTSX";
 
 type OverviewFinancialMetrics = {

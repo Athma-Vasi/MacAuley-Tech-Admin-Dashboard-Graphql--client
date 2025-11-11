@@ -1,4 +1,4 @@
-import { PERTState } from "./types";
+import type { PERTState } from "./types";
 
 const initialPERTState: PERTState = {
   yAxisKey: "all",

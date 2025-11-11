@@ -1,10 +1,11 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { describe, expect, it } from "vitest";
 import { INVALID_STRINGS } from "../../../../constants";
-import { FinancialYAxisKey } from "../../types";
+import type { FinancialYAxisKey } from "../../types";
 import { pertAction } from "./actions";
 import { pertReducer_setYAxisKey } from "./reducers";
 import { initialPERTState } from "./state";
-import { PERTDispatch } from "./types";
+import type { PERTDispatch } from "./types";
 
 describe(pertAction.setYAxisKey, () => {
     it("should allow valid payload", () => {

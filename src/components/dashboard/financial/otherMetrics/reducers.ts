@@ -1,8 +1,7 @@
-import { parseSyncSafe } from "../../../../utils";
-import { FinancialMetricsOtherMetricsChartsKey } from "../chartsData";
-import { OtherMetricsAction, otherMetricsAction } from "./actions";
+import { parseDispatchAndSetState } from "../../../../utils";
+import { type OtherMetricsAction, otherMetricsAction } from "./actions";
 import { setYAxisKeyOtherMetricsDispatchZod } from "./schemas";
-import { OtherMetricsDispatch, OtherMetricsState } from "./types";
+import type { OtherMetricsDispatch, OtherMetricsState } from "./types";
 
 function otherMetricsReducer(
   state: OtherMetricsState,
@@ -29,20 +28,12 @@ function otherMetricsReducer_setYAxisKey(
   state: OtherMetricsState,
   dispatch: OtherMetricsDispatch,
 ): OtherMetricsState {
-  const parsedResult = parseSyncSafe({
-    object: dispatch,
+  return parseDispatchAndSetState({
+    dispatch,
+    key: "yAxisKey",
+    state,
     zSchema: setYAxisKeyOtherMetricsDispatchZod,
   });
-
-  if (parsedResult.err || parsedResult.val.none) {
-    return state;
-  }
-
-  return {
-    ...state,
-    yAxisKey: parsedResult.val.val
-      .payload as FinancialMetricsOtherMetricsChartsKey,
-  };
 }
 
 export { otherMetricsReducer, otherMetricsReducer_setYAxisKey };

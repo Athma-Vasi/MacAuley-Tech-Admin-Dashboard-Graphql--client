@@ -1,14 +1,14 @@
 import { expect, test } from "@playwright/test";
 import { shuffle } from "simple-statistics";
-import {
+import type {
     FinancialMetricsBarLineChartsKey,
     FinancialMetricsCalendarChartsKeyPERT,
     FinancialMetricsOtherMetricsChartsKey,
     FinancialMetricsPieChartsKey,
 } from "./chartsData";
 import { FINANCIAL_YAXIS_KEY_TO_CARDS_KEY_MAP } from "./constants";
-import { FinancialMetricCategory } from "./types";
-import { AllStoreLocations, DashboardCalendarView } from "../types";
+import type { FinancialMetricCategory } from "./types";
+import type { AllStoreLocations, DashboardCalendarView } from "../types";
 
 test.beforeEach(async ({ page }) => {
     await page.goto("http://localhost:5173/login");

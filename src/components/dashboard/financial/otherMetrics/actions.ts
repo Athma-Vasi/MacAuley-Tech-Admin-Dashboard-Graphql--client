@@ -1,5 +1,5 @@
-import { Prettify } from "../../../../types";
-import { OtherMetricsState } from "./types";
+import type { Prettify } from "../../../../types";
+import type { OtherMetricsState } from "./types";
 
 type OtherMetricsAction = Prettify<
   {

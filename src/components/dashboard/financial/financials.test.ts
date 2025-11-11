@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import "@vitest/web-worker";
 import { describe, expect, it } from "vitest";
 import { INVALID_BOOLEANS, VALID_BOOLEANS } from "../../../constants";
@@ -8,7 +9,7 @@ import {
     financialMetricsReducer_setIsGenerating,
 } from "./reducers";
 import { initialFinancialMetricsState } from "./state";
-import { FinancialMetricsDispatch } from "./types";
+import type { FinancialMetricsDispatch } from "./types";
 
 describe("Financial Metrics Reducers", () => {
     describe(financialMetricsAction.setCards, () => {

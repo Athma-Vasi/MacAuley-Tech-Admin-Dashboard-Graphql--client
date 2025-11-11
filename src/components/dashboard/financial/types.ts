@@ -1,6 +1,6 @@
-import { FinancialMetricsAction } from "./actions";
-import { FinancialMetricsCards } from "./cards";
-import {
+import type { FinancialMetricsAction } from "./actions";
+import type { FinancialMetricsCards } from "./cards";
+import type {
   FinancialMetricsCalendarCharts,
   FinancialMetricsCharts,
 } from "./chartsData";

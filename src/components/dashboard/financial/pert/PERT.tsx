@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import React from "react";
 import { useNavigate } from "react-router-dom";
 
@@ -20,7 +21,7 @@ import {
   ResponsivePieChart,
   ResponsiveRadialBarChart,
 } from "../../../charts";
-import { ChartUnitKind } from "../../../charts/types";
+import type { ChartUnitKind } from "../../../charts/types";
 import { createChartTooltipElement } from "../../../charts/utils";
 import DashboardLayoutContainer from "../../DashboardLayoutContainer";
 import type {
@@ -45,9 +46,9 @@ import {
   returnFinancialMetricsCards,
 } from "../cards";
 import {
-  FinancialMetricsCalendarCharts,
+  type FinancialMetricsCalendarCharts,
   type FinancialMetricsCharts,
-  FinancialMetricsPieChartsKey,
+  type FinancialMetricsPieChartsKey,
   returnCalendarViewFinancialCharts,
 } from "../chartsData";
 import {

@@ -1,10 +1,11 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { describe, expect, it } from "vitest";
 import { INVALID_STRINGS } from "../../../../constants";
-import { FinancialMetricsOtherMetricsChartsKey } from "../chartsData";
+import type { FinancialMetricsOtherMetricsChartsKey } from "../chartsData";
 import { otherMetricsAction } from "./actions";
 import { otherMetricsReducer_setYAxisKey } from "./reducers";
 import { initialOtherMetricsState } from "./state";
-import { OtherMetricsDispatch } from "./types";
+import type { OtherMetricsDispatch } from "./types";
 
 describe(otherMetricsAction.setYAxisKey, () => {
     it("should allow valid payload", () => {

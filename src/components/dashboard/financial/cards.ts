@@ -1,6 +1,6 @@
-import { SafeResult } from "../../../types";
+import type { SafeResult } from "../../../types";
 import { createSafeErrorResult, createSafeSuccessResult } from "../../../utils";
-import { DashboardCalendarView, FinancialYAxisKey } from "../types";
+import type { DashboardCalendarView, FinancialYAxisKey } from "../types";
 import { createDashboardMetricsCards } from "../utils";
 import {
   type CreateDashboardMetricsCardsInput,
@@ -11,7 +11,7 @@ import type {
   SelectedDateFinancialMetrics,
 } from "./chartsData";
 import { PERT_SET } from "./constants";
-import {
+import type {
   FinancialCardsAndStatisticsKeyOtherMetrics,
   FinancialCardsAndStatisticsKeyPERT,
   FinancialMetricCategory,

@@ -1,5 +1,5 @@
-import { FinancialYAxisKey } from "../../types";
-import { PERTAction } from "./actions";
+import type { FinancialYAxisKey } from "../../types";
+import type { PERTAction } from "./actions";
 
 type PERTState = {
   yAxisKey: FinancialYAxisKey;

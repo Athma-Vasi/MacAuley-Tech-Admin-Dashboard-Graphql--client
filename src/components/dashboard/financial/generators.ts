@@ -146,14 +146,14 @@
  */
 
 import { STORE_LOCATIONS } from "../../../constants";
-import { SafeResult, StoreLocation } from "../../../types";
+import type { SafeResult, StoreLocation } from "../../../types";
 import {
     createDaysInMonthsInYearsSafe,
     createSafeErrorResult,
     createSafeSuccessResult,
     toFixedFloat,
 } from "../../../utils";
-import {
+import type {
     BusinessMetric,
     DailyFinancialMetric,
     FinancialMetricCategories,
