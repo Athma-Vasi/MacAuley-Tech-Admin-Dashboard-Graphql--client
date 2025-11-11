@@ -1,5 +1,5 @@
-import { Prettify } from "../../../../types";
-import { ChurnRetentionState } from "./types";
+import type { Prettify } from "../../../../types";
+import type { ChurnRetentionState } from "./types";
 
 type ChurnRetentionAction = Prettify<
   {

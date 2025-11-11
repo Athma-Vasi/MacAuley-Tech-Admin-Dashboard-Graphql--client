@@ -1,8 +1,7 @@
-import { parseSyncSafe } from "../../../../utils";
-import { CustomerMetricsChurnRetentionChartsKey } from "../chartsData";
-import { ChurnRetentionAction, churnRetentionAction } from "./actions";
+import { parseDispatchAndSetState } from "../../../../utils";
+import { type ChurnRetentionAction, churnRetentionAction } from "./actions";
 import { setYAxisKeyChurnRetentionDispatchZod } from "./schemas";
-import { ChurnRetentionDispatch, ChurnRetentionState } from "./types";
+import type { ChurnRetentionDispatch, ChurnRetentionState } from "./types";
 
 function churnRetentionReducer(
   state: ChurnRetentionState,
@@ -26,20 +25,12 @@ function churnRetentionReducer_setYAxisKey(
   state: ChurnRetentionState,
   dispatch: ChurnRetentionDispatch,
 ): ChurnRetentionState {
-  const parsedResult = parseSyncSafe({
-    object: dispatch,
+  return parseDispatchAndSetState({
+    dispatch,
+    key: "yAxisKey",
+    state,
     zSchema: setYAxisKeyChurnRetentionDispatchZod,
   });
-
-  if (parsedResult.err || parsedResult.val.none) {
-    return state;
-  }
-
-  return {
-    ...state,
-    yAxisKey: parsedResult.val.val
-      .payload as CustomerMetricsChurnRetentionChartsKey,
-  };
 }
 
 export { churnRetentionReducer, churnRetentionReducer_setYAxisKey };

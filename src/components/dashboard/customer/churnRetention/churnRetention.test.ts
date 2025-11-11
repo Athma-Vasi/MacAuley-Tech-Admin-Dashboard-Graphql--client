@@ -1,10 +1,11 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { describe, expect, it } from "vitest";
 import { INVALID_STRINGS } from "../../../../constants";
-import { CustomerMetricsChurnRetentionChartsKey } from "../chartsData";
+import type { CustomerMetricsChurnRetentionChartsKey } from "../chartsData";
 import { churnRetentionAction } from "./actions";
 import { churnRetentionReducer_setYAxisKey } from "./reducers";
 import { initialChurnRetentionState } from "./state";
-import { ChurnRetentionDispatch } from "./types";
+import type { ChurnRetentionDispatch } from "./types";
 
 describe(churnRetentionAction.setYAxisKey, () => {
     it("should allow valid payload", () => {

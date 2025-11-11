@@ -1,4 +1,4 @@
-import { ChurnRetentionState } from "./types";
+import type { ChurnRetentionState } from "./types";
 
 const initialChurnRetentionState: ChurnRetentionState = {
   yAxisKey: "churnRate",

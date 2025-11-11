@@ -1,4 +1,4 @@
-import { CustomerMetricsChurnRetentionChartsKey } from "../chartsData";
+import type { CustomerMetricsChurnRetentionChartsKey } from "../chartsData";
 
 type ChurnRetentionState = {
   yAxisKey: CustomerMetricsChurnRetentionChartsKey;
