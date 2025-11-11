@@ -1,4 +1,4 @@
-import { SafeResult } from "../../../types";
+import type { SafeResult } from "../../../types";
 import {
     catchHandlerErrorSafe,
     createSafeErrorResult,
@@ -6,11 +6,11 @@ import {
     makeTransition,
     parseSyncSafe,
 } from "../../../utils";
-import { InvariantError } from "../../error";
+import { InvariantError } from "../../error/classes";
 import { productMetricsAction } from "./actions";
-import { MessageEventProductChartsWorkerToMain } from "./chartsWorker";
+import type { MessageEventProductChartsWorkerToMain } from "./chartsWorker";
 import { handleMessageEventProductChartsWorkerToMainInputZod } from "./schemas";
-import { ProductMetricsDispatch } from "./types";
+import type { ProductMetricsDispatch } from "./types";
 
 async function handleMessageEventProductChartsWorkerToMain(input: {
     event: MessageEventProductChartsWorkerToMain;

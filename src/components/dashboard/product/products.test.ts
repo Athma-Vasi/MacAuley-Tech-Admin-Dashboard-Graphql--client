@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import "@vitest/web-worker";
 import { describe, expect, it } from "vitest";
 import { INVALID_BOOLEANS, VALID_BOOLEANS } from "../../../constants";
@@ -8,7 +9,7 @@ import {
     productMetricsReducer_setProductChartsWorker,
 } from "./reducers";
 import { initialProductMetricsState } from "./state";
-import { ProductMetricsDispatch } from "./types";
+import type { ProductMetricsDispatch } from "./types";
 
 describe("Product Metrics Reducers", () => {
     describe(productMetricsAction.setCards, () => {

@@ -1,4 +1,4 @@
-import { ProductMetricsDocument, SafeResult } from "../../../types";
+import type { ProductMetricsDocument, SafeResult } from "../../../types";
 import {
     createSafeErrorResult,
     createSafeSuccessResult,
@@ -6,13 +6,16 @@ import {
     parseSyncSafe,
 } from "../../../utils";
 import { MONTHS } from "../constants";
-import { DashboardCalendarView, Month, Year } from "../types";
-import { createProductMetricsCardsSafe, ProductMetricsCards } from "./cards";
+import type { DashboardCalendarView, Month, Year } from "../types";
+import {
+    createProductMetricsCardsSafe,
+    type ProductMetricsCards,
+} from "./cards";
 import {
     createProductMetricsCalendarChartsSafe,
     createProductMetricsChartsSafe,
-    ProductMetricsCalendarCharts,
-    ProductMetricsCharts,
+    type ProductMetricsCalendarCharts,
+    type ProductMetricsCharts,
     returnSelectedDateProductMetricsSafe,
 } from "./chartsData";
 import { messageEventProductChartsMainToWorkerZod } from "./schemas";

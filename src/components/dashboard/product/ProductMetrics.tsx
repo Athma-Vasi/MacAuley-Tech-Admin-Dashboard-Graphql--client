@@ -1,10 +1,11 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { useEffect, useReducer } from "react";
 import { useErrorBoundary } from "react-error-boundary";
 
 import { COLORS_SWATCHES } from "../../../constants";
 import { useMountedRef } from "../../../hooks";
 import { useGlobalState } from "../../../hooks/useGlobalState";
-import { ProductMetricsDocument } from "../../../types";
+import type { ProductMetricsDocument } from "../../../types";
 import { returnThemeColors } from "../../../utils";
 import type {
   AllStoreLocations,
@@ -13,13 +14,13 @@ import type {
   Year,
 } from "../types";
 import { productMetricsAction } from "./actions";
-import { MessageEventProductChartsWorkerToMain } from "./chartsWorker";
+import type { MessageEventProductChartsWorkerToMain } from "./chartsWorker";
 import ProductChartsWorker from "./chartsWorker?worker";
 import { handleMessageEventProductChartsWorkerToMain } from "./handlers";
 import { productMetricsReducer } from "./reducers";
 import { RUS } from "./rus/RUS";
 import { initialProductMetricsState } from "./state";
-import { ProductMetricCategory, ProductSubMetric } from "./types";
+import type { ProductMetricCategory, ProductSubMetric } from "./types";
 import {
   returnOverviewAllProductsMetrics,
   returnProductMetricsOverviewCards,

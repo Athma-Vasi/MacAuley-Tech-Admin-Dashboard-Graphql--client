@@ -1,6 +1,6 @@
-import { ProductMetricsDocument } from "../../../types";
+import type { ProductMetricsDocument } from "../../../types";
 import { MONTHS } from "../constants";
-import { AllStoreLocations, DashboardCalendarView } from "../types";
+import type { AllStoreLocations, DashboardCalendarView } from "../types";
 import { createOverviewMetricCard } from "../utilsTSX";
 
 type OverviewAllProductsMetrics = Record<

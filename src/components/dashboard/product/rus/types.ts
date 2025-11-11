@@ -1,5 +1,5 @@
-import { ProductMetricsChartKey } from "../chartsData";
-import { RUSAction } from "./actions";
+import type { ProductMetricsChartKey } from "../chartsData";
+import type { RUSAction } from "./actions";
 
 type RUSState = {
   yAxisKey: ProductMetricsChartKey;

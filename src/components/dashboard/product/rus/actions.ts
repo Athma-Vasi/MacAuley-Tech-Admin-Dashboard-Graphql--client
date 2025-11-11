@@ -1,5 +1,5 @@
-import { Prettify } from "../../../../types";
-import { RUSState } from "./types";
+import type { Prettify } from "../../../../types";
+import type { RUSState } from "./types";
 
 type RUSAction = Prettify<
   {

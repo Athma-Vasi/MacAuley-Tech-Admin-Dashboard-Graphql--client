@@ -1,5 +1,5 @@
-import { AllStoreLocations } from "../types";
-import { ProductMetricCategory } from "./types";
+import type { AllStoreLocations } from "../types";
+import type { ProductMetricCategory } from "./types";
 
 const PRODUCT_METRICS_TEST_INPUT: Array<
     {

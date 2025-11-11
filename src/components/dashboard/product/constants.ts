@@ -1,10 +1,10 @@
-import { CheckboxRadioSelectData } from "../../../types";
-import { ChartsToYAxisKeysMap } from "../types";
-import {
+import type { CheckboxRadioSelectData } from "../../../types";
+import type { ChartsToYAxisKeysMap } from "../types";
+import type {
   ProductMetricsCalendarChartsKey,
   ProductMetricsChartKey,
 } from "./chartsData";
-import { ProductMetricCategory, ProductSubMetric } from "./types";
+import type { ProductMetricCategory, ProductSubMetric } from "./types";
 
 const PRODUCT_METRICS_SUB_CATEGORY_DATA: CheckboxRadioSelectData<
   ProductSubMetric

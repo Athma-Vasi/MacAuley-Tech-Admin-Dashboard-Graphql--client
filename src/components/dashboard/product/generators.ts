@@ -1,7 +1,7 @@
-import { SafeResult, StoreLocation } from "../../../types";
+import type { SafeResult, StoreLocation } from "../../../types";
 import { createSafeErrorResult, createSafeSuccessResult } from "../../../utils";
 import { PRODUCT_CATEGORIES } from "../constants";
-import {
+import type {
     DaysInMonthsInYears,
     LocationYearSpread,
     ProductCategory,

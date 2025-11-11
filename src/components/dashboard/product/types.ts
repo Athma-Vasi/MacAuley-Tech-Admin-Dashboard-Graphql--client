@@ -1,7 +1,7 @@
-import { ProductCategory } from "../types";
-import { ProductMetricsAction } from "./actions";
-import { ProductMetricsCards } from "./cards";
-import {
+import type { ProductCategory } from "../types";
+import type { ProductMetricsAction } from "./actions";
+import type { ProductMetricsCards } from "./cards";
+import type {
   ProductMetricsCalendarCharts,
   ProductMetricsCharts,
 } from "./chartsData";

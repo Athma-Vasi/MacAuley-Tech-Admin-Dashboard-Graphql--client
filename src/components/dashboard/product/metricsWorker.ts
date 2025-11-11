@@ -1,5 +1,5 @@
 import { METRICS_URL, STORE_LOCATIONS } from "../../../constants";
-import { ProductMetricsDocument, SafeResult } from "../../../types";
+import type { ProductMetricsDocument, SafeResult } from "../../../types";
 import {
     createDaysInMonthsInYearsSafe,
     createMetricsURLCacheKey,
@@ -9,7 +9,7 @@ import {
     handlePromiseSettledResults,
     setCachedItemAsyncSafe,
 } from "../../../utils";
-import {
+import type {
     AllStoreLocations,
     ProductCategory,
     ProductMetric,

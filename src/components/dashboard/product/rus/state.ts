@@ -1,4 +1,4 @@
-import { RUSState } from "./types";
+import type { RUSState } from "./types";
 
 const initialRUSState: RUSState = {
   yAxisKey: "overview",

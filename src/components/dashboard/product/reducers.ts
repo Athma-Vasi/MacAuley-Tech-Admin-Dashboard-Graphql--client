@@ -1,17 +1,14 @@
-import { parseSyncSafe } from "../../../utils";
-import { ProductMetricsAction, productMetricsAction } from "./actions";
-import { ProductMetricsCards } from "./cards";
-import {
-  ProductMetricsCalendarCharts,
-  ProductMetricsCharts,
-} from "./chartsData";
+import { parseDispatchAndSetState, parseSyncSafe } from "../../../utils";
+import { type ProductMetricsAction, productMetricsAction } from "./actions";
+import type { ProductMetricsCards } from "./cards";
+import type { ProductMetricsCalendarCharts } from "./chartsData";
 import {
   setCalendarChartsDataProductMetricsDispatchZod,
   setChartsProductMetricsDispatchZod,
   setChartsWorkerProductMetricsDispatchZod,
   setIsGeneratingProductMetricsDispatchZod,
 } from "./schemas";
-import { ProductMetricsDispatch, ProductMetricsState } from "./types";
+import type { ProductMetricsDispatch, ProductMetricsState } from "./types";
 
 function productMetricsReducer(
   state: ProductMetricsState,
@@ -81,57 +78,36 @@ function productMetricsReducer_setCharts(
   state: ProductMetricsState,
   dispatch: ProductMetricsDispatch,
 ): ProductMetricsState {
-  const parsedResult = parseSyncSafe({
-    object: dispatch,
+  return parseDispatchAndSetState({
+    dispatch,
+    key: "charts",
+    state,
     zSchema: setChartsProductMetricsDispatchZod,
   });
-
-  if (parsedResult.err || parsedResult.val.none) {
-    return state;
-  }
-
-  return {
-    ...state,
-    charts: parsedResult.val.val.payload as ProductMetricsCharts,
-  };
 }
 
 function productMetricsReducer_setIsGenerating(
   state: ProductMetricsState,
   dispatch: ProductMetricsDispatch,
 ): ProductMetricsState {
-  const parsedResult = parseSyncSafe({
-    object: dispatch,
+  return parseDispatchAndSetState({
+    dispatch,
+    key: "isGenerating",
+    state,
     zSchema: setIsGeneratingProductMetricsDispatchZod,
   });
-
-  if (parsedResult.err || parsedResult.val.none) {
-    return state;
-  }
-
-  return {
-    ...state,
-    isGenerating: parsedResult.val.val.payload as boolean,
-  };
 }
 
 function productMetricsReducer_setProductChartsWorker(
   state: ProductMetricsState,
   dispatch: ProductMetricsDispatch,
 ): ProductMetricsState {
-  const parsedResult = parseSyncSafe({
-    object: dispatch,
+  return parseDispatchAndSetState({
+    dispatch,
+    key: "productChartsWorker",
+    state,
     zSchema: setChartsWorkerProductMetricsDispatchZod,
   });
-
-  if (parsedResult.err || parsedResult.val.none) {
-    return state;
-  }
-
-  return {
-    ...state,
-    productChartsWorker: parsedResult.val.val.payload as Worker,
-  };
 }
 
 export {

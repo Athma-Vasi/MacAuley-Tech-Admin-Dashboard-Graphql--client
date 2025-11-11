@@ -1,4 +1,4 @@
-import { ProductMetricsState } from "./types";
+import type { ProductMetricsState } from "./types";
 
 const initialProductMetricsState: ProductMetricsState = {
   calendarChartsData: {
