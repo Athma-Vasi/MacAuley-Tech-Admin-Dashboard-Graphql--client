@@ -1,4 +1,4 @@
-import { SafeResult } from "../../../types";
+import type { SafeResult } from "../../../types";
 import { createSafeErrorResult, createSafeSuccessResult } from "../../../utils";
 import type { DashboardCalendarView } from "../types";
 import { createDashboardMetricsCards } from "../utils";
@@ -11,7 +11,7 @@ import type {
   CustomerMetricsNewReturningChartsKey,
   SelectedDateCustomerMetrics,
 } from "./chartsData";
-import { CustomerNewReturningYAxisKey } from "./types";
+import type { CustomerNewReturningYAxisKey } from "./types";
 
 type CreateCustomerMetricsCardsInput = {
   grayBorderShade: string;

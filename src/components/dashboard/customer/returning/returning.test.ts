@@ -1,10 +1,11 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { describe, expect, it } from "vitest";
 import { INVALID_STRINGS } from "../../../../constants";
-import { CustomerNewReturningYAxisKey } from "../types";
+import type { CustomerNewReturningYAxisKey } from "../types";
 import { returningAction } from "./actions";
 import { returningReducer_setYAxisKey } from "./reducers";
 import { initialReturningState } from "./state";
-import { ReturningDispatch } from "./types";
+import type { ReturningDispatch } from "./types";
 
 describe(returningAction.setYAxisKey, () => {
     it("should allow valid payload", () => {

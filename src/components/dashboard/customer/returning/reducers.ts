@@ -1,8 +1,7 @@
-import { parseSyncSafe } from "../../../../utils";
-import { CustomerNewReturningYAxisKey } from "../types";
-import { ReturningAction, returningAction } from "./actions";
+import { parseDispatchAndSetState } from "../../../../utils";
+import { type ReturningAction, returningAction } from "./actions";
 import { setYAxisKeyReturningDispatchZod } from "./schemas";
-import { ReturningDispatch, ReturningState } from "./types";
+import type { ReturningDispatch, ReturningState } from "./types";
 
 function returningReducer(state: ReturningState, dispatch: ReturningDispatch) {
   const reducer = returningReducers.get(dispatch.action);
@@ -20,19 +19,12 @@ function returningReducer_setYAxisKey(
   state: ReturningState,
   dispatch: ReturningDispatch,
 ): ReturningState {
-  const parsedResult = parseSyncSafe({
-    object: dispatch,
+  return parseDispatchAndSetState({
+    dispatch,
+    key: "yAxisKey",
+    state,
     zSchema: setYAxisKeyReturningDispatchZod,
   });
-
-  if (parsedResult.err || parsedResult.val.none) {
-    return state;
-  }
-
-  return {
-    ...state,
-    yAxisKey: parsedResult.val.val.payload as CustomerNewReturningYAxisKey,
-  };
 }
 
 export { returningReducer, returningReducer_setYAxisKey };

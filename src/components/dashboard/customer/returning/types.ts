@@ -1,5 +1,5 @@
-import { CustomerNewReturningYAxisKey } from "../types";
-import { ReturningAction } from "./actions";
+import type { CustomerNewReturningYAxisKey } from "../types";
+import type { ReturningAction } from "./actions";
 
 type ReturningState = {
   yAxisKey: CustomerNewReturningYAxisKey;

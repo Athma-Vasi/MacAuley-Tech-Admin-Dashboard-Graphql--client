@@ -87,13 +87,13 @@
   }
  */
 
-import { SafeResult, StoreLocation } from "../../../types";
+import type { SafeResult, StoreLocation } from "../../../types";
 import {
     createSafeErrorResult,
     createSafeSuccessResult,
     toFixedFloat,
 } from "../../../utils";
-import {
+import type {
     CustomerDailyMetric,
     CustomerMetrics,
     CustomerMonthlyMetric,

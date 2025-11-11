@@ -1,5 +1,5 @@
-import { Prettify } from "../../../../types";
-import { ReturningState } from "./types";
+import type { Prettify } from "../../../../types";
+import type { ReturningState } from "./types";
 
 type ReturningAction = Prettify<
   {

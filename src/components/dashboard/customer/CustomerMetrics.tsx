@@ -1,10 +1,11 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { useEffect, useReducer } from "react";
 import { useErrorBoundary } from "react-error-boundary";
 
 import { COLORS_SWATCHES } from "../../../constants";
 import { useMountedRef } from "../../../hooks";
 import { useGlobalState } from "../../../hooks/useGlobalState";
-import { CustomerMetricsDocument } from "../../../types";
+import type { CustomerMetricsDocument } from "../../../types";
 import { returnThemeColors } from "../../../utils";
 import type {
   AllStoreLocations,
@@ -13,7 +14,7 @@ import type {
   Year,
 } from "../types";
 import { customerMetricsAction } from "./actions";
-import { MessageEventCustomerChartsWorkerToMain } from "./chartsWorker";
+import type { MessageEventCustomerChartsWorkerToMain } from "./chartsWorker";
 import CustomerChartsWorker from "./chartsWorker?worker";
 import { ChurnRetention } from "./churnRetention/ChurnRetention";
 import { handleMessageEventCustomerChartsWorkerToMain } from "./handlers";
@@ -21,7 +22,7 @@ import New from "./new/New";
 import { customerMetricsReducer } from "./reducers";
 import Returning from "./returning/Returning";
 import { initialCustomerMetricsState } from "./state";
-import { CustomerMetricsCategory } from "./types";
+import type { CustomerMetricsCategory } from "./types";
 import {
   returnCustomerMetricsOverviewCards,
   returnOverviewCustomerMetrics,

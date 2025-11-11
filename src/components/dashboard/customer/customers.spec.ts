@@ -1,6 +1,6 @@
 import { expect, test } from "@playwright/test";
 import { shuffle } from "simple-statistics";
-import {
+import type {
     CustomerChurnRetentionCalendarChartsKey,
     CustomerMetricsNewReturningChartsKey,
 } from "./chartsData";
@@ -9,8 +9,8 @@ import {
     CUSTOMER_NEW_YAXIS_KEY_TO_CARDS_KEY_MAP,
     CUSTOMER_RETURNING_YAXIS_KEY_TO_CARDS_KEY_MAP,
 } from "./constants";
-import { CustomerMetricsCategory } from "./types";
-import { AllStoreLocations, DashboardCalendarView } from "../types";
+import type { CustomerMetricsCategory } from "./types";
+import type { AllStoreLocations, DashboardCalendarView } from "../types";
 
 test.beforeEach(async ({ page }) => {
     await page.goto("http://localhost:5173/login");

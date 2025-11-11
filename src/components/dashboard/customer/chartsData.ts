@@ -1,15 +1,15 @@
-import { CustomerMetricsDocument, SafeResult } from "../../../types";
+import type { CustomerMetricsDocument, SafeResult } from "../../../types";
 import {
   createSafeErrorResult,
   createSafeSuccessResult,
   toFixedFloat,
 } from "../../../utils";
-import { BarChartData } from "../../charts/responsiveBarChart/types";
-import { CalendarChartData } from "../../charts/responsiveCalendarChart/types";
-import { LineChartData } from "../../charts/responsiveLineChart/types";
-import { PieChartData } from "../../charts/responsivePieChart/types";
+import type { BarChartData } from "../../charts/responsiveBarChart/types";
+import type { CalendarChartData } from "../../charts/responsiveCalendarChart/types";
+import type { LineChartData } from "../../charts/responsiveLineChart/types";
+import type { PieChartData } from "../../charts/responsivePieChart/types";
 import { MONTHS } from "../constants";
-import {
+import type {
   CustomerDailyMetric,
   CustomerMonthlyMetric,
   CustomerYearlyMetric,

@@ -1,6 +1,6 @@
-import { CustomerMetricsAction } from "./actions";
-import { CustomerMetricsCards } from "./cards";
-import {
+import type { CustomerMetricsAction } from "./actions";
+import type { CustomerMetricsCards } from "./cards";
+import type {
   CustomerMetricsCalendarCharts,
   CustomerMetricsCharts,
   CustomerMetricsNewReturningChartsKey,

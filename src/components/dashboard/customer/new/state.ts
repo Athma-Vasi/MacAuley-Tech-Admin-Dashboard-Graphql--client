@@ -1,4 +1,4 @@
-import { NewState } from "./types";
+import type { NewState } from "./types";
 
 const initialNewState: NewState = {
   yAxisKey: "all",

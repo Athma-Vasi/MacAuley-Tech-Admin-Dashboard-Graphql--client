@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { Stack } from "@mantine/core";
 import React from "react";
 import { useErrorBoundary } from "react-error-boundary";
@@ -19,11 +20,11 @@ import {
   ResponsivePieChart,
   ResponsiveRadialBarChart,
 } from "../../../charts";
-import { ChartUnitKind } from "../../../charts/types";
+import type { ChartUnitKind } from "../../../charts/types";
 import { createChartTooltipElement } from "../../../charts/utils";
 import DashboardBarLineLayout from "../../DashboardLayoutContainer";
-import { FinancialMetricsPieChartsKey } from "../../financial/chartsData";
-import {
+import type { FinancialMetricsPieChartsKey } from "../../financial/chartsData";
+import type {
   AllStoreLocations,
   DashboardCalendarView,
   DashboardMetricsView,
@@ -40,10 +41,13 @@ import {
   returnCardElementsForYAxisVariable,
   returnStatisticsModals,
 } from "../../utilsTSX";
-import { CustomerMetricsCards, returnCustomerMetricsCardsMap } from "../cards";
 import {
-  CustomerMetricsCalendarCharts,
-  CustomerMetricsCharts,
+  type CustomerMetricsCards,
+  returnCustomerMetricsCardsMap,
+} from "../cards";
+import {
+  type CustomerMetricsCalendarCharts,
+  type CustomerMetricsCharts,
   returnCalendarViewCustomerCharts,
 } from "../chartsData";
 import {
@@ -51,7 +55,7 @@ import {
   CUSTOMER_NEW_RETURNING_Y_AXIS_DATA,
   CUSTOMER_RETURNING_YAXIS_KEY_TO_CARDS_KEY_MAP,
 } from "../constants";
-import { CustomerMetricsCategory } from "../types";
+import type { CustomerMetricsCategory } from "../types";
 import { returningAction } from "./actions";
 import { returningReducer } from "./reducers";
 import { initialReturningState } from "./state";

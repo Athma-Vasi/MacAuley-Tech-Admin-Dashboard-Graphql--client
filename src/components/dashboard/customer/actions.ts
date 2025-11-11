@@ -1,5 +1,5 @@
-import { Prettify } from "../../../types";
-import { CustomerMetricsState } from "./types";
+import type { Prettify } from "../../../types";
+import type { CustomerMetricsState } from "./types";
 
 type CustomerMetricsAction = Prettify<
   {

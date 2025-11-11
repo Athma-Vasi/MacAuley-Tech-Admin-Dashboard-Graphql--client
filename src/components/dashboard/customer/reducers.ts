@@ -1,17 +1,14 @@
-import { parseSyncSafe } from "../../../utils";
-import { CustomerMetricsAction, customerMetricsAction } from "./actions";
-import { CustomerMetricsCards } from "./cards";
-import {
-  CustomerMetricsCalendarCharts,
-  CustomerMetricsCharts,
-} from "./chartsData";
+import { parseDispatchAndSetState, parseSyncSafe } from "../../../utils";
+import { type CustomerMetricsAction, customerMetricsAction } from "./actions";
+import type { CustomerMetricsCards } from "./cards";
+import type { CustomerMetricsCalendarCharts } from "./chartsData";
 import {
   setCalendarChartsCustomerMetricsDispatchZod,
   setChartsCustomerMetricsDispatchZod,
   setChartsWorkerCustomerMetricsDispatchZod,
   setIsGeneratingCustomerMetricsDispatchZod,
 } from "./schemas";
-import { CustomerMetricsDispatch, CustomerMetricsState } from "./types";
+import type { CustomerMetricsDispatch, CustomerMetricsState } from "./types";
 
 function customerMetricsReducer(
   state: CustomerMetricsState,
@@ -84,57 +81,36 @@ function customerMetricsReducer_setCharts(
   state: CustomerMetricsState,
   dispatch: CustomerMetricsDispatch,
 ): CustomerMetricsState {
-  const parsedResult = parseSyncSafe({
-    object: dispatch,
+  return parseDispatchAndSetState({
+    dispatch,
+    key: "charts",
+    state,
     zSchema: setChartsCustomerMetricsDispatchZod,
   });
-
-  if (parsedResult.err || parsedResult.val.none) {
-    return state;
-  }
-
-  return {
-    ...state,
-    charts: parsedResult.val.val.payload as CustomerMetricsCharts,
-  };
 }
 
 function customerMetricsReducer_setCustomerChartsWorker(
   state: CustomerMetricsState,
   dispatch: CustomerMetricsDispatch,
 ): CustomerMetricsState {
-  const parsedResult = parseSyncSafe({
-    object: dispatch,
+  return parseDispatchAndSetState({
+    dispatch,
+    key: "customerChartsWorker",
+    state,
     zSchema: setChartsWorkerCustomerMetricsDispatchZod,
   });
-
-  if (parsedResult.err || parsedResult.val.none) {
-    return state;
-  }
-
-  return {
-    ...state,
-    customerChartsWorker: parsedResult.val.val.payload as Worker,
-  };
 }
 
 function customerMetricsReducer_setIsGenerating(
   state: CustomerMetricsState,
   dispatch: CustomerMetricsDispatch,
 ): CustomerMetricsState {
-  const parsedResult = parseSyncSafe({
-    object: dispatch,
+  return parseDispatchAndSetState({
+    dispatch,
+    key: "isGenerating",
+    state,
     zSchema: setIsGeneratingCustomerMetricsDispatchZod,
   });
-
-  if (parsedResult.err || parsedResult.val.none) {
-    return state;
-  }
-
-  return {
-    ...state,
-    isGenerating: parsedResult.val.val.payload as boolean,
-  };
 }
 
 export {

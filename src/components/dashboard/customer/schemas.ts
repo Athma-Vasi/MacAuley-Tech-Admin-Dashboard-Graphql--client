@@ -386,8 +386,8 @@ const setChartsWorkerCustomerMetricsDispatchZod = z.object({
 const handleMessageEventCustomerWorkerToMainInputZod = z.object({
     event: z.instanceof(MessageEvent),
     isComponentMountedRef: z.object({ current: z.boolean() }),
-    customerMetricsDispatch: z.function().args(z.any()).returns(z.void()),
-    showBoundary: z.function().args(z.any()).returns(z.void()),
+    customerMetricsDispatch: z.function(),
+    showBoundary: z.function(),
 });
 
 const customerDailyMetricZod = z.object({

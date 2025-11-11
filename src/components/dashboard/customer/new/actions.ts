@@ -1,5 +1,5 @@
-import { Prettify } from "../../../../types";
-import { NewState } from "./types";
+import type { Prettify } from "../../../../types";
+import type { NewState } from "./types";
 
 type NewAction = Prettify<
   {

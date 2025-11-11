@@ -1,5 +1,5 @@
 import { METRICS_URL, STORE_LOCATIONS } from "../../../constants";
-import { CustomerMetricsDocument, SafeResult } from "../../../types";
+import type { CustomerMetricsDocument, SafeResult } from "../../../types";
 import {
     createDaysInMonthsInYearsSafe,
     createMetricsURLCacheKey,
@@ -8,7 +8,7 @@ import {
     handleErrorResultAndNoneOptionInWorker,
     setCachedItemAsyncSafe,
 } from "../../../utils";
-import { AllStoreLocations, CustomerMetrics } from "../types";
+import type { AllStoreLocations, CustomerMetrics } from "../types";
 import {
     createAllLocationsAggregatedCustomerMetricsSafe,
     createRandomCustomerMetricsSafe,
