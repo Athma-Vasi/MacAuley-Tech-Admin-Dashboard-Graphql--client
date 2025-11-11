@@ -1,4 +1,4 @@
-import { parseSyncSafe } from "../../utils";
+import { parseDispatchAndSetState } from "../../utils";
 import { dashboardAction } from "./actions";
 import {
   setCalendarViewDashboardDispatchZod,
@@ -9,7 +9,6 @@ import {
 } from "./schemas";
 import type {
   DashboardAction,
-  DashboardCalendarView,
   DashboardDispatch,
   DashboardState,
 } from "./types";
@@ -43,96 +42,60 @@ function dashboardReducer_setIsLoading(
   state: DashboardState,
   dispatch: DashboardDispatch,
 ): DashboardState {
-  const parsedResult = parseSyncSafe({
-    object: dispatch,
+  return parseDispatchAndSetState({
+    dispatch,
+    key: "isLoading",
+    state,
     zSchema: setIsLoadingDashboardDispatchZod,
   });
-
-  if (parsedResult.err || parsedResult.val.none) {
-    return state;
-  }
-
-  return {
-    ...state,
-    isLoading: parsedResult.val.val.payload as boolean,
-  };
 }
 
 function dashboardReducer_setLoadingMessage(
   state: DashboardState,
   dispatch: DashboardDispatch,
 ): DashboardState {
-  const parsedResult = parseSyncSafe({
-    object: dispatch,
+  return parseDispatchAndSetState({
+    dispatch,
+    key: "loadingMessage",
+    state,
     zSchema: setLoadingMessageDashboardDispatchZod,
   });
-
-  if (parsedResult.err || parsedResult.val.none) {
-    return state;
-  }
-
-  return {
-    ...state,
-    loadingMessage: parsedResult.val.val.payload as string,
-  };
 }
 
 function dashboardReducer_setCalendarView(
   state: DashboardState,
   dispatch: DashboardDispatch,
 ): DashboardState {
-  const parsedResult = parseSyncSafe({
-    object: dispatch,
+  return parseDispatchAndSetState({
+    dispatch,
+    key: "calendarView",
+    state,
     zSchema: setCalendarViewDashboardDispatchZod,
   });
-
-  if (parsedResult.err || parsedResult.val.none) {
-    return state;
-  }
-
-  return {
-    ...state,
-    calendarView: parsedResult.val.val
-      .payload as DashboardCalendarView,
-  };
 }
 
 function dashboardReducer_setDashboardCacheWorker(
   state: DashboardState,
   dispatch: DashboardDispatch,
 ): DashboardState {
-  const parsedResult = parseSyncSafe({
-    object: dispatch,
+  return parseDispatchAndSetState({
+    dispatch,
+    key: "dashboardCacheWorker",
+    state,
     zSchema: setDashboardCacheWorkerDashboardDispatchZod,
   });
-
-  if (parsedResult.err || parsedResult.val.none) {
-    return state;
-  }
-
-  return {
-    ...state,
-    dashboardCacheWorker: parsedResult.val.val.payload as Worker,
-  };
 }
 
 function dashboardReducer_setCurrentSelectedInput(
   state: DashboardState,
   dispatch: DashboardDispatch,
 ): DashboardState {
-  const parsedResult = parseSyncSafe({
-    object: dispatch,
+  return parseDispatchAndSetState({
+    dispatch,
+    key: "currentSelectedInput",
+    state,
     zSchema: setCurrentSelectedInputDashboardDispatchZod,
   });
-
-  if (parsedResult.err || parsedResult.val.none) {
-    return state;
-  }
-
-  return {
-    ...state,
-    currentSelectedInput: parsedResult.val.val.payload as string,
-  };
 }
 
 export {

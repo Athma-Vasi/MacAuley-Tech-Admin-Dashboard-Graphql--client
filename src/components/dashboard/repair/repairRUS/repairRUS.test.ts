@@ -1,10 +1,11 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { describe, expect, it } from "vitest";
 import { INVALID_STRINGS } from "../../../../constants";
-import { RepairSubMetric } from "../types";
+import type { RepairSubMetric } from "../types";
 import { repairRUSAction } from "./actions";
 import { repairRUSReducer_setYAxisKey } from "./reducers";
 import { initialRepairRUSState } from "./state";
-import { RepairRUSDispatch } from "./types";
+import type { RepairRUSDispatch } from "./types";
 
 describe(repairRUSAction.setYAxisKey, () => {
     it("should allow valid payload", () => {

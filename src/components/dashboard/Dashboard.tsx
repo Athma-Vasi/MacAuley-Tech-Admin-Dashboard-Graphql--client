@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import {
   Accordion,
   Box,
@@ -17,7 +18,7 @@ import {
   METRICS_URL,
 } from "../../constants";
 import {
-  GlobalAction,
+  type GlobalAction,
   globalAction,
 } from "../../context/globalProvider/actions";
 import { useGlobalState } from "../../hooks/useGlobalState";
@@ -27,7 +28,7 @@ import { useParams } from "react-router-dom";
 import { useMountedRef } from "../../hooks";
 import { useAuth } from "../../hooks/useAuth";
 import { useWindowSize } from "../../hooks/useWindowSize";
-import {
+import type {
   CustomerMetricsDocument,
   FinancialMetricsDocument,
   ProductMetricsDocument,
@@ -37,7 +38,7 @@ import { returnThemeColors } from "../../utils";
 import { AccessibleDateTimeInput } from "../accessibleInputs/AccessibleDateTimeInput";
 import { AccessibleSelectInput } from "../accessibleInputs/AccessibleSelectInput";
 import { dashboardAction } from "./actions";
-import { MessageEventDashboardCacheWorkerToMain } from "./cacheWorker";
+import type { MessageEventDashboardCacheWorkerToMain } from "./cacheWorker";
 import DashboardCacheWorker from "./cacheWorker?worker";
 import {
   CALENDAR_VIEW_DATA,
@@ -47,10 +48,10 @@ import {
 } from "./constants";
 import { CUSTOMER_METRICS_CATEGORY_DATA } from "./customer/constants";
 import { CustomerMetrics } from "./customer/CustomerMetrics";
-import { CustomerMetricsCategory } from "./customer/types";
+import type { CustomerMetricsCategory } from "./customer/types";
 import { FINANCIAL_METRICS_CATEGORY_DATA } from "./financial/constants";
 import { FinancialMetrics } from "./financial/FinancialMetrics";
-import { FinancialMetricCategory } from "./financial/types";
+import type { FinancialMetricCategory } from "./financial/types";
 import {
   handleMessageEventDashboardCacheWorkerToMain,
   handleStoreAndCategoryClicks,
@@ -60,12 +61,12 @@ import {
   PRODUCT_METRICS_SUB_CATEGORY_DATA,
 } from "./product/constants";
 import { ProductMetrics } from "./product/ProductMetrics";
-import { ProductMetricCategory, ProductSubMetric } from "./product/types";
+import type { ProductMetricCategory, ProductSubMetric } from "./product/types";
 import { dashboardReducer } from "./reducers";
 import { RepairMetrics } from "./repair/RepairMetrics";
-import { RepairMetricCategory } from "./repair/types";
+import type { RepairMetricCategory } from "./repair/types";
 import { initialDashboardState } from "./state";
-import { AllStoreLocations, DashboardMetricsView } from "./types";
+import type { AllStoreLocations, DashboardMetricsView } from "./types";
 import { splitSelectedCalendarDate } from "./utils";
 
 function Dashboard() {

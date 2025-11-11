@@ -1,5 +1,5 @@
 import type { CheckboxRadioSelectData } from "../../types";
-import { RepairMetricCategory } from "./repair/types";
+import type { RepairMetricCategory } from "./repair/types";
 import type {
   AllStoreLocations,
   ChartKindSegment,

@@ -1,5 +1,5 @@
-import { Prettify } from "../../../types";
-import { RepairMetricsState } from "./types";
+import type { Prettify } from "../../../types";
+import type { RepairMetricsState } from "./types";
 
 type RepairMetricsAction = Prettify<
   {

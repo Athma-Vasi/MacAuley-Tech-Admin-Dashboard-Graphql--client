@@ -1,4 +1,4 @@
-import { RepairMetricsDocument, SafeResult } from "../../../types";
+import type { RepairMetricsDocument, SafeResult } from "../../../types";
 import {
     createSafeErrorResult,
     createSafeSuccessResult,
@@ -6,13 +6,13 @@ import {
     parseSyncSafe,
 } from "../../../utils";
 import { MONTHS } from "../constants";
-import { DashboardCalendarView, Month, Year } from "../types";
-import { createRepairMetricsCardsSafe, RepairMetricsCards } from "./cards";
+import type { DashboardCalendarView, Month, Year } from "../types";
+import { createRepairMetricsCardsSafe, type RepairMetricsCards } from "./cards";
 import {
     createRepairMetricsCalendarChartsSafe,
     createRepairMetricsChartsSafe,
-    RepairMetricCalendarCharts,
-    RepairMetricsCharts,
+    type RepairMetricCalendarCharts,
+    type RepairMetricsCharts,
     returnSelectedDateRepairMetricsSafe,
 } from "./chartsData";
 import { messageEventRepairChartsMainToWorkerZod } from "./schemas";

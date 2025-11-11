@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import {
   Card,
   Center,
@@ -16,7 +17,7 @@ import {
   addCommaSeparator,
   formatDate,
   splitCamelCase,
-  StatisticsObject,
+  type StatisticsObject,
 } from "../../utils";
 import { AccessibleButton } from "../accessibleInputs/AccessibleButton";
 import { GoldenGrid } from "../goldenGrid";
@@ -25,11 +26,11 @@ import {
   MONEY_SYMBOL_CATEGORIES,
   PERCENTAGE_SYMBOL_CATEGORIES,
 } from "./financial/constants";
-import {
+import type {
   FinancialCardsAndStatisticsKeyPERT,
   FinancialMetricCategory,
 } from "./financial/types";
-import { AllStoreLocations, DashboardCalendarView } from "./types";
+import type { AllStoreLocations, DashboardCalendarView } from "./types";
 
 type DashboardCardInfo = {
   date?: string;

@@ -21,10 +21,10 @@
   }[]
  */
 
-import { SafeResult, StoreLocation } from "../../../types";
+import type { SafeResult, StoreLocation } from "../../../types";
 import { createSafeErrorResult, createSafeSuccessResult } from "../../../utils";
 import { REPAIR_CATEGORIES } from "../constants";
-import {
+import type {
     DaysInMonthsInYears,
     LocationYearSpread,
     RepairCategory,

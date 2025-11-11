@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import "@vitest/web-worker";
 import { describe, expect, it } from "vitest";
 import {
@@ -14,7 +15,7 @@ import {
     dashboardReducer_setLoadingMessage,
 } from "./reducers";
 import { initialDashboardState } from "./state";
-import { DashboardCalendarView, DashboardDispatch } from "./types";
+import type { DashboardCalendarView, DashboardDispatch } from "./types";
 
 describe("dashboardReducer", () => {
     describe(dashboardAction.setCalendarView, () => {

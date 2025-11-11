@@ -1,5 +1,5 @@
-import { RepairSubMetric } from "../types";
-import { RepairRUSAction } from "./actions";
+import type { RepairSubMetric } from "../types";
+import type { RepairRUSAction } from "./actions";
 
 type RepairRUSState = {
   yAxisKey: RepairSubMetric;

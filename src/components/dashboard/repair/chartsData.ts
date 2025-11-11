@@ -1,10 +1,10 @@
-import { RepairMetricsDocument, SafeResult } from "../../../types";
+import type { RepairMetricsDocument, SafeResult } from "../../../types";
 import { createSafeErrorResult, createSafeSuccessResult } from "../../../utils";
-import { BarChartData } from "../../charts/responsiveBarChart/types";
-import { CalendarChartData } from "../../charts/responsiveCalendarChart/types";
-import { LineChartData } from "../../charts/responsiveLineChart/types";
+import type { BarChartData } from "../../charts/responsiveBarChart/types";
+import type { CalendarChartData } from "../../charts/responsiveCalendarChart/types";
+import type { LineChartData } from "../../charts/responsiveLineChart/types";
 import { MONTHS } from "../constants";
-import {
+import type {
   DashboardCalendarView,
   Month,
   RepairDailyMetric,
@@ -12,7 +12,7 @@ import {
   RepairYearlyMetric,
   Year,
 } from "../types";
-import { RepairSubMetric } from "./types";
+import type { RepairSubMetric } from "./types";
 
 type RepairMetricChartsKey = "unitsRepaired" | "revenue";
 type RepairMetricBarCharts = Record<RepairMetricChartsKey, BarChartData[]>;

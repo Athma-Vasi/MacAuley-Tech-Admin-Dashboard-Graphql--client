@@ -1,6 +1,6 @@
 import type { StoreLocation } from "../../types";
 import type { DashboardAction } from "./actions";
-import {
+import type {
   FinancialMetricsBarLineChartsKey,
   FinancialMetricsCalendarChartsKeyPERT,
   FinancialMetricsPieChartsKey,

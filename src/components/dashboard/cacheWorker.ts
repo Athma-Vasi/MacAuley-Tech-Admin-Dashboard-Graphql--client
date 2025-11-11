@@ -1,8 +1,8 @@
 import {
     ROUTES_ZOD_SCHEMAS_MAP,
-    RoutesZodSchemasMapKey,
+    type RoutesZodSchemasMapKey,
 } from "../../constants";
-import { BusinessMetricsDocument, SafeResult } from "../../types";
+import type { BusinessMetricsDocument, SafeResult } from "../../types";
 import {
     createSafeErrorResult,
     createSafeSuccessResult,
@@ -11,7 +11,7 @@ import {
     parseSyncSafe,
 } from "../../utils";
 import { messageEventDashboardFetchMainToWorkerZod } from "./schemas";
-import { DashboardMetricsView } from "./types";
+import type { DashboardMetricsView } from "./types";
 
 type MessageEventDashboardCacheMainToWorker = MessageEvent<
     {

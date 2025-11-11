@@ -102,9 +102,10 @@ type AccessibleButtonAttributes = ButtonProps & {
 
 type AccessibleButtonProps = {
   attributes: AccessibleButtonAttributes;
+  uniqueId?: string;
 };
 
-function AccessibleButton({ attributes }: AccessibleButtonProps) {
+function AccessibleButton({ attributes, uniqueId }: AccessibleButtonProps) {
   const {
     globalState: { themeObject },
   } = useGlobalState();
@@ -502,7 +503,7 @@ function AccessibleButton({ attributes }: AccessibleButtonProps) {
   );
 
   return (
-    <Box>
+    <Box key={uniqueId}>
       {isTooltip && enabledScreenreaderText?.length
         ? (
           <Tooltip

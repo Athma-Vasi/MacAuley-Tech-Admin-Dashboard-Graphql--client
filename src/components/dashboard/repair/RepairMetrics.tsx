@@ -1,10 +1,11 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { useEffect, useReducer } from "react";
 import { useErrorBoundary } from "react-error-boundary";
 
 import { COLORS_SWATCHES } from "../../../constants";
 import { useMountedRef } from "../../../hooks";
 import { useGlobalState } from "../../../hooks/useGlobalState";
-import { RepairMetricsDocument } from "../../../types";
+import type { RepairMetricsDocument } from "../../../types";
 import { returnThemeColors } from "../../../utils";
 import type {
   AllStoreLocations,
@@ -13,13 +14,13 @@ import type {
   Year,
 } from "../types";
 import { repairMetricsAction } from "./actions";
-import { MessageEventRepairChartsWorkerToMain } from "./chartsWorker";
+import type { MessageEventRepairChartsWorkerToMain } from "./chartsWorker";
 import RepairChartsWorker from "./chartsWorker?worker";
 import { handleMessageEventRepairChartsWorkerToMain } from "./handlers";
 import { repairMetricsReducer } from "./reducers";
 import { RepairRUS } from "./repairRUS/RepairRUS";
 import { initialRepairMetricsState } from "./state";
-import { RepairMetricCategory } from "./types";
+import type { RepairMetricCategory } from "./types";
 import {
   createOverviewRepairMetricsCards,
   returnOverviewRepairMetrics,

@@ -1,8 +1,8 @@
 import { expect, test } from "@playwright/test";
 import { shuffle } from "simple-statistics";
 import { REPAIR_YAXIS_KEY_TO_CARDS_KEY_MAP } from "./constants";
-import { RepairMetricCategory, RepairSubMetric } from "./types";
-import { AllStoreLocations, DashboardCalendarView } from "../types";
+import type { RepairMetricCategory, RepairSubMetric } from "./types";
+import type { AllStoreLocations, DashboardCalendarView } from "../types";
 
 test.beforeEach(async ({ page }) => {
     await page.goto("http://localhost:5173/login");

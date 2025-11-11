@@ -1,10 +1,11 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import type { StoreLocation } from "../../types";
 import { addCommaSeparator, splitCamelCase, toFixedFloat } from "../../utils";
-import { CalendarChartData } from "../charts/responsiveCalendarChart/types";
-import { CustomerMetricsCategory } from "./customer/types";
-import { FinancialMetricCategory } from "./financial/types";
-import { ProductSubMetric } from "./product/types";
-import { RepairSubMetric } from "./repair/types";
+import type { CalendarChartData } from "../charts/responsiveCalendarChart/types";
+import type { CustomerMetricsCategory } from "./customer/types";
+import type { FinancialMetricCategory } from "./financial/types";
+import type { ProductSubMetric } from "./product/types";
+import type { RepairSubMetric } from "./repair/types";
 import type {
   AllStoreLocations,
   DashboardCalendarView,
@@ -13,7 +14,7 @@ import type {
   Month,
   Year,
 } from "./types";
-import {
+import type {
   CreateDashboardMetricsCardsInput,
   DashboardCardInfo,
 } from "./utilsTSX";

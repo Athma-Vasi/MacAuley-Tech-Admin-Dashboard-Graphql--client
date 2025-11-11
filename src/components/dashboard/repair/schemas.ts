@@ -179,8 +179,8 @@ const setChartsWorkerRepairMetricsDispatchZod = z.object({
 const handleMessageEventRepairWorkerToMainInputZod = z.object({
     event: z.instanceof(MessageEvent),
     isComponentMountedRef: z.object({ current: z.boolean() }),
-    repairMetricsDispatch: z.function().args(z.any()).returns(z.void()),
-    showBoundary: z.function().args(z.any()).returns(z.void()),
+    repairMetricsDispatch: z.function(),
+    showBoundary: z.function(),
 });
 
 const messageEventRepairChartsMainToWorkerZod = z.object({

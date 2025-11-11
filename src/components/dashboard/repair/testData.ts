@@ -1,5 +1,5 @@
-import { AllStoreLocations } from "../types";
-import { RepairMetricCategory } from "./types";
+import type { AllStoreLocations } from "../types";
+import type { RepairMetricCategory } from "./types";
 
 const REPAIR_METRICS_TEST_INPUT: Array<
     {

@@ -1,13 +1,13 @@
-import { SafeResult } from "../../../types";
+import type { SafeResult } from "../../../types";
 import { createSafeErrorResult, createSafeSuccessResult } from "../../../utils";
-import { DashboardCalendarView } from "../types";
+import type { DashboardCalendarView } from "../types";
 import { createDashboardMetricsCards } from "../utils";
 import {
   type CreateDashboardMetricsCardsInput,
   type DashboardCardInfo,
 } from "../utilsTSX";
 import type { SelectedDateRepairMetrics } from "./chartsData";
-import { RepairSubMetric } from "./types";
+import type { RepairSubMetric } from "./types";
 
 type createRepairMetricsCardsInput = {
   grayBorderShade: string;

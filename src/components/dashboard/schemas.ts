@@ -33,23 +33,23 @@ const setCurrentSelectedInputDashboardDispatchZod = z.object({
 });
 
 const handleStoreAndCategoryClicksInputZod = z.object({
-    dashboardDispatch: z.function().args(z.any()).returns(z.void()),
+    dashboardDispatch: z.function(),
     dashboardCacheWorker: z.instanceof(Worker),
     isComponentMountedRef: z.object({ current: z.boolean() }),
     metricsUrl: z.string().url(),
     metricsView: metricsViewZod,
     productMetricCategory: productMetricCategoryZod,
     repairMetricCategory: repairMetricCategoryZod,
-    showBoundary: z.function().args(z.any()).returns(z.void()),
+    showBoundary: z.function(),
     storeLocation: allStoreLocationsZod,
 });
 
 const handleMessageEventDashboardCacheWorkerToMainInputZod = z.object({
-    dashboardDispatch: z.function().args(z.any()).returns(z.void()),
+    dashboardDispatch: z.function(),
     event: z.instanceof(MessageEvent),
-    globalDispatch: z.function().args(z.any()).returns(z.void()),
+    globalDispatch: z.function(),
     isComponentMountedRef: z.object({ current: z.boolean() }),
-    showBoundary: z.function().args(z.any()).returns(z.void()),
+    showBoundary: z.function(),
 });
 
 const messageEventDashboardFetchMainToWorkerZod = z.object({

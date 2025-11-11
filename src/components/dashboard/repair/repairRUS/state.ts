@@ -1,4 +1,4 @@
-import { RepairRUSState } from "./types";
+import type { RepairRUSState } from "./types";
 
 const initialRepairRUSState: RepairRUSState = {
   yAxisKey: "revenue",

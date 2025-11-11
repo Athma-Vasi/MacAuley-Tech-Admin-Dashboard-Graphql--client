@@ -1,5 +1,8 @@
-import { globalAction, GlobalDispatch } from "../../context/globalProvider";
 import {
+    globalAction,
+    type GlobalDispatch,
+} from "../../context/globalProvider";
+import type {
     CustomerMetricsDocument,
     FinancialMetricsDocument,
     ProductMetricsDocument,
@@ -14,16 +17,16 @@ import {
     makeTransition,
     parseSyncSafe,
 } from "../../utils";
-import { InvariantError } from "../error";
+import { InvariantError } from "../error/classes";
 import { dashboardAction } from "./actions";
-import { MessageEventDashboardCacheWorkerToMain } from "./cacheWorker";
-import { ProductMetricCategory } from "./product/types";
-import { RepairMetricCategory } from "./repair/types";
+import type { MessageEventDashboardCacheWorkerToMain } from "./cacheWorker";
+import type { ProductMetricCategory } from "./product/types";
+import type { RepairMetricCategory } from "./repair/types";
 import {
     handleMessageEventDashboardCacheWorkerToMainInputZod,
     handleStoreAndCategoryClicksInputZod,
 } from "./schemas";
-import {
+import type {
     AllStoreLocations,
     DashboardDispatch,
     DashboardMetricsView,

@@ -1,6 +1,6 @@
-import { CheckboxRadioSelectData } from "../../../types";
-import { ChartsToYAxisKeysMap } from "../types";
-import { RepairMetricCategory, RepairSubMetric } from "./types";
+import type { CheckboxRadioSelectData } from "../../../types";
+import type { ChartsToYAxisKeysMap } from "../types";
+import type { RepairMetricCategory, RepairSubMetric } from "./types";
 
 const REPAIR_METRICS_SUB_CATEGORY_DATA: CheckboxRadioSelectData<
   RepairSubMetric

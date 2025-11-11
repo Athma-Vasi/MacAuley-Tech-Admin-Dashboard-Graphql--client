@@ -1,9 +1,10 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { Box, Group, Text, Title } from "@mantine/core";
 import React from "react";
 import { COLORS_SWATCHES } from "../../constants";
 import { useGlobalState } from "../../hooks/useGlobalState";
 import { returnThemeColors } from "../../utils";
-import { ChartsToYAxisKeysMap, DashboardCalendarView } from "./types";
+import type { ChartsToYAxisKeysMap, DashboardCalendarView } from "./types";
 
 type DashboardLayoutContainerProps = {
   barChart: React.JSX.Element;

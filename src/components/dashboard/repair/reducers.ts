@@ -1,15 +1,17 @@
-import { parseSyncSafe } from "../../../utils";
-import { RepairMetricsAction, repairMetricsAction } from "./actions";
-import { RepairMetricsCards } from "./cards";
-import { RepairMetricCalendarCharts, RepairMetricsCharts } from "./chartsData";
+import { parseDispatchAndSetState, parseSyncSafe } from "../../../utils";
+import { type RepairMetricsAction, repairMetricsAction } from "./actions";
+import type { RepairMetricsCards } from "./cards";
+import type {
+  RepairMetricCalendarCharts,
+  RepairMetricsCharts,
+} from "./chartsData";
 import {
   setCalendarChartsDataRepairMetricsDispatchZod,
   setChartsRepairMetricsDispatchZod,
   setChartsWorkerRepairMetricsDispatchZod,
   setIsGeneratingRepairMetricsDispatchZod,
 } from "./schemas";
-
-import { RepairMetricsDispatch, RepairMetricsState } from "./types";
+import type { RepairMetricsDispatch, RepairMetricsState } from "./types";
 
 function repairMetricsReducer(
   state: RepairMetricsState,
@@ -98,38 +100,24 @@ function repairMetricsReducer_setIsGenerating(
   state: RepairMetricsState,
   dispatch: RepairMetricsDispatch,
 ): RepairMetricsState {
-  const parsedResult = parseSyncSafe({
-    object: dispatch,
+  return parseDispatchAndSetState({
+    dispatch,
+    key: "isGenerating",
+    state,
     zSchema: setIsGeneratingRepairMetricsDispatchZod,
   });
-
-  if (parsedResult.err || parsedResult.val.none) {
-    return state;
-  }
-
-  return {
-    ...state,
-    isGenerating: parsedResult.val.val.payload as boolean,
-  };
 }
 
 function repairMetricsReducer_setRepairChartsWorker(
   state: RepairMetricsState,
   dispatch: RepairMetricsDispatch,
 ): RepairMetricsState {
-  const parsedResult = parseSyncSafe({
-    object: dispatch,
+  return parseDispatchAndSetState({
+    dispatch,
+    key: "repairChartsWorker",
+    state,
     zSchema: setChartsWorkerRepairMetricsDispatchZod,
   });
-
-  if (parsedResult.err || parsedResult.val.none) {
-    return state;
-  }
-
-  return {
-    ...state,
-    repairChartsWorker: parsedResult.val.val.payload as Worker,
-  };
 }
 
 export {

@@ -1,15 +1,16 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import "@vitest/web-worker";
 import { describe, expect, it } from "vitest";
 import { INVALID_BOOLEANS, VALID_BOOLEANS } from "../../../constants";
 import { repairMetricsAction } from "./actions";
-import { RepairMetricsCards } from "./cards";
+import type { RepairMetricsCards } from "./cards";
 import {
     repairMetricsReducer_setCards,
     repairMetricsReducer_setIsGenerating,
     repairMetricsReducer_setRepairChartsWorker,
 } from "./reducers";
 import { initialRepairMetricsState } from "./state";
-import { RepairMetricsDispatch } from "./types";
+import type { RepairMetricsDispatch } from "./types";
 
 describe("Repair Metrics Reducers", () => {
     describe(repairMetricsAction.setCards, () => {

@@ -1,5 +1,5 @@
-import { Prettify } from "../../types";
-import { DashboardState } from "./types";
+import type { Prettify } from "../../types";
+import type { DashboardState } from "./types";
 
 type DashboardAction = Prettify<
   {

@@ -1,7 +1,10 @@
-import { RepairCategory } from "../types";
-import { RepairMetricsAction } from "./actions";
-import { RepairMetricsCards } from "./cards";
-import { RepairMetricCalendarCharts, RepairMetricsCharts } from "./chartsData";
+import type { RepairCategory } from "../types";
+import type { RepairMetricsAction } from "./actions";
+import type { RepairMetricsCards } from "./cards";
+import type {
+  RepairMetricCalendarCharts,
+  RepairMetricsCharts,
+} from "./chartsData";
 
 type RepairSubMetric = "revenue" | "unitsRepaired";
 type RepairMetricCategory = RepairCategory | "All Repairs";
