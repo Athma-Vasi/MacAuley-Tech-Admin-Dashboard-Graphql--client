@@ -1,17 +1,21 @@
+import type { Prettify } from "../../types.ts";
 import type { LoginState } from "./state.ts";
 
-type LoginAction = {
-    [K in keyof LoginState as `set${Capitalize<string & K>}`]: `set${Capitalize<
-        string & K
-    >}`;
-};
+type LoginAction = Prettify<
+    {
+        [K in keyof LoginState as `set${Capitalize<string & K>}`]:
+            `set${Capitalize<
+                string & K
+            >}`;
+    }
+>;
 
 const loginAction: LoginAction = {
     setUsername: "setUsername",
     setPassword: "setPassword",
     setIsLoading: "setIsLoading",
     setIsSubmitting: "setIsSubmitting",
-    setIsSuccessful: "setIsSuccessful",
+    setIsError: "setIsError",
     setFinancialMetricsGenerated: "setFinancialMetricsGenerated",
     setProductMetricsGenerated: "setProductMetricsGenerated",
     setRepairMetricsGenerated: "setRepairMetricsGenerated",
@@ -21,6 +25,7 @@ const loginAction: LoginAction = {
     setErrorMessage: "setErrorMessage",
     setCustomerMetricsWorker: "setCustomerMetricsWorker",
     setLoginFetchWorker: "setLoginFetchWorker",
+    setSafeErrorResult: "setSafeErrorResult",
 };
 
 export { loginAction };

@@ -2,7 +2,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import html2canvas from "html2canvas";
 import jwtDecode from "jwt-decode";
-import { Err, None, Ok, type Option, Some } from "ts-results";
+import { Err, ErrImpl, None, Ok, type Option, Some } from "ts-results";
 import { v4 as uuidv4 } from "uuid";
 import {
     type ColorsSwatches,
@@ -211,6 +211,7 @@ function parseDispatchAndSetState<
         | ZodNullable<ZodCustom<Worker, Worker>>
         | ZodCustom<Worker, Worker>
         | ZodCustom<FormData, FormData>
+        | ZodNullable<ZodCustom<ErrImpl<unknown>, ErrImpl<unknown>>>
         | ZodObject = any,
     Dispatch extends { action: string; payload: unknown } = {
         action: string;

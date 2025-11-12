@@ -1,9 +1,12 @@
+import type { Err } from "ts-results";
+import type { SafeError } from "../../types";
+
 type LoginState = {
     username: string;
     password: string;
     isLoading: boolean;
     isSubmitting: boolean;
-    isSuccessful: boolean;
+    isError: boolean;
     financialMetricsGenerated: boolean;
     productMetricsGenerated: boolean;
     repairMetricsGenerated: boolean;
@@ -13,6 +16,7 @@ type LoginState = {
     errorMessage: string;
     customerMetricsWorker: Worker | null;
     loginFetchWorker: Worker | null;
+    safeErrorResult: Err<SafeError> | null;
 };
 
 const initialLoginState: LoginState = {
@@ -20,7 +24,7 @@ const initialLoginState: LoginState = {
     password: "",
     isLoading: false,
     isSubmitting: false,
-    isSuccessful: true,
+    isError: false,
     financialMetricsGenerated: false,
     productMetricsGenerated: false,
     repairMetricsGenerated: false,
@@ -30,6 +34,7 @@ const initialLoginState: LoginState = {
     errorMessage: "",
     customerMetricsWorker: null,
     loginFetchWorker: null,
+    safeErrorResult: null,
 };
 
 export { initialLoginState };

@@ -10,16 +10,16 @@ import {
 } from "../../utils";
 import { InvariantError } from "../error/classes";
 
-type MessageEventLoginFetchWorkerToMain = MessageEvent<
+type MessageEventLoginForageWorkerToMain = MessageEvent<
     SafeResult<{ financialMetricsDocument: FinancialMetricsDocument }>
 >;
 
-type MessageEventLoginFetchMainToWorker = MessageEvent<
+type MessageEventLoginForageMainToWorker = MessageEvent<
     boolean
 >;
 
 self.onmessage = async (
-    event: MessageEventLoginFetchMainToWorker,
+    event: MessageEventLoginForageMainToWorker,
 ) => {
     if (!event.data) {
         self.postMessage(
@@ -124,6 +124,6 @@ self.addEventListener("unhandledrejection", (event: PromiseRejectionEvent) => {
 });
 
 export type {
-    MessageEventLoginFetchMainToWorker,
-    MessageEventLoginFetchWorkerToMain,
+    MessageEventLoginForageMainToWorker,
+    MessageEventLoginForageWorkerToMain,
 };

@@ -7,15 +7,16 @@ import {
     setErrorMessageLoginDispatchZod,
     setFinancialMetricsGeneratedLoginDispatchZod,
     setFinancialMetricsWorkerLoginDispatchZod,
+    setIsErrorLoginDispatchZod,
     setIsLoadingLoginDispatchZod,
     setIsSubmittingLoginDispatchZod,
-    setIsSuccessfulLoginDispatchZod,
     setLoginFetchWorkerLoginDispatchZod,
     setPasswordLoginDispatchZod,
     setProductMetricsGeneratedLoginDispatchZod,
     setProductMetricsWorkerLoginDispatchZod,
     setRepairMetricsGeneratedLoginDispatchZod,
     setRepairMetricsWorkerLoginDispatchZod,
+    setSafeErrorResultLoginDispatchZod,
     setUsernameLoginDispatchZod,
 } from "./schemas.ts";
 import type { LoginState } from "./state.ts";
@@ -49,8 +50,8 @@ const loginReducersMap: Map<
         loginReducer_setIsSubmitting,
     ],
     [
-        loginAction.setIsSuccessful,
-        loginReducer_setIsSuccessful,
+        loginAction.setIsError,
+        loginReducer_setIsError,
     ],
     [
         loginAction.setFinancialMetricsGenerated,
@@ -87,6 +88,10 @@ const loginReducersMap: Map<
     [
         loginAction.setLoginFetchWorker,
         loginReducer_setLoginFetchWorker,
+    ],
+    [
+        loginAction.setSafeErrorResult,
+        loginReducer_setSafeErrorResult,
     ],
 ]);
 
@@ -138,15 +143,15 @@ function loginReducer_setIsSubmitting(
     });
 }
 
-function loginReducer_setIsSuccessful(
+function loginReducer_setIsError(
     state: LoginState,
     dispatch: LoginDispatch,
 ): LoginState {
     return parseDispatchAndSetState({
         dispatch,
-        key: "isSuccessful",
+        key: "isError",
         state,
-        zSchema: setIsSuccessfulLoginDispatchZod,
+        zSchema: setIsErrorLoginDispatchZod,
     });
 }
 
@@ -258,20 +263,33 @@ function loginReducer_setLoginFetchWorker(
     });
 }
 
+function loginReducer_setSafeErrorResult(
+    state: LoginState,
+    dispatch: LoginDispatch,
+): LoginState {
+    return parseDispatchAndSetState({
+        dispatch,
+        key: "safeErrorResult",
+        state,
+        zSchema: setSafeErrorResultLoginDispatchZod,
+    });
+}
+
 export {
     loginReducer,
     loginReducer_setCustomerMetricsWorker,
     loginReducer_setErrorMessage,
     loginReducer_setFinancialMetricsGenerated,
     loginReducer_setFinancialMetricsWorker,
+    loginReducer_setIsError,
     loginReducer_setIsLoading,
     loginReducer_setIsSubmitting,
-    loginReducer_setIsSuccessful,
     loginReducer_setPassword,
     loginReducer_setProductMetricsGenerated,
     loginReducer_setProductMetricsWorker,
     loginReducer_setRepairMetricsGenerated,
     loginReducer_setRepairMetricsWorker,
+    loginReducer_setSafeErrorResult,
     loginReducer_setUsername,
     loginReducersMap,
 };

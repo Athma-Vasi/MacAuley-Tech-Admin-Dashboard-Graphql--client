@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { describe, expect, it } from "vitest";
 import {
     INVALID_BOOLEANS,
@@ -5,29 +6,29 @@ import {
     VALID_BOOLEANS,
     VALID_STRINGS,
 } from "../../constants.ts";
-import { loginActions } from "./actions";
-import type { LoginDispatch } from "./dispatches.ts";
+import { loginAction } from "./actions";
 import {
     loginReducer_setCustomerMetricsWorker,
     loginReducer_setErrorMessage,
     loginReducer_setFinancialMetricsGenerated,
     loginReducer_setFinancialMetricsWorker,
+    loginReducer_setIsError,
     loginReducer_setIsLoading,
     loginReducer_setIsSubmitting,
-    loginReducer_setIsSuccessful,
     loginReducer_setProductMetricsGenerated,
     loginReducer_setProductMetricsWorker,
     loginReducer_setRepairMetricsGenerated,
     loginReducer_setRepairMetricsWorker,
     loginReducer_setUsername,
 } from "./reducers";
+import type { LoginDispatch } from "./schemas.ts";
 import { initialLoginState } from "./state";
 
-describe(loginActions.setUsername, () => {
+describe(loginAction.setUsername, () => {
     it("should allow valid string values", () => {
         VALID_STRINGS.forEach((value) => {
             const dispatch = {
-                action: loginActions.setUsername,
+                action: loginAction.setUsername,
                 payload: value,
             };
             const state = loginReducer_setUsername(
@@ -43,7 +44,7 @@ describe(loginActions.setUsername, () => {
 
         INVALID_STRINGS.forEach((value) => {
             const dispatch = {
-                action: loginActions.setUsername,
+                action: loginAction.setUsername,
                 payload: value,
             };
             const state = loginReducer_setUsername(
@@ -55,11 +56,11 @@ describe(loginActions.setUsername, () => {
     });
 });
 
-describe(loginActions.setIsLoading, () => {
+describe(loginAction.setIsLoading, () => {
     it("should allow valid boolean values", () => {
         VALID_BOOLEANS.forEach((value) => {
             const dispatch = {
-                action: loginActions.setIsLoading,
+                action: loginAction.setIsLoading,
                 payload: value,
             };
             const state = loginReducer_setIsLoading(
@@ -75,7 +76,7 @@ describe(loginActions.setIsLoading, () => {
 
         INVALID_BOOLEANS.forEach((value) => {
             const dispatch = {
-                action: loginActions.setIsLoading,
+                action: loginAction.setIsLoading,
                 payload: value,
             };
             const state = loginReducer_setIsLoading(
@@ -87,11 +88,11 @@ describe(loginActions.setIsLoading, () => {
     });
 });
 
-describe(loginActions.setIsSubmitting, () => {
+describe(loginAction.setIsSubmitting, () => {
     it("should allow valid boolean values", () => {
         VALID_BOOLEANS.forEach((value) => {
             const dispatch = {
-                action: loginActions.setIsSubmitting,
+                action: loginAction.setIsSubmitting,
                 payload: value,
             };
             const state = loginReducer_setIsSubmitting(
@@ -107,7 +108,7 @@ describe(loginActions.setIsSubmitting, () => {
 
         INVALID_BOOLEANS.forEach((value) => {
             const dispatch = {
-                action: loginActions.setIsSubmitting,
+                action: loginAction.setIsSubmitting,
                 payload: value,
             };
             const state = loginReducer_setIsSubmitting(
@@ -119,43 +120,43 @@ describe(loginActions.setIsSubmitting, () => {
     });
 });
 
-describe(loginActions.setIsSuccessful, () => {
+describe(loginAction.setIsError, () => {
     it("should allow valid boolean values", () => {
         VALID_BOOLEANS.forEach((value) => {
             const dispatch = {
-                action: loginActions.setIsSuccessful,
+                action: loginAction.setIsError,
                 payload: value,
             };
-            const state = loginReducer_setIsSuccessful(
+            const state = loginReducer_setIsError(
                 initialLoginState,
                 dispatch,
             );
-            expect(state.isSuccessful).toBe(value);
+            expect(state.isError).toBe(value);
         });
     });
 
     it("should not allow invalid boolean values", () => {
-        const initialIsSuccessful = initialLoginState.isSuccessful;
+        const initialIsSuccessful = initialLoginState.isError;
 
         INVALID_BOOLEANS.forEach((value) => {
             const dispatch = {
-                action: loginActions.setIsSuccessful,
+                action: loginAction.setIsError,
                 payload: value,
             };
-            const state = loginReducer_setIsSuccessful(
+            const state = loginReducer_setIsError(
                 initialLoginState,
                 dispatch as LoginDispatch,
             );
-            expect(state.isSuccessful).toBe(initialIsSuccessful);
+            expect(state.isError).toBe(initialIsSuccessful);
         });
     });
 });
 
-describe(loginActions.setFinancialMetricsGenerated, () => {
+describe(loginAction.setFinancialMetricsGenerated, () => {
     it("should allow valid boolean values", () => {
         VALID_BOOLEANS.forEach((value) => {
             const dispatch = {
-                action: loginActions.setFinancialMetricsGenerated,
+                action: loginAction.setFinancialMetricsGenerated,
                 payload: value,
             };
             const state = loginReducer_setFinancialMetricsGenerated(
@@ -172,7 +173,7 @@ describe(loginActions.setFinancialMetricsGenerated, () => {
 
         INVALID_BOOLEANS.forEach((value) => {
             const dispatch = {
-                action: loginActions.setFinancialMetricsGenerated,
+                action: loginAction.setFinancialMetricsGenerated,
                 payload: value,
             };
             const state = loginReducer_setFinancialMetricsGenerated(
@@ -186,11 +187,11 @@ describe(loginActions.setFinancialMetricsGenerated, () => {
     });
 });
 
-describe(loginActions.setProductMetricsGenerated, () => {
+describe(loginAction.setProductMetricsGenerated, () => {
     it("should allow valid boolean values", () => {
         VALID_BOOLEANS.forEach((value) => {
             const dispatch = {
-                action: loginActions.setProductMetricsGenerated,
+                action: loginAction.setProductMetricsGenerated,
                 payload: value,
             };
             const state = loginReducer_setProductMetricsGenerated(
@@ -207,7 +208,7 @@ describe(loginActions.setProductMetricsGenerated, () => {
 
         INVALID_BOOLEANS.forEach((value) => {
             const dispatch = {
-                action: loginActions.setProductMetricsGenerated,
+                action: loginAction.setProductMetricsGenerated,
                 payload: value,
             };
             const state = loginReducer_setProductMetricsGenerated(
@@ -221,11 +222,11 @@ describe(loginActions.setProductMetricsGenerated, () => {
     });
 });
 
-describe(loginActions.setRepairMetricsGenerated, () => {
+describe(loginAction.setRepairMetricsGenerated, () => {
     it("should allow valid boolean values", () => {
         VALID_BOOLEANS.forEach((value) => {
             const dispatch = {
-                action: loginActions.setRepairMetricsGenerated,
+                action: loginAction.setRepairMetricsGenerated,
                 payload: value,
             };
             const state = loginReducer_setRepairMetricsGenerated(
@@ -242,7 +243,7 @@ describe(loginActions.setRepairMetricsGenerated, () => {
 
         INVALID_BOOLEANS.forEach((value) => {
             const dispatch = {
-                action: loginActions.setRepairMetricsGenerated,
+                action: loginAction.setRepairMetricsGenerated,
                 payload: value,
             };
             const state = loginReducer_setRepairMetricsGenerated(
@@ -256,7 +257,7 @@ describe(loginActions.setRepairMetricsGenerated, () => {
     });
 });
 
-describe(loginActions.setFinancialMetricsWorker, () => {
+describe(loginAction.setFinancialMetricsWorker, () => {
     it("should allow valid Worker values", () => {
         const mockWorker = new Worker(
             URL.createObjectURL(
@@ -267,7 +268,7 @@ describe(loginActions.setFinancialMetricsWorker, () => {
         );
 
         const dispatch = {
-            action: loginActions.setFinancialMetricsWorker,
+            action: loginAction.setFinancialMetricsWorker,
             payload: mockWorker,
         };
         const state = loginReducer_setFinancialMetricsWorker(
@@ -281,18 +282,18 @@ describe(loginActions.setFinancialMetricsWorker, () => {
 
     it("should allow null values", () => {
         const dispatch = {
-            action: loginActions.setFinancialMetricsWorker,
+            action: loginAction.setFinancialMetricsWorker,
             payload: null,
         };
         const state = loginReducer_setFinancialMetricsWorker(
             initialLoginState,
-            dispatch,
+            dispatch as any,
         );
         expect(state.financialMetricsWorker).toBe(null);
     });
 });
 
-describe(loginActions.setProductMetricsWorker, () => {
+describe(loginAction.setProductMetricsWorker, () => {
     it("should allow valid Worker values", () => {
         const mockWorker = new Worker(
             URL.createObjectURL(
@@ -303,7 +304,7 @@ describe(loginActions.setProductMetricsWorker, () => {
         );
 
         const dispatch = {
-            action: loginActions.setProductMetricsWorker,
+            action: loginAction.setProductMetricsWorker,
             payload: mockWorker,
         };
         const state = loginReducer_setProductMetricsWorker(
@@ -317,18 +318,18 @@ describe(loginActions.setProductMetricsWorker, () => {
 
     it("should allow null values", () => {
         const dispatch = {
-            action: loginActions.setProductMetricsWorker,
+            action: loginAction.setProductMetricsWorker,
             payload: null,
         };
         const state = loginReducer_setProductMetricsWorker(
             initialLoginState,
-            dispatch,
+            dispatch as any,
         );
         expect(state.productMetricsWorker).toBe(null);
     });
 });
 
-describe(loginActions.setRepairMetricsWorker, () => {
+describe(loginAction.setRepairMetricsWorker, () => {
     it("should allow valid Worker values", () => {
         const mockWorker = new Worker(
             URL.createObjectURL(
@@ -339,7 +340,7 @@ describe(loginActions.setRepairMetricsWorker, () => {
         );
 
         const dispatch = {
-            action: loginActions.setRepairMetricsWorker,
+            action: loginAction.setRepairMetricsWorker,
             payload: mockWorker,
         };
         const state = loginReducer_setRepairMetricsWorker(
@@ -353,22 +354,22 @@ describe(loginActions.setRepairMetricsWorker, () => {
 
     it("should allow null values", () => {
         const dispatch = {
-            action: loginActions.setRepairMetricsWorker,
+            action: loginAction.setRepairMetricsWorker,
             payload: null,
         };
         const state = loginReducer_setRepairMetricsWorker(
             initialLoginState,
-            dispatch,
+            dispatch as any,
         );
         expect(state.repairMetricsWorker).toBe(null);
     });
 });
 
-describe(loginActions.setErrorMessage, () => {
+describe(loginAction.setErrorMessage, () => {
     it("should allow valid string values", () => {
         VALID_STRINGS.forEach((value) => {
             const dispatch = {
-                action: loginActions.setErrorMessage,
+                action: loginAction.setErrorMessage,
                 payload: value,
             };
             const state = loginReducer_setErrorMessage(
@@ -384,7 +385,7 @@ describe(loginActions.setErrorMessage, () => {
 
         INVALID_STRINGS.forEach((value) => {
             const dispatch = {
-                action: loginActions.setErrorMessage,
+                action: loginAction.setErrorMessage,
                 payload: value,
             };
             const state = loginReducer_setErrorMessage(
@@ -396,7 +397,7 @@ describe(loginActions.setErrorMessage, () => {
     });
 });
 
-describe(loginActions.setCustomerMetricsWorker, () => {
+describe(loginAction.setCustomerMetricsWorker, () => {
     it("should allow valid Worker values", () => {
         const mockWorker = new Worker(
             URL.createObjectURL(
@@ -407,7 +408,7 @@ describe(loginActions.setCustomerMetricsWorker, () => {
         );
 
         const dispatch = {
-            action: loginActions.setCustomerMetricsWorker,
+            action: loginAction.setCustomerMetricsWorker,
             payload: mockWorker,
         };
         const state = loginReducer_setCustomerMetricsWorker(
@@ -421,12 +422,12 @@ describe(loginActions.setCustomerMetricsWorker, () => {
 
     it("should allow null values", () => {
         const dispatch = {
-            action: loginActions.setCustomerMetricsWorker,
+            action: loginAction.setCustomerMetricsWorker,
             payload: null,
         };
         const state = loginReducer_setCustomerMetricsWorker(
             initialLoginState,
-            dispatch,
+            dispatch as any,
         );
         expect(state.customerMetricsWorker).toBe(null);
     });

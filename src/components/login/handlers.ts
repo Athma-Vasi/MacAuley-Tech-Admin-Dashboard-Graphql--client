@@ -10,7 +10,6 @@ import type { SafeResult } from "../../types";
 import {
   catchHandlerErrorSafe,
   createSafeErrorResult,
-  createSafeSuccessResult,
   decodeJWTSafe,
   parseSyncSafe,
 } from "../../utils";
@@ -18,16 +17,16 @@ import type { MessageEventCustomerMetricsWorkerToMain } from "../dashboard/custo
 import type { MessageEventFinancialMetricsWorkerToMain } from "../dashboard/financial/metricsWorker";
 import type { MessageEventProductMetricsWorkerToMain } from "../dashboard/product/metricsWorker";
 import type { MessageEventRepairMetricsWorkerToMain } from "../dashboard/repair/metricsWorker";
-import { AuthError, InvariantError } from "../error/classes";
+import { InvariantError } from "../error/classes";
 import type {
   LoginUserMutation$data,
 } from "./__generated__/LoginUserMutation.graphql";
 import { loginAction } from "./actions";
-import type { MessageEventLoginFetchWorkerToMain } from "./fetchWorker";
+import type { MessageEventLoginForageWorkerToMain } from "./forageWorker";
 import {
   handleMessageEventCustomerMetricsWorkerToMainInputZod,
   handleMessageEventFinancialMetricsWorkerToMainInputZod,
-  handleMessageEventLoginFetchWorkerToMainInputZod,
+  handleMessageEventLoginForageWorkerToMainInputZod,
   handleMessageEventProductMetricsWorkerToMainInputZod,
   handleMessageEventRepairMetricsWorkerToMainInputZod,
   type LoginDispatch,
@@ -480,34 +479,41 @@ async function handleMessageEventFinancialMetricsWorkerToMain(input: {
   }
 }
 
-async function handleMessageEventLoginFetchWorkerToMain(
+async function handleMessageEventLoginForageWorkerToMain(
   input: {
-    authDispatch: React.Dispatch<AuthDispatch>;
-    event: MessageEventLoginFetchWorkerToMain;
+    event: MessageEventLoginForageWorkerToMain;
     globalDispatch: React.Dispatch<GlobalDispatch>;
     isComponentMountedRef: React.RefObject<boolean>;
     loginDispatch: React.Dispatch<LoginDispatch>;
     navigate: NavigateFunction;
-    showBoundary: (error: unknown) => void;
   },
-): Promise<SafeResult<string>> {
+): Promise<undefined> {
   try {
     const parsedInputResult = parseSyncSafe({
       object: input,
-      zSchema: handleMessageEventLoginFetchWorkerToMainInputZod,
+      zSchema: handleMessageEventLoginForageWorkerToMainInputZod,
     });
+
     if (parsedInputResult.err) {
-      input?.showBoundary?.(parsedInputResult);
-      return parsedInputResult;
+      input?.loginDispatch?.({
+        action: loginAction.setSafeErrorResult,
+        payload: parsedInputResult,
+      });
+      return;
     }
-    if (parsedInputResult.val.none) {
+
+    const parsedInputMaybe = parsedInputResult.safeUnwrap();
+    if (parsedInputMaybe.none) {
       const safeErrorResult = createSafeErrorResult(
         new InvariantError(
           "Unexpected None option in input parsing",
         ),
       );
-      input?.showBoundary?.(safeErrorResult);
-      return safeErrorResult;
+      input?.loginDispatch?.({
+        action: loginAction.setSafeErrorResult,
+        payload: safeErrorResult,
+      });
+      return;
     }
 
     const {
@@ -516,49 +522,32 @@ async function handleMessageEventLoginFetchWorkerToMain(
       isComponentMountedRef,
       loginDispatch,
       navigate,
-      showBoundary,
-    } = parsedInputResult.val.val;
-
-    const messageEventResult = event.data;
-    if (!messageEventResult) {
-      return createSafeErrorResult(
-        new InvariantError(
-          "No data in message event",
-        ),
-      );
-    }
+    } = parsedInputMaybe.safeUnwrap();
 
     if (!isComponentMountedRef.current) {
-      return createSafeErrorResult(
-        new InvariantError("Component is not mounted"),
-      );
+      return;
     }
 
+    const messageEventResult = event.data;
     if (messageEventResult.err) {
-      showBoundary(messageEventResult);
-      return messageEventResult;
+      loginDispatch({
+        action: loginAction.setSafeErrorResult,
+        payload: messageEventResult,
+      });
+      return;
+    }
+    const messageEventMaybe = messageEventResult.safeUnwrap();
+    if (messageEventMaybe.none) {
+      loginDispatch({
+        action: loginAction.setSafeErrorResult,
+        payload: createSafeErrorResult(
+          new InvariantError("No data received from the worker"),
+        ),
+      });
+      return;
     }
 
-    if (messageEventResult.val.none) {
-      loginDispatch({
-        action: loginAction.setErrorMessage,
-        payload: "Invalid credentials",
-      });
-      loginDispatch({
-        action: loginAction.setIsSubmitting,
-        payload: false,
-      });
-      loginDispatch({
-        action: loginAction.setIsSuccessful,
-        payload: false,
-      });
-
-      return createSafeErrorResult(
-        new AuthError("Invalid credentials"),
-      );
-    }
-
-    const { financialMetricsDocument } = messageEventResult.val.val;
+    const { financialMetricsDocument } = messageEventMaybe.safeUnwrap();
 
     globalDispatch({
       action: globalAction.setFinancialMetricsDocument,
@@ -566,23 +555,23 @@ async function handleMessageEventLoginFetchWorkerToMain(
     });
 
     loginDispatch({
-      action: loginAction.setIsSubmitting,
+      action: loginAction.setIsLoading,
       payload: false,
     });
     loginDispatch({
-      action: loginAction.setIsSuccessful,
-      payload: true,
+      action: loginAction.setSafeErrorResult,
+      payload: null,
     });
 
     navigate("/dashboard/financials");
 
-    return createSafeSuccessResult("Login successful");
+    return;
   } catch (error: unknown) {
-    return catchHandlerErrorSafe(
-      error,
-      input?.isComponentMountedRef,
-      input?.showBoundary,
-    );
+    input?.loginDispatch?.({
+      action: loginAction.setSafeErrorResult,
+      payload: createSafeErrorResult(error),
+    });
+    return;
   }
 }
 
@@ -590,7 +579,7 @@ export {
   handleLogin,
   handleMessageEventCustomerMetricsWorkerToMain,
   handleMessageEventFinancialMetricsWorkerToMain,
-  handleMessageEventLoginFetchWorkerToMain,
+  handleMessageEventLoginForageWorkerToMain,
   handleMessageEventProductMetricsWorkerToMain,
   handleMessageEventRepairMetricsWorkerToMain,
 };

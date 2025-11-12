@@ -72,7 +72,6 @@ import { COLORS_SWATCHES } from "../../constants";
 import { useMountedRef } from "../../hooks";
 import { useAuth } from "../../hooks/useAuth";
 import { useGlobalState } from "../../hooks/useGlobalState";
-import type { UserDocument } from "../../types";
 import { returnThemeColors } from "../../utils";
 import { AccessibleButton } from "../accessibleInputs/AccessibleButton";
 import type { MessageEventCustomerMetricsWorkerToMain } from "../dashboard/customer/metricsWorker";
@@ -84,13 +83,13 @@ import ProductMetricsWorker from "../dashboard/product/metricsWorker?worker";
 import type { MessageEventRepairMetricsWorkerToMain } from "../dashboard/repair/metricsWorker";
 import RepairMetricsWorker from "../dashboard/repair/metricsWorker?worker";
 import { loginAction } from "./actions";
-import type { MessageEventLoginFetchWorkerToMain } from "./fetchWorker";
-import LoginFetchWorker from "./fetchWorker?worker";
+import type { MessageEventLoginForageWorkerToMain } from "./forageWorker";
+import LoginForageWorker from "./forageWorker?worker";
 import {
     handleLogin,
     handleMessageEventCustomerMetricsWorkerToMain,
     handleMessageEventFinancialMetricsWorkerToMain,
-    handleMessageEventLoginFetchWorkerToMain,
+    handleMessageEventLoginForageWorkerToMain,
     handleMessageEventProductMetricsWorkerToMain,
     handleMessageEventRepairMetricsWorkerToMain,
 } from "./handlers";
@@ -109,7 +108,7 @@ function Login() {
         financialMetricsWorker,
         isLoading,
         isSubmitting,
-        isSuccessful,
+        isError,
         password,
         productMetricsGenerated,
         productMetricsWorker,
@@ -196,15 +195,15 @@ function Login() {
             });
         };
 
-        const newLoginFetchWorker = new LoginFetchWorker();
+        const newLoginForageWorker = new LoginForageWorker();
         loginDispatch({
             action: loginAction.setLoginFetchWorker,
-            payload: newLoginFetchWorker,
+            payload: newLoginForageWorker,
         });
-        newLoginFetchWorker.onmessage = async (
-            event: MessageEventLoginFetchWorkerToMain,
+        newLoginForageWorker.onmessage = async (
+            event: MessageEventLoginForageWorkerToMain,
         ) => {
-            await handleMessageEventLoginFetchWorkerToMain({
+            await handleMessageEventLoginForageWorkerToMain({
                 event,
                 authDispatch,
                 globalDispatch,
@@ -221,7 +220,7 @@ function Login() {
             newFinancialMetricsWorker.terminate();
             newProductMetricsWorker.terminate();
             newRepairMetricsWorker.terminate();
-            newLoginFetchWorker.terminate();
+            newLoginForageWorker.terminate();
         };
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
@@ -265,7 +264,7 @@ function Login() {
         repairMetricsGenerated,
     ]);
 
-    if (!isSuccessful) {
+    if (isError) {
         throw new Error(errorMessage || "Login failed");
     }
 
@@ -367,7 +366,7 @@ function Login() {
                                 : ""}
                         />
                     )
-                    : isSuccessful
+                    : !isError
                     ? (
                         <TbCheck
                             color={themeObject.colorScheme === "light"
