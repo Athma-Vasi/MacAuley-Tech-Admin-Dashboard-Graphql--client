@@ -12,6 +12,7 @@ type LoginState = {
     repairMetricsWorker: Worker | null;
     errorMessage: string;
     customerMetricsWorker: Worker | null;
+    loginFetchWorker: Worker | null;
 };
 
 const initialLoginState: LoginState = {
@@ -19,7 +20,7 @@ const initialLoginState: LoginState = {
     password: "",
     isLoading: false,
     isSubmitting: false,
-    isSuccessful: false,
+    isSuccessful: true,
     financialMetricsGenerated: false,
     productMetricsGenerated: false,
     repairMetricsGenerated: false,
@@ -28,6 +29,7 @@ const initialLoginState: LoginState = {
     repairMetricsWorker: null,
     errorMessage: "",
     customerMetricsWorker: null,
+    loginFetchWorker: null,
 };
 
 export { initialLoginState };

@@ -10,7 +10,7 @@ import {
   Text,
   Title,
 } from "@mantine/core";
-import { useEffect, useReducer } from "react";
+import { useReducer } from "react";
 import { useErrorBoundary } from "react-error-boundary";
 
 import { TbCheck, TbUpload } from "react-icons/tb";
@@ -20,21 +20,12 @@ import { useMountedRef } from "../../hooks";
 import { useGlobalState } from "../../hooks/useGlobalState";
 import type { FormReview, UserSchema } from "../../types";
 import { returnThemeColors } from "../../utils";
-import { type MessageEventFetchWorkerToMain } from "../../workers/fetchParseWorker";
-import FetchParseWorker from "../../workers/fetchParseWorker?worker";
 import { AccessibleButton } from "../accessibleInputs/AccessibleButton";
 import { AccessibleTextInput } from "../accessibleInputs/AccessibleTextInput";
-import { AccessibleImageInput } from "../accessibleInputs/image";
 import { MAX_IMAGES } from "../accessibleInputs/image/constants";
 import { registerAction } from "./actions";
 import { MAX_REGISTER_STEPS, REGISTER_STEPS, REGISTER_URL } from "./constants";
-import {
-  handleMessageEventCheckEmailWorkerToMain,
-  handleMessageEventCheckUsernameWorkerToMain,
-  handleMessageEventRegisterFetchWorkerToMain,
-  handlePrevNextStepClick,
-  handleRegisterButtonSubmit,
-} from "./handlers";
+import { handlePrevNextStepClick } from "./handlers";
 import { registerReducer } from "./reducers";
 import { RegisterAddress } from "./RegisterAddress";
 import { RegisterAuthentication } from "./RegisterAuthentication";
@@ -97,65 +88,6 @@ function Register() {
   const { showBoundary } = useErrorBoundary();
   const isComponentMountedRef = useMountedRef();
   const navigate = useNavigate();
-
-  useEffect(() => {
-    const newRegisterWorker = new FetchParseWorker();
-    registerDispatch({
-      action: registerAction.setRegisterWorker,
-      payload: newRegisterWorker,
-    });
-    newRegisterWorker.onmessage = async (
-      event: MessageEventFetchWorkerToMain<boolean>,
-    ) => {
-      await handleMessageEventRegisterFetchWorkerToMain({
-        event,
-        isComponentMountedRef,
-        navigate,
-        registerDispatch,
-        showBoundary,
-        toLocation: "/login",
-      });
-    };
-
-    const newCheckUsernameWorker = new FetchParseWorker();
-    registerDispatch({
-      action: registerAction.setCheckUsernameWorker,
-      payload: newCheckUsernameWorker,
-    });
-    newCheckUsernameWorker.onmessage = async (
-      event: MessageEventFetchWorkerToMain<boolean>,
-    ) => {
-      await handleMessageEventCheckUsernameWorkerToMain({
-        event,
-        isComponentMountedRef,
-        registerDispatch,
-        showBoundary,
-      });
-    };
-
-    const newCheckEmailWorker = new FetchParseWorker();
-    registerDispatch({
-      action: registerAction.setCheckEmailWorker,
-      payload: newCheckEmailWorker,
-    });
-    newCheckEmailWorker.onmessage = async (
-      event: MessageEventFetchWorkerToMain<boolean>,
-    ) => {
-      await handleMessageEventCheckEmailWorkerToMain({
-        event,
-        isComponentMountedRef,
-        registerDispatch,
-        showBoundary,
-      });
-    };
-
-    return () => {
-      isComponentMountedRef.current = false;
-      newCheckUsernameWorker.terminate();
-      newCheckEmailWorker.terminate();
-      newRegisterWorker.terminate();
-    };
-  }, []);
 
   const {
     bgGradient,
@@ -299,15 +231,6 @@ function Register() {
             "schema",
             JSON.stringify({ schema }),
           );
-
-          await handleRegisterButtonSubmit({
-            formData,
-            isComponentMountedRef,
-            registerDispatch,
-            registerWorker,
-            showBoundary,
-            url: REGISTER_URL,
-          });
         },
       }}
     />
@@ -423,7 +346,8 @@ function Register() {
     <Stack w="100%" align="center">
       {profilePictureUrlTextInput}
       <Text size="xl">or</Text>
-      <AccessibleImageInput
+      {
+        /* <AccessibleImageInput
         attributes={{
           disabled: isMaxFilesReached ||
             isProfilePictureUrlNotEmpty,
@@ -438,7 +362,8 @@ function Register() {
           storageKey: "profilePicture",
           validValueAction: registerAction.setFormData,
         }}
-      />
+      /> */
+      }
     </Stack>
   );
 

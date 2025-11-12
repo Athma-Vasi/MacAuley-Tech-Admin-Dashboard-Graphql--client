@@ -1,15 +1,15 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { Card, Loader, Text } from "@mantine/core";
 import { useEffect, useRef } from "react";
 import { useErrorBoundary } from "react-error-boundary";
 import { TbExclamationCircle } from "react-icons/tb";
-import { AUTH_URL, COLORS_SWATCHES } from "../../constants";
+import { COLORS_SWATCHES } from "../../constants";
 import { useMountedRef } from "../../hooks";
 import { useGlobalState } from "../../hooks/useGlobalState";
 import { returnThemeColors } from "../../utils";
 import { AccessiblePasswordInput } from "../accessibleInputs/AccessiblePasswordInput";
 import { AccessibleTextInput } from "../accessibleInputs/AccessibleTextInput";
 import { registerAction } from "./actions";
-import { handleCheckEmail, handleCheckUsername } from "./handlers";
 import { type RegisterDispatch } from "./schemas";
 
 type RegisterAuthenticationProps = {
@@ -72,15 +72,6 @@ function RegisterAuthentication(
                     if (!username || checkUsernameWorker == null) {
                         return;
                     }
-
-                    handleCheckUsername({
-                        checkUsernameWorker,
-                        isComponentMountedRef,
-                        registerDispatch,
-                        showBoundary,
-                        url: AUTH_URL,
-                        username: event.currentTarget.value,
-                    });
                 },
                 parentDispatch: registerDispatch,
                 validValueAction: registerAction.setUsername,
@@ -103,15 +94,6 @@ function RegisterAuthentication(
                     if (!email || checkEmailWorker == null) {
                         return;
                     }
-
-                    handleCheckEmail({
-                        checkEmailWorker,
-                        isComponentMountedRef,
-                        registerDispatch,
-                        showBoundary,
-                        url: AUTH_URL,
-                        email: event.currentTarget.value,
-                    });
                 },
                 parentDispatch: registerDispatch,
                 validValueAction: registerAction.setEmail,

@@ -96,18 +96,26 @@ function Dashboard() {
     },
     globalDispatch,
   } = useGlobalState();
-  const deferredCustomerMetricsDocument = React.useDeferredValue(
-    customerMetricsDocument,
-  );
-  const deferredFinancialMetricsDocument = React.useDeferredValue(
-    financialMetricsDocument,
-  );
-  const deferredProductMetricsDocument = React.useDeferredValue(
-    productMetricsDocument,
-  );
-  const deferredRepairMetricsDocument = React.useDeferredValue(
-    repairMetricsDocument,
-  );
+
+  console.group("Dashboard render");
+  console.log("customermetricsdocument:", customerMetricsDocument);
+  console.log("financialmetricsdocument:", financialMetricsDocument);
+  console.log("productmetricsdocument:", productMetricsDocument);
+  console.log("repairmetricsdocument:", repairMetricsDocument);
+  console.groupEnd();
+
+  // const deferredCustomerMetricsDocument = React.useDeferredValue(
+  //   customerMetricsDocument,
+  // );
+  // const deferredFinancialMetricsDocument = React.useDeferredValue(
+  //   financialMetricsDocument,
+  // );
+  // const deferredProductMetricsDocument = React.useDeferredValue(
+  //   productMetricsDocument,
+  // );
+  // const deferredRepairMetricsDocument = React.useDeferredValue(
+  //   repairMetricsDocument,
+  // );
 
   const { bgGradient, stickyHeaderBgGradient } = returnThemeColors(
     {
@@ -157,43 +165,6 @@ function Dashboard() {
       calendarDate: selectedYYYYMMDD,
       months: MONTHS,
     });
-
-  // const name = "calendarDate";
-  // const { screenreaderTextElement } =
-  //   createAccessibleDateTimeScreenreaderTextElements({
-  //     name,
-  //     value: selectedYYYYMMDD,
-  //   });
-  // const calendarDateInput = (
-  //   <Box className="accessible-input">
-  //     {screenreaderTextElement}
-  //     <TextInput
-  //       aria-label='Please enter date in format "date-date-month-month-year-year-year-year"'
-  //       aria-description="View metrics for selected calendar date."
-  //       aria-describedby={`${name}-valid-text ${name}-empty-text`}
-  //       label={splitCamelCase(name)}
-  //       max={"2025-03-31"}
-  //       min={storeLocation === "Vancouver"
-  //         ? new Date(2019, 0, 1).toISOString().split("T")[0]
-  //         : storeLocation === "Calgary"
-  //         ? new Date(2017, 0, 1).toISOString().split("T")[0]
-  //         : new Date(2013, 0, 1).toISOString().split("T")[0]}
-  //       name={name}
-  //       onChange={(event) => {
-  //         const { value } = event.currentTarget;
-
-  //         makeTransition(() => {
-  //           globalDispatch({
-  //             action: globalAction.setSelectedYYYYMMDD,
-  //             payload: value,
-  //           });
-  //         });
-  //       }}
-  //       type="date"
-  //       value={selectedYYYYMMDD}
-  //     />
-  //   </Box>
-  // );
 
   const yesterday = new Date();
   yesterday.setDate(yesterday.getDate() - 1);
@@ -487,7 +458,7 @@ function Dashboard() {
       <FinancialMetrics
         calendarView={calendarView}
         financialMetricCategory={financialMetricCategory}
-        financialMetricsDocument={deferredFinancialMetricsDocument as FinancialMetricsDocument}
+        financialMetricsDocument={financialMetricsDocument as FinancialMetricsDocument}
         selectedDate={selectedDate}
         selectedMonth={selectedMonth}
         storeLocation={storeLocation}
@@ -500,7 +471,7 @@ function Dashboard() {
       <CustomerMetrics
         calendarView={calendarView}
         customerMetricsCategory={customerMetricsCategory}
-        customerMetricsDocument={deferredCustomerMetricsDocument as CustomerMetricsDocument}
+        customerMetricsDocument={customerMetricsDocument as CustomerMetricsDocument}
         selectedDate={selectedDate}
         selectedMonth={selectedMonth}
         storeLocation={storeLocation}
@@ -513,7 +484,7 @@ function Dashboard() {
       <ProductMetrics
         calendarView={calendarView}
         productMetricCategory={productMetricCategory}
-        productMetricsDocument={deferredProductMetricsDocument as ProductMetricsDocument}
+        productMetricsDocument={productMetricsDocument as ProductMetricsDocument}
         productSubMetricCategory={productSubMetricCategory}
         selectedDate={selectedDate}
         selectedMonth={selectedMonth}
@@ -526,7 +497,7 @@ function Dashboard() {
       <RepairMetrics
         calendarView={calendarView}
         repairMetricCategory={repairMetricCategory}
-        repairMetricsDocument={deferredRepairMetricsDocument as RepairMetricsDocument}
+        repairMetricsDocument={repairMetricsDocument as RepairMetricsDocument}
         selectedDate={selectedDate}
         selectedMonth={selectedMonth}
         selectedYYYYMMDD={selectedYYYYMMDD}

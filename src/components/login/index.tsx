@@ -1,5 +1,5 @@
 import ErrorSuspenseHOC from "../error/ErrorSuspenseHOC";
-import LoginWithMetadata from "./Login";
+import Login from "./Login";
 
 function LoginWrapper() {
     // const loginButtonHoverRef = useRef<HTMLDivElement | null>(null);
@@ -14,7 +14,7 @@ function LoginWrapper() {
     //     });
     // }
 
-    return ErrorSuspenseHOC(LoginWithMetadata)({});
+    return ErrorSuspenseHOC(Login)({});
 }
 
 export default LoginWrapper;

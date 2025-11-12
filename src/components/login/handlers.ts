@@ -1,0 +1,596 @@
+import type { NavigateFunction } from "react-router-dom";
+import { commitMutation, graphql } from "relay-runtime";
+import { authAction, type AuthDispatch } from "../../context/authProvider";
+import {
+  globalAction,
+  type GlobalDispatch,
+} from "../../context/globalProvider";
+import { relayEnvironment } from "../../environment-single";
+import type { SafeResult } from "../../types";
+import {
+  catchHandlerErrorSafe,
+  createSafeErrorResult,
+  createSafeSuccessResult,
+  decodeJWTSafe,
+  parseSyncSafe,
+} from "../../utils";
+import type { MessageEventCustomerMetricsWorkerToMain } from "../dashboard/customer/metricsWorker";
+import type { MessageEventFinancialMetricsWorkerToMain } from "../dashboard/financial/metricsWorker";
+import type { MessageEventProductMetricsWorkerToMain } from "../dashboard/product/metricsWorker";
+import type { MessageEventRepairMetricsWorkerToMain } from "../dashboard/repair/metricsWorker";
+import { AuthError, InvariantError } from "../error/classes";
+import type {
+  LoginUserMutation$data,
+} from "./__generated__/LoginUserMutation.graphql";
+import { loginAction } from "./actions";
+import type { MessageEventLoginFetchWorkerToMain } from "./fetchWorker";
+import {
+  handleMessageEventCustomerMetricsWorkerToMainInputZod,
+  handleMessageEventFinancialMetricsWorkerToMainInputZod,
+  handleMessageEventLoginFetchWorkerToMainInputZod,
+  handleMessageEventProductMetricsWorkerToMainInputZod,
+  handleMessageEventRepairMetricsWorkerToMainInputZod,
+  type LoginDispatch,
+} from "./schemas";
+
+async function handleLogin(
+  {
+    authDispatch,
+    isComponentMountedRef,
+    loginDispatch,
+    navigate,
+    password,
+    username,
+  }: {
+    authDispatch: React.Dispatch<AuthDispatch>;
+    isComponentMountedRef: React.RefObject<boolean>;
+    loginDispatch: React.Dispatch<LoginDispatch>;
+    navigate: NavigateFunction;
+    password: string;
+    username: string;
+  },
+) {
+  if (!isComponentMountedRef.current) {
+    return;
+  }
+
+  const LoginUserMutation = graphql`
+    mutation LoginUserMutation($username: String!, $password: String!) {
+        loginUser(username: $username, password: $password) {
+            accessToken
+            message
+            statusCode
+            timestamp
+            dataBox {
+                _id
+                addressLine
+                city
+                country
+                department
+                email
+                expireAt
+                firstName
+                jobPosition
+                lastName
+                orgId
+                parentOrgId
+                postalCodeCanada
+                postalCodeUS
+                profilePictureUrl
+                province
+                roles
+                state
+                storeLocation
+                username
+                createdAt
+                updatedAt
+            }
+        }
+    }
+`;
+
+  loginDispatch({
+    action: loginAction.setIsLoading,
+    payload: true,
+  });
+
+  // Use standalone commitMutation with cacheConfig containing metadata
+  commitMutation(relayEnvironment, {
+    mutation: LoginUserMutation,
+    variables: { username, password },
+
+    // CacheConfig with metadata for endpoint routing
+    cacheConfig: {
+      metadata: {
+        endpoint: "auth",
+      },
+    },
+
+    onCompleted: (response, errors) => {
+      loginDispatch({
+        action: loginAction.setIsLoading,
+        payload: false,
+      });
+
+      if (errors && errors.length > 0) {
+        console.error("Login errors:", errors);
+
+        loginDispatch({
+          action: loginAction.setIsSuccessful,
+          payload: false,
+        });
+        loginDispatch({
+          action: loginAction.setErrorMessage,
+          payload: errors.map((e) => e.message).join(", "),
+        });
+        return;
+      }
+
+      // Type assertion for response data
+      const typedResponse = response as LoginUserMutation$data;
+      const accessToken = typedResponse.loginUser?.accessToken || "";
+
+      const decodedTokenResult = decodeJWTSafe(accessToken);
+      if (decodedTokenResult.err) {
+        loginDispatch({
+          action: loginAction.setIsSuccessful,
+          payload: false,
+        });
+        loginDispatch({
+          action: loginAction.setErrorMessage,
+          payload: "Invalid access token received",
+        });
+        return;
+      }
+
+      const decodedTokenMaybe = decodedTokenResult.safeUnwrap();
+      if (decodedTokenMaybe.none) {
+        loginDispatch({
+          action: loginAction.setIsSuccessful,
+          payload: false,
+        });
+        loginDispatch({
+          action: loginAction.setErrorMessage,
+          payload: "Invalid access token received",
+        });
+        return;
+      }
+      const decodedToken = decodedTokenMaybe.safeUnwrap();
+
+      loginDispatch({
+        action: loginAction.setIsSuccessful,
+        payload: true,
+      });
+      loginDispatch({
+        action: loginAction.setErrorMessage,
+        payload: "",
+      });
+      authDispatch({
+        action: authAction.setAccessToken,
+        payload: accessToken,
+      });
+      authDispatch({
+        action: authAction.setDecodedToken,
+        payload: decodedToken,
+      });
+
+      navigate("/dashboard/financials");
+    },
+
+    onError: (error) => {
+      console.error("Mutation error:", error);
+      loginDispatch({
+        action: loginAction.setIsLoading,
+        payload: false,
+      });
+      loginDispatch({
+        action: loginAction.setIsSuccessful,
+        payload: false,
+      });
+      loginDispatch({
+        action: loginAction.setErrorMessage,
+        payload: error.message || "An unknown error occurred during login",
+      });
+    },
+  });
+}
+
+async function handleMessageEventCustomerMetricsWorkerToMain(
+  input: {
+    event: MessageEventCustomerMetricsWorkerToMain;
+    isComponentMountedRef: React.RefObject<boolean>;
+    showBoundary: (error: unknown) => void;
+  },
+): Promise<SafeResult<string>> {
+  try {
+    const parsedInputResult = parseSyncSafe({
+      object: input,
+      zSchema: handleMessageEventCustomerMetricsWorkerToMainInputZod,
+    });
+    if (parsedInputResult.err) {
+      input?.showBoundary?.(parsedInputResult);
+      return parsedInputResult;
+    }
+    if (parsedInputResult.val.none) {
+      const safeErrorResult = createSafeErrorResult(
+        new InvariantError(
+          "Unexpected None option in input parsing",
+        ),
+      );
+      input?.showBoundary?.(safeErrorResult);
+      return safeErrorResult;
+    }
+
+    const {
+      event,
+      isComponentMountedRef,
+      showBoundary,
+    } = parsedInputResult.val.val;
+
+    if (!isComponentMountedRef.current) {
+      return createSafeErrorResult(
+        new InvariantError("Component is not mounted"),
+      );
+    }
+
+    const messageEventResult = event.data;
+    if (!messageEventResult) {
+      return createSafeErrorResult(
+        new InvariantError("No data received from the worker"),
+      );
+    }
+
+    if (messageEventResult.err) {
+      showBoundary(messageEventResult);
+      return messageEventResult;
+    }
+
+    if (messageEventResult.val.none) {
+      return createSafeErrorResult(
+        new InvariantError("No customer metrics data found"),
+      );
+    }
+
+    return messageEventResult;
+  } catch (error: unknown) {
+    return catchHandlerErrorSafe(
+      error,
+      input?.isComponentMountedRef,
+      input?.showBoundary,
+    );
+  }
+}
+
+async function handleMessageEventProductMetricsWorkerToMain(input: {
+  event: MessageEventProductMetricsWorkerToMain;
+  loginDispatch: React.Dispatch<LoginDispatch>;
+  isComponentMountedRef: React.RefObject<boolean>;
+  showBoundary: (error: unknown) => void;
+}): Promise<SafeResult<boolean>> {
+  try {
+    const parsedInputResult = parseSyncSafe({
+      object: input,
+      zSchema: handleMessageEventProductMetricsWorkerToMainInputZod,
+    });
+    if (parsedInputResult.err) {
+      input?.showBoundary?.(parsedInputResult);
+      return parsedInputResult;
+    }
+    if (parsedInputResult.val.none) {
+      const safeErrorResult = createSafeErrorResult(
+        new InvariantError(
+          "Unexpected None option in input parsing",
+        ),
+      );
+      input?.showBoundary?.(safeErrorResult);
+      return safeErrorResult;
+    }
+
+    const {
+      event,
+      loginDispatch,
+      isComponentMountedRef,
+      showBoundary,
+    } = parsedInputResult.val.val;
+
+    if (!isComponentMountedRef.current) {
+      return createSafeErrorResult(
+        new InvariantError("Component unmounted"),
+      );
+    }
+
+    const messageEventResult = event.data;
+    if (!messageEventResult) {
+      return createSafeErrorResult(
+        new InvariantError("No data received from the worker"),
+      );
+    }
+
+    if (messageEventResult.err) {
+      showBoundary(messageEventResult);
+      return messageEventResult;
+    }
+
+    if (messageEventResult.val.none) {
+      const safeErrorResult = createSafeErrorResult(
+        new InvariantError("No product metrics data found"),
+      );
+      showBoundary(safeErrorResult);
+      return safeErrorResult;
+    }
+
+    loginDispatch({
+      action: loginAction.setProductMetricsGenerated,
+      payload: true,
+    });
+
+    return messageEventResult;
+  } catch (error: unknown) {
+    return catchHandlerErrorSafe(
+      error,
+      input?.isComponentMountedRef,
+      input?.showBoundary,
+    );
+  }
+}
+
+async function handleMessageEventRepairMetricsWorkerToMain(input: {
+  event: MessageEventRepairMetricsWorkerToMain;
+  loginDispatch: React.Dispatch<LoginDispatch>;
+  isComponentMountedRef: React.RefObject<boolean>;
+  showBoundary: (error: unknown) => void;
+}): Promise<SafeResult<boolean>> {
+  try {
+    const parsedInputResult = parseSyncSafe({
+      object: input,
+      zSchema: handleMessageEventRepairMetricsWorkerToMainInputZod,
+    });
+    if (parsedInputResult.err) {
+      input?.showBoundary?.(parsedInputResult);
+      return parsedInputResult;
+    }
+    if (parsedInputResult.val.none) {
+      const safeErrorResult = createSafeErrorResult(
+        new InvariantError(
+          "Unexpected None option in input parsing",
+        ),
+      );
+      input?.showBoundary?.(safeErrorResult);
+      return safeErrorResult;
+    }
+
+    const {
+      event,
+      loginDispatch,
+      isComponentMountedRef,
+      showBoundary,
+    } = parsedInputResult.val.val;
+
+    if (!isComponentMountedRef.current) {
+      return createSafeErrorResult(
+        new InvariantError("Component is not mounted"),
+      );
+    }
+
+    const messageEventResult = event.data;
+    if (!messageEventResult) {
+      return createSafeErrorResult(
+        new InvariantError("No data received from the worker"),
+      );
+    }
+
+    if (messageEventResult.err) {
+      showBoundary(messageEventResult);
+      return messageEventResult;
+    }
+
+    if (messageEventResult.val.none) {
+      const safeErrorResult = createSafeErrorResult(
+        new InvariantError("No repair metrics data found"),
+      );
+      showBoundary(safeErrorResult);
+      return safeErrorResult;
+    }
+
+    loginDispatch({
+      action: loginAction.setRepairMetricsGenerated,
+      payload: true,
+    });
+
+    return messageEventResult;
+  } catch (error: unknown) {
+    return catchHandlerErrorSafe(
+      error,
+      input?.isComponentMountedRef,
+      input?.showBoundary,
+    );
+  }
+}
+
+async function handleMessageEventFinancialMetricsWorkerToMain(input: {
+  event: MessageEventFinancialMetricsWorkerToMain;
+  loginDispatch: React.Dispatch<LoginDispatch>;
+  isComponentMountedRef: React.RefObject<boolean>;
+  showBoundary: (error: unknown) => void;
+}): Promise<SafeResult<boolean>> {
+  try {
+    const parsedInputResult = parseSyncSafe({
+      object: input,
+      zSchema: handleMessageEventFinancialMetricsWorkerToMainInputZod,
+    });
+    if (parsedInputResult.err) {
+      input?.showBoundary?.(parsedInputResult);
+      return parsedInputResult;
+    }
+    if (parsedInputResult.val.none) {
+      const safeErrorResult = createSafeErrorResult(
+        new InvariantError(
+          "Unexpected None option in input parsing",
+        ),
+      );
+      input?.showBoundary?.(safeErrorResult);
+      return safeErrorResult;
+    }
+
+    const {
+      event,
+      loginDispatch,
+      isComponentMountedRef,
+      showBoundary,
+    } = parsedInputResult.val.val;
+
+    if (!isComponentMountedRef.current) {
+      return createSafeErrorResult(
+        new InvariantError("Component is not mounted"),
+      );
+    }
+
+    const messageEventResult = event.data;
+    if (!messageEventResult) {
+      return createSafeErrorResult(
+        new InvariantError("No data received from the worker"),
+      );
+    }
+
+    if (messageEventResult.err) {
+      showBoundary(messageEventResult);
+      return messageEventResult;
+    }
+
+    if (messageEventResult.val.none) {
+      const safeErrorResult = createSafeErrorResult(
+        new InvariantError("No financial metrics data found"),
+      );
+      showBoundary(safeErrorResult);
+      return safeErrorResult;
+    }
+
+    loginDispatch({
+      action: loginAction.setFinancialMetricsGenerated,
+      payload: true,
+    });
+
+    return messageEventResult;
+  } catch (error: unknown) {
+    return catchHandlerErrorSafe(
+      error,
+      input?.isComponentMountedRef,
+      input?.showBoundary,
+    );
+  }
+}
+
+async function handleMessageEventLoginFetchWorkerToMain(
+  input: {
+    authDispatch: React.Dispatch<AuthDispatch>;
+    event: MessageEventLoginFetchWorkerToMain;
+    globalDispatch: React.Dispatch<GlobalDispatch>;
+    isComponentMountedRef: React.RefObject<boolean>;
+    loginDispatch: React.Dispatch<LoginDispatch>;
+    navigate: NavigateFunction;
+    showBoundary: (error: unknown) => void;
+  },
+): Promise<SafeResult<string>> {
+  try {
+    const parsedInputResult = parseSyncSafe({
+      object: input,
+      zSchema: handleMessageEventLoginFetchWorkerToMainInputZod,
+    });
+    if (parsedInputResult.err) {
+      input?.showBoundary?.(parsedInputResult);
+      return parsedInputResult;
+    }
+    if (parsedInputResult.val.none) {
+      const safeErrorResult = createSafeErrorResult(
+        new InvariantError(
+          "Unexpected None option in input parsing",
+        ),
+      );
+      input?.showBoundary?.(safeErrorResult);
+      return safeErrorResult;
+    }
+
+    const {
+      event,
+      globalDispatch,
+      isComponentMountedRef,
+      loginDispatch,
+      navigate,
+      showBoundary,
+    } = parsedInputResult.val.val;
+
+    const messageEventResult = event.data;
+    if (!messageEventResult) {
+      return createSafeErrorResult(
+        new InvariantError(
+          "No data in message event",
+        ),
+      );
+    }
+
+    if (!isComponentMountedRef.current) {
+      return createSafeErrorResult(
+        new InvariantError("Component is not mounted"),
+      );
+    }
+
+    if (messageEventResult.err) {
+      showBoundary(messageEventResult);
+      return messageEventResult;
+    }
+
+    if (messageEventResult.val.none) {
+      loginDispatch({
+        action: loginAction.setErrorMessage,
+        payload: "Invalid credentials",
+      });
+      loginDispatch({
+        action: loginAction.setIsSubmitting,
+        payload: false,
+      });
+      loginDispatch({
+        action: loginAction.setIsSuccessful,
+        payload: false,
+      });
+
+      return createSafeErrorResult(
+        new AuthError("Invalid credentials"),
+      );
+    }
+
+    const { financialMetricsDocument } = messageEventResult.val.val;
+
+    globalDispatch({
+      action: globalAction.setFinancialMetricsDocument,
+      payload: financialMetricsDocument,
+    });
+
+    loginDispatch({
+      action: loginAction.setIsSubmitting,
+      payload: false,
+    });
+    loginDispatch({
+      action: loginAction.setIsSuccessful,
+      payload: true,
+    });
+
+    navigate("/dashboard/financials");
+
+    return createSafeSuccessResult("Login successful");
+  } catch (error: unknown) {
+    return catchHandlerErrorSafe(
+      error,
+      input?.isComponentMountedRef,
+      input?.showBoundary,
+    );
+  }
+}
+
+export {
+  handleLogin,
+  handleMessageEventCustomerMetricsWorkerToMain,
+  handleMessageEventFinancialMetricsWorkerToMain,
+  handleMessageEventLoginFetchWorkerToMain,
+  handleMessageEventProductMetricsWorkerToMain,
+  handleMessageEventRepairMetricsWorkerToMain,
+};

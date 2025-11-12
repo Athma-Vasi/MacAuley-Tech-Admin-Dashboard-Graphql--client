@@ -1,12 +1,12 @@
 import type { LoginState } from "./state.ts";
 
-type LoginActions = {
+type LoginAction = {
     [K in keyof LoginState as `set${Capitalize<string & K>}`]: `set${Capitalize<
         string & K
     >}`;
 };
 
-const loginActions: LoginActions = {
+const loginAction: LoginAction = {
     setUsername: "setUsername",
     setPassword: "setPassword",
     setIsLoading: "setIsLoading",
@@ -20,7 +20,8 @@ const loginActions: LoginActions = {
     setRepairMetricsWorker: "setRepairMetricsWorker",
     setErrorMessage: "setErrorMessage",
     setCustomerMetricsWorker: "setCustomerMetricsWorker",
+    setLoginFetchWorker: "setLoginFetchWorker",
 };
 
-export { loginActions };
-export type { LoginActions };
+export { loginAction };
+export type { LoginAction };

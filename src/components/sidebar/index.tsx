@@ -12,37 +12,20 @@ import {
   TbUser,
 } from "react-icons/tb";
 import { useNavigate } from "react-router-dom";
-import {
-  API_URL,
-  COLORS_SWATCHES,
-  LOGOUT_URL,
-  METRICS_URL,
-} from "../../constants";
+import { COLORS_SWATCHES, METRICS_URL } from "../../constants";
 import { globalAction } from "../../context/globalProvider";
 import { useMountedRef } from "../../hooks";
 import { useAuth } from "../../hooks/useAuth";
 import { useGlobalState } from "../../hooks/useGlobalState";
 import { returnThemeColors } from "../../utils";
-import type { MessageEventFetchWorkerToMain } from "../../workers/fetchParseWorker";
-import FetchParseWorker from "../../workers/fetchParseWorker?worker";
-import { type MessageEventPrefetchAndCacheWorkerToMain } from "../../workers/prefetchAndCacheWorker";
-import PrefetchAndCacheWorker from "../../workers/prefetchAndCacheWorker?worker";
 import { AccessibleButton } from "../accessibleInputs/AccessibleButton";
 import { AccessibleNavLink } from "../accessibleInputs/AccessibleNavLink";
 import { type MessageEventDashboardCacheWorkerToMain } from "../dashboard/cacheWorker";
 import MetricsCacheWorker from "../dashboard/cacheWorker?worker";
-import { type MessageEventDirectoryFetchWorkerToMain } from "../directory/fetchWorker";
-import DirectoryFetchWorker from "../directory/fetchWorker?worker";
-import { handleMessageEventUsersPrefetchAndCacheWorkerToMain } from "../usersQuery/handlers";
 import { sidebarAction } from "./actions";
 import {
-  handleDirectoryNavClick,
-  handleLogoutClick,
-  handleMessageEventDirectoryFetchWorkerToMain,
-  handleMessageEventLogoutFetchWorkerToMain,
   handleMessageEventMetricsCacheWorkerToMain,
   handleMetricCategoryNavClick,
-  triggerMessageEventDirectoryPrefetchAndCacheMainToWorker,
 } from "./handlers";
 import { sidebarReducer } from "./reducers";
 import { initialSidebarState } from "./state";
@@ -53,7 +36,7 @@ type SidebarProps = {
 };
 
 function Sidebar({ opened, setOpened }: SidebarProps) {
-  const { authState: { accessToken, decodedToken }, authDispatch } = useAuth();
+  const { authDispatch } = useAuth();
   const {
     globalState,
     globalDispatch,
@@ -102,66 +85,9 @@ function Sidebar({ opened, setOpened }: SidebarProps) {
       });
     };
 
-    const newDirectoryFetchWorker = new DirectoryFetchWorker();
-    sidebarDispatch({
-      action: sidebarAction.setDirectoryFetchWorker,
-      payload: newDirectoryFetchWorker,
-    });
-
-    newDirectoryFetchWorker.onmessage = async (
-      event: MessageEventDirectoryFetchWorkerToMain,
-    ) => {
-      await handleMessageEventDirectoryFetchWorkerToMain({
-        authDispatch,
-        event,
-        globalDispatch,
-        isComponentMountedRef,
-        showBoundary,
-        navigate,
-        toLocation: "/dashboard/directory",
-      });
-    };
-
-    const newLogoutFetchWorker = new FetchParseWorker();
-    sidebarDispatch({
-      action: sidebarAction.setLogoutFetchWorker,
-      payload: newLogoutFetchWorker,
-    });
-
-    newLogoutFetchWorker.onmessage = async (
-      event: MessageEventFetchWorkerToMain<boolean>,
-    ) => {
-      await handleMessageEventLogoutFetchWorkerToMain({
-        event,
-        globalDispatch,
-        isComponentMountedRef,
-        navigate,
-        showBoundary,
-      });
-    };
-
-    const newPrefetchAndCacheWorker = new PrefetchAndCacheWorker();
-    sidebarDispatch({
-      action: sidebarAction.setPrefetchAndCacheWorker,
-      payload: newPrefetchAndCacheWorker,
-    });
-    newPrefetchAndCacheWorker.onmessage = async (
-      event: MessageEventPrefetchAndCacheWorkerToMain,
-    ) => {
-      await handleMessageEventUsersPrefetchAndCacheWorkerToMain({
-        authDispatch,
-        event,
-        isComponentMountedRef,
-        showBoundary,
-      });
-    };
-
     return () => {
       isComponentMountedRef.current = false;
       newMetricsCacheWorker.terminate();
-      newDirectoryFetchWorker.terminate();
-      newLogoutFetchWorker.terminate();
-      newPrefetchAndCacheWorker.terminate();
     };
   }, []);
 
@@ -312,29 +238,9 @@ function Sidebar({ opened, setOpened }: SidebarProps) {
             payload: true,
           });
 
-          await handleDirectoryNavClick({
-            accessToken,
-            department: "Executive Management",
-            directoryFetchWorker,
-            directoryUrl: API_URL,
-            globalDispatch,
-            isComponentMountedRef,
-            showBoundary,
-            storeLocation: "All Locations",
-          });
-
           setOpened(false);
         },
         onMouseEnter: async () => {
-          await triggerMessageEventDirectoryPrefetchAndCacheMainToWorker({
-            accessToken,
-            department: "Executive Management",
-            directoryUrl: API_URL,
-            isComponentMountedRef,
-            prefetchAndCacheWorker,
-            showBoundary,
-            storeLocation: "All Locations",
-          });
         },
       }}
     />
@@ -392,15 +298,6 @@ function Sidebar({ opened, setOpened }: SidebarProps) {
           sidebarDispatch({
             action: sidebarAction.setClickedNavlink,
             payload: "logout",
-          });
-
-          await handleLogoutClick({
-            accessToken,
-            globalDispatch,
-            isComponentMountedRef,
-            logoutFetchWorker,
-            logoutUrl: LOGOUT_URL,
-            showBoundary,
           });
         },
       }}

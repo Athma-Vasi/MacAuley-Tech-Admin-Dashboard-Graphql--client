@@ -1,5 +1,6 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { Box, Group, Loader, Stack, Text } from "@mantine/core";
-import { useEffect, useReducer } from "react";
+import { useReducer } from "react";
 
 import type { Orientation } from "react-d3-tree";
 import { useErrorBoundary } from "react-error-boundary";
@@ -11,15 +12,10 @@ import type { CheckboxRadioSelectData } from "../../types";
 import { returnThemeColors } from "../../utils";
 import { AccessibleSelectInput } from "../accessibleInputs/AccessibleSelectInput";
 import { type AllStoreLocations } from "../dashboard/types";
-import {
-  handleMessageEventDirectoryFetchWorkerToMain,
-} from "../sidebar/handlers";
 import { directoryAction } from "./actions";
 import { ALL_DEPARTMENTS_DATA, ORIENTATIONS_DATA } from "./constants";
 import { D3Tree } from "./d3Tree/D3Tree";
 import { buildD3Tree } from "./d3Tree/utils";
-import type { MessageEventDirectoryFetchWorkerToMain } from "./fetchWorker";
-import DirectoryFetchWorker from "./fetchWorker?worker";
 import { handleDirectoryDepartmentAndLocationClicks } from "./handlers";
 import { directoryReducer } from "./reducers";
 import { initialDirectoryState } from "./state";
@@ -58,37 +54,6 @@ function Directory() {
   const isComponentMountedRef = useMountedRef();
 
   console.log("auth state inside Directory:", authState);
-
-  useEffect(() => {
-    const newDirectoryFetchWorker = new DirectoryFetchWorker();
-
-    directoryDispatch({
-      action: directoryAction.setDirectoryFetchWorker,
-      payload: newDirectoryFetchWorker,
-    });
-
-    newDirectoryFetchWorker.onmessage = async (
-      event: MessageEventDirectoryFetchWorkerToMain,
-    ) => {
-      await handleMessageEventDirectoryFetchWorkerToMain({
-        authDispatch,
-        event,
-        globalDispatch,
-        isComponentMountedRef,
-        showBoundary,
-      });
-
-      directoryDispatch({
-        action: directoryAction.setIsLoading,
-        payload: false,
-      });
-    };
-
-    return () => {
-      isComponentMountedRef.current = false;
-      newDirectoryFetchWorker.terminate();
-    };
-  }, []);
 
   if (directory === null || directory === undefined || directory.length === 0) {
     return null;

@@ -1,28 +1,19 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { Accordion, Box, Group, Pagination, Space } from "@mantine/core";
-import { useEffect, useReducer } from "react";
+import { useReducer } from "react";
 import { useErrorBoundary } from "react-error-boundary";
 import { useNavigate } from "react-router-dom";
-import { API_URL, COLORS_SWATCHES } from "../../constants";
+import { COLORS_SWATCHES } from "../../constants";
 import { useMountedRef } from "../../hooks";
 import { useAuth } from "../../hooks/useAuth";
 import { useGlobalState } from "../../hooks/useGlobalState";
 import { useWindowSize } from "../../hooks/useWindowSize";
 import { returnThemeColors } from "../../utils";
-import type { MessageEventPrefetchAndCacheWorkerToMain } from "../../workers/prefetchAndCacheWorker";
-import PrefetchAndCacheWorker from "../../workers/prefetchAndCacheWorker?worker";
 import { AccessibleButton } from "../accessibleInputs/AccessibleButton";
 import { Query } from "../query/Query";
 import { usersQueryAction } from "./actions";
 import { USER_QUERY_TEMPLATES } from "./constants";
 import DisplayResource from "./DisplayResource";
-import type { MessageEventUsersFetchWorkerToMain } from "./fetchWorker";
-import UsersFetchWorker from "./fetchWorker?worker";
-import {
-    handleMessageEventUsersFetchWorkerToMain,
-    handleMessageEventUsersPrefetchAndCacheWorkerToMain,
-    triggerMessageEventFetchMainToWorkerUsersQuery,
-    triggerMessageEventUsersPrefetchAndCacheMainToWorker,
-} from "./handlers";
 import { usersQueryReducer } from "./reducers";
 import { initialUsersQueryState } from "./state";
 
@@ -46,54 +37,6 @@ function UsersQuery() {
     });
 
     const isComponentMountedRef = useMountedRef();
-
-    useEffect(() => {
-        const newPrefetchAndCacheWorker = new PrefetchAndCacheWorker();
-        usersQueryDispatch({
-            action: usersQueryAction.setPrefetchAndCacheWorker,
-            payload: newPrefetchAndCacheWorker,
-        });
-        newPrefetchAndCacheWorker.onmessage = async (
-            event: MessageEventPrefetchAndCacheWorkerToMain,
-        ) => {
-            const result =
-                await handleMessageEventUsersPrefetchAndCacheWorkerToMain(
-                    {
-                        authDispatch,
-                        event,
-                        isComponentMountedRef,
-                        showBoundary,
-                    },
-                );
-
-            console.log("Prefetch and cache result:", result.val);
-        };
-
-        const newUsersFetchWorker = new UsersFetchWorker();
-        usersQueryDispatch({
-            action: usersQueryAction.setUsersFetchWorker,
-            payload: newUsersFetchWorker,
-        });
-
-        newUsersFetchWorker.onmessage = async (
-            event: MessageEventUsersFetchWorkerToMain,
-        ) => {
-            await handleMessageEventUsersFetchWorkerToMain({
-                authDispatch,
-                event,
-                isComponentMountedRef,
-                navigate,
-                showBoundary,
-                usersQueryDispatch,
-            });
-        };
-
-        return () => {
-            isComponentMountedRef.current = false;
-            newPrefetchAndCacheWorker.terminate();
-            newUsersFetchWorker.terminate();
-        };
-    }, []);
 
     const {
         arrangeByDirection,
@@ -124,42 +67,11 @@ function UsersQuery() {
                     if (isLoading || !decodedToken) {
                         return;
                     }
-
-                    await triggerMessageEventFetchMainToWorkerUsersQuery({
-                        accessToken,
-                        arrangeByDirection,
-                        arrangeByField,
-                        currentPage,
-                        isComponentMountedRef,
-                        newQueryFlag,
-                        queryString,
-                        showBoundary,
-                        totalDocuments,
-                        url: API_URL,
-                        usersFetchWorker,
-                        usersQueryDispatch,
-                    });
                 },
                 onMouseEnter: async () => {
                     if (isLoading || !decodedToken) {
                         return;
                     }
-
-                    await triggerMessageEventUsersPrefetchAndCacheMainToWorker(
-                        {
-                            accessToken,
-                            arrangeByDirection,
-                            arrangeByField,
-                            currentPage,
-                            isComponentMountedRef,
-                            newQueryFlag,
-                            prefetchAndCacheWorker,
-                            queryString,
-                            showBoundary,
-                            totalDocuments,
-                            url: API_URL,
-                        },
-                    );
                 },
             }}
         />
@@ -217,40 +129,11 @@ function UsersQuery() {
                     if (isLoading || !decodedToken) {
                         return;
                     }
-                    await triggerMessageEventFetchMainToWorkerUsersQuery({
-                        accessToken,
-                        arrangeByDirection,
-                        arrangeByField,
-                        currentPage: page,
-                        isComponentMountedRef,
-                        newQueryFlag: false,
-                        queryString,
-                        showBoundary,
-                        totalDocuments,
-                        url: API_URL,
-                        usersFetchWorker,
-                        usersQueryDispatch,
-                    });
                 }}
                 onMouseEnter={async () => {
                     if (isLoading || !decodedToken) {
                         return;
                     }
-                    await triggerMessageEventUsersPrefetchAndCacheMainToWorker(
-                        {
-                            accessToken,
-                            arrangeByDirection,
-                            arrangeByField,
-                            currentPage: currentPage + 1, // optimistically prefetch next page
-                            isComponentMountedRef,
-                            newQueryFlag: false,
-                            prefetchAndCacheWorker,
-                            queryString,
-                            showBoundary,
-                            totalDocuments,
-                            url: API_URL,
-                        },
-                    );
                 }}
                 total={pages}
                 w="100%"

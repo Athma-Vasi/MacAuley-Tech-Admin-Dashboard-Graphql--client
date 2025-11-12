@@ -1,7 +1,7 @@
 import { parseDispatchAndSetState } from "../../utils.ts";
-import type { LoginActions } from "./actions.ts";
-import { loginActions } from "./actions.ts";
-import type { LoginDispatch } from "./dispatches.ts";
+import type { LoginAction } from "./actions.ts";
+import { loginAction } from "./actions.ts";
+import type { LoginDispatch } from "./schemas.ts";
 import {
     setCustomerMetricsWorkerLoginDispatchZod,
     setErrorMessageLoginDispatchZod,
@@ -10,13 +10,14 @@ import {
     setIsLoadingLoginDispatchZod,
     setIsSubmittingLoginDispatchZod,
     setIsSuccessfulLoginDispatchZod,
+    setLoginFetchWorkerLoginDispatchZod,
     setPasswordLoginDispatchZod,
     setProductMetricsGeneratedLoginDispatchZod,
     setProductMetricsWorkerLoginDispatchZod,
     setRepairMetricsGeneratedLoginDispatchZod,
     setRepairMetricsWorkerLoginDispatchZod,
     setUsernameLoginDispatchZod,
-} from "./dispatches.ts";
+} from "./schemas.ts";
 import type { LoginState } from "./state.ts";
 
 function loginReducer(
@@ -28,60 +29,64 @@ function loginReducer(
 }
 
 const loginReducersMap: Map<
-    LoginActions[keyof LoginActions],
+    LoginAction[keyof LoginAction],
     (state: LoginState, dispatch: LoginDispatch) => LoginState
 > = new Map([
     [
-        loginActions.setUsername,
+        loginAction.setUsername,
         loginReducer_setUsername,
     ],
     [
-        loginActions.setPassword,
+        loginAction.setPassword,
         loginReducer_setPassword,
     ],
     [
-        loginActions.setIsLoading,
+        loginAction.setIsLoading,
         loginReducer_setIsLoading,
     ],
     [
-        loginActions.setIsSubmitting,
+        loginAction.setIsSubmitting,
         loginReducer_setIsSubmitting,
     ],
     [
-        loginActions.setIsSuccessful,
+        loginAction.setIsSuccessful,
         loginReducer_setIsSuccessful,
     ],
     [
-        loginActions.setFinancialMetricsGenerated,
+        loginAction.setFinancialMetricsGenerated,
         loginReducer_setFinancialMetricsGenerated,
     ],
     [
-        loginActions.setProductMetricsGenerated,
+        loginAction.setProductMetricsGenerated,
         loginReducer_setProductMetricsGenerated,
     ],
     [
-        loginActions.setRepairMetricsGenerated,
+        loginAction.setRepairMetricsGenerated,
         loginReducer_setRepairMetricsGenerated,
     ],
     [
-        loginActions.setFinancialMetricsWorker,
+        loginAction.setFinancialMetricsWorker,
         loginReducer_setFinancialMetricsWorker,
     ],
     [
-        loginActions.setProductMetricsWorker,
+        loginAction.setProductMetricsWorker,
         loginReducer_setProductMetricsWorker,
     ],
     [
-        loginActions.setRepairMetricsWorker,
+        loginAction.setRepairMetricsWorker,
         loginReducer_setRepairMetricsWorker,
     ],
     [
-        loginActions.setErrorMessage,
+        loginAction.setErrorMessage,
         loginReducer_setErrorMessage,
     ],
     [
-        loginActions.setCustomerMetricsWorker,
+        loginAction.setCustomerMetricsWorker,
         loginReducer_setCustomerMetricsWorker,
+    ],
+    [
+        loginAction.setLoginFetchWorker,
+        loginReducer_setLoginFetchWorker,
     ],
 ]);
 
@@ -238,6 +243,18 @@ function loginReducer_setCustomerMetricsWorker(
         key: "customerMetricsWorker",
         state,
         zSchema: setCustomerMetricsWorkerLoginDispatchZod,
+    });
+}
+
+function loginReducer_setLoginFetchWorker(
+    state: LoginState,
+    dispatch: LoginDispatch,
+): LoginState {
+    return parseDispatchAndSetState({
+        dispatch,
+        key: "loginFetchWorker",
+        state,
+        zSchema: setLoginFetchWorkerLoginDispatchZod,
     });
 }
 

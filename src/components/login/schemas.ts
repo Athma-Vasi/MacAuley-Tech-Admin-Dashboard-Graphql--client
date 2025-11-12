@@ -1,0 +1,180 @@
+import { z } from "zod";
+import { loginAction } from "./actions";
+
+const setIsLoadingLoginDispatchZod = z.object({
+    action: z.literal(loginAction.setIsLoading),
+    payload: z.boolean(),
+});
+const setIsSubmittingLoginDispatchZod = z.object({
+    action: z.literal(loginAction.setIsSubmitting),
+    payload: z.boolean(),
+});
+const setIsSuccessfulLoginDispatchZod = z.object({
+    action: z.literal(loginAction.setIsSuccessful),
+    payload: z.boolean(),
+});
+const setPasswordLoginDispatchZod = z.object({
+    action: z.literal(loginAction.setPassword),
+    payload: z.string(),
+});
+const setUsernameLoginDispatchZod = z.object({
+    action: z.literal(loginAction.setUsername),
+    payload: z.string(),
+});
+const setLoginFetchWorkerLoginDispatchZod = z.object({
+    action: z.literal(loginAction.setLoginFetchWorker),
+    payload: z.instanceof(Worker),
+});
+
+const setErrorMessageLoginDispatchZod = z.object({
+    action: z.literal(loginAction.setErrorMessage),
+    payload: z.string(),
+});
+
+const setFinancialMetricsWorkerLoginDispatchZod = z.object({
+    action: z.literal(loginAction.setFinancialMetricsWorker),
+    payload: z.instanceof(Worker),
+});
+
+const setProductMetricsWorkerLoginDispatchZod = z.object({
+    action: z.literal(loginAction.setProductMetricsWorker),
+    payload: z.instanceof(Worker),
+});
+
+const setRepairMetricsWorkerLoginDispatchZod = z.object({
+    action: z.literal(loginAction.setRepairMetricsWorker),
+    payload: z.instanceof(Worker),
+});
+
+const setCustomerMetricsWorkerLoginDispatchZod = z.object({
+    action: z.literal(loginAction.setCustomerMetricsWorker),
+    payload: z.instanceof(Worker),
+});
+
+const setProductMetricsGeneratedLoginDispatchZod = z.object({
+    action: z.literal(loginAction.setProductMetricsGenerated),
+    payload: z.boolean(),
+});
+
+const setRepairMetricsGeneratedLoginDispatchZod = z.object({
+    action: z.literal(loginAction.setRepairMetricsGenerated),
+    payload: z.boolean(),
+});
+
+const setFinancialMetricsGeneratedLoginDispatchZod = z.object({
+    action: z.literal(loginAction.setFinancialMetricsGenerated),
+    payload: z.boolean(),
+});
+
+type LoginDispatch =
+    | z.infer<typeof setCustomerMetricsWorkerLoginDispatchZod>
+    | z.infer<typeof setErrorMessageLoginDispatchZod>
+    | z.infer<typeof setFinancialMetricsGeneratedLoginDispatchZod>
+    | z.infer<typeof setFinancialMetricsWorkerLoginDispatchZod>
+    | z.infer<typeof setIsLoadingLoginDispatchZod>
+    | z.infer<typeof setIsSubmittingLoginDispatchZod>
+    | z.infer<typeof setIsSuccessfulLoginDispatchZod>
+    | z.infer<typeof setLoginFetchWorkerLoginDispatchZod>
+    | z.infer<typeof setPasswordLoginDispatchZod>
+    | z.infer<typeof setProductMetricsGeneratedLoginDispatchZod>
+    | z.infer<typeof setProductMetricsWorkerLoginDispatchZod>
+    | z.infer<typeof setRepairMetricsGeneratedLoginDispatchZod>
+    | z.infer<typeof setRepairMetricsWorkerLoginDispatchZod>
+    | z.infer<typeof setUsernameLoginDispatchZod>;
+
+const handleLoginClickInputZod = z.object({
+    isLoading: z.boolean(),
+    isSubmitting: z.boolean(),
+    isSuccessful: z.boolean(),
+    loginDispatch: z.function(),
+    loginFetchWorker: z.instanceof(Worker),
+    schema: z.object({
+        username: z.string(),
+        password: z.string(),
+    }),
+});
+
+const handleMessageEventLoginFetchWorkerToMainInputZod = z.object({
+    authDispatch: z.function(),
+    event: z.instanceof(MessageEvent),
+    globalDispatch: z.function(),
+    isComponentMountedRef: z.object({ current: z.boolean() }),
+    loginDispatch: z.function(),
+    navigate: z.function(),
+    showBoundary: z.function(),
+});
+
+const handleMessageEventCustomerMetricsWorkerToMainInputZod = z.object({
+    event: z.instanceof(MessageEvent),
+    isComponentMountedRef: z.object({ current: z.boolean() }),
+    showBoundary: z.function(),
+});
+
+const handleMessageEventProductMetricsWorkerToMainInputZod = z.object({
+    event: z.instanceof(MessageEvent),
+    loginDispatch: z.function(),
+    isComponentMountedRef: z.object({ current: z.boolean() }),
+    showBoundary: z.function(),
+});
+
+const handleMessageEventRepairMetricsWorkerToMainInputZod = z.object({
+    event: z.instanceof(MessageEvent),
+    loginDispatch: z.function(),
+    isComponentMountedRef: z.object({ current: z.boolean() }),
+    showBoundary: z.function(),
+});
+
+const handleMessageEventFinancialMetricsWorkerToMainInputZod = z.object({
+    event: z.instanceof(MessageEvent),
+    loginDispatch: z.function(),
+    isComponentMountedRef: z.object({ current: z.boolean() }),
+    showBoundary: z.function(),
+});
+
+const handleMessageEventTriggerPrefetchWorkerToMainInputZod = z.object({
+    isComponentMountedRef: z.object({ current: z.boolean() }),
+    isLoading: z.boolean(),
+    isSubmitting: z.boolean(),
+    isSuccessful: z.boolean(),
+    loginDispatch: z.function(),
+    prefetchAndCacheWorker: z.instanceof(Worker),
+    schema: z.object({
+        username: z.string(),
+        password: z.string(),
+    }),
+    showBoundary: z.function(),
+});
+
+const handleMessageEventLoginPrefetchAndCacheWorkerToMainInputZod = z.object({
+    authDispatch: z.function(),
+    event: z.instanceof(MessageEvent),
+    loginDispatch: z.function(),
+    isComponentMountedRef: z.object({ current: z.boolean() }),
+    showBoundary: z.function(),
+});
+
+export {
+    handleLoginClickInputZod,
+    handleMessageEventCustomerMetricsWorkerToMainInputZod,
+    handleMessageEventFinancialMetricsWorkerToMainInputZod,
+    handleMessageEventLoginFetchWorkerToMainInputZod,
+    handleMessageEventLoginPrefetchAndCacheWorkerToMainInputZod,
+    handleMessageEventProductMetricsWorkerToMainInputZod,
+    handleMessageEventRepairMetricsWorkerToMainInputZod,
+    handleMessageEventTriggerPrefetchWorkerToMainInputZod,
+    setCustomerMetricsWorkerLoginDispatchZod,
+    setErrorMessageLoginDispatchZod,
+    setFinancialMetricsGeneratedLoginDispatchZod,
+    setFinancialMetricsWorkerLoginDispatchZod,
+    setIsLoadingLoginDispatchZod,
+    setIsSubmittingLoginDispatchZod,
+    setIsSuccessfulLoginDispatchZod,
+    setLoginFetchWorkerLoginDispatchZod,
+    setPasswordLoginDispatchZod,
+    setProductMetricsGeneratedLoginDispatchZod,
+    setProductMetricsWorkerLoginDispatchZod,
+    setRepairMetricsGeneratedLoginDispatchZod,
+    setRepairMetricsWorkerLoginDispatchZod,
+    setUsernameLoginDispatchZod,
+};
+export type { LoginDispatch };
