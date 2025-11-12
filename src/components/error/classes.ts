@@ -348,12 +348,60 @@ class HTTPError extends AppErrorBase {
     }
 }
 
+class MetricsGenerationError extends AppErrorBase {
+    readonly _tag = "MetricsGenerationError";
+
+    constructor(
+        error?: unknown,
+        message = "Metrics generation error occurred",
+    ) {
+        super(
+            "MetricsGenerationError",
+            error instanceof Error ? error.name : "UnknownError",
+            error instanceof Error && error.stack
+                ? error.stack
+                : "Stack trace not available",
+            message,
+        );
+    }
+}
+
 class UnknownError extends AppErrorBase {
     readonly _tag = "UnknownError";
 
     constructor(error?: unknown, message = "An unknown error occurred") {
         super(
             "UnknownError",
+            error instanceof Error ? error.name : "UnknownError",
+            error instanceof Error && error.stack
+                ? error.stack
+                : "Stack trace not available",
+            message,
+        );
+    }
+}
+
+class WorkerError extends AppErrorBase {
+    readonly _tag = "WorkerError";
+
+    constructor(error?: unknown, message = "Worker error occurred") {
+        super(
+            "WorkerError",
+            error instanceof Error ? error.name : "UnknownError",
+            error instanceof Error && error.stack
+                ? error.stack
+                : "Stack trace not available",
+            message,
+        );
+    }
+}
+
+class WorkerMessageError extends AppErrorBase {
+    readonly _tag = "WorkerMessageError";
+
+    constructor(error?: unknown, message = "Worker message error occurred") {
+        super(
+            "WorkerMessageError",
             error instanceof Error ? error.name : "UnknownError",
             error instanceof Error && error.stack
                 ? error.stack
@@ -374,6 +422,7 @@ export {
     HTTPError,
     InvariantError,
     JSONError,
+    MetricsGenerationError,
     NetworkError,
     NotFoundError,
     ParseError,
@@ -387,4 +436,6 @@ export {
     TokenVerificationError,
     UnknownError,
     ValidationError,
+    WorkerError,
+    WorkerMessageError,
 };

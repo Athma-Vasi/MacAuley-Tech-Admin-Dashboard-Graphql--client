@@ -112,7 +112,7 @@ const handleMessageEventLoginForageWorkerToMainInputZod = z.object({
 const handleMessageEventCustomerMetricsWorkerToMainInputZod = z.object({
     event: z.instanceof(MessageEvent),
     isComponentMountedRef: z.object({ current: z.boolean() }),
-    showBoundary: z.function(),
+    loginDispatch: z.function(),
 });
 
 const handleMessageEventProductMetricsWorkerToMainInputZod = z.object({

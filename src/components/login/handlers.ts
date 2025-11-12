@@ -17,7 +17,7 @@ import type { MessageEventCustomerMetricsWorkerToMain } from "../dashboard/custo
 import type { MessageEventFinancialMetricsWorkerToMain } from "../dashboard/financial/metricsWorker";
 import type { MessageEventProductMetricsWorkerToMain } from "../dashboard/product/metricsWorker";
 import type { MessageEventRepairMetricsWorkerToMain } from "../dashboard/repair/metricsWorker";
-import { InvariantError } from "../error/classes";
+import { AuthError, InvariantError, WorkerError } from "../error/classes";
 import type {
   LoginUserMutation$data,
 } from "./__generated__/LoginUserMutation.graphql";
@@ -48,7 +48,7 @@ async function handleLogin(
     password: string;
     username: string;
   },
-) {
+): Promise<undefined> {
   if (!isComponentMountedRef.current) {
     return;
   }
@@ -115,12 +115,12 @@ async function handleLogin(
         console.error("Login errors:", errors);
 
         loginDispatch({
-          action: loginAction.setIsSuccessful,
-          payload: false,
-        });
-        loginDispatch({
-          action: loginAction.setErrorMessage,
-          payload: errors.map((e) => e.message).join(", "),
+          action: loginAction.setSafeErrorResult,
+          payload: createSafeErrorResult(
+            new AuthError(
+              "Failed to login due to server errors",
+            ),
+          ),
         });
         return;
       }
@@ -132,12 +132,8 @@ async function handleLogin(
       const decodedTokenResult = decodeJWTSafe(accessToken);
       if (decodedTokenResult.err) {
         loginDispatch({
-          action: loginAction.setIsSuccessful,
-          payload: false,
-        });
-        loginDispatch({
-          action: loginAction.setErrorMessage,
-          payload: "Invalid access token received",
+          action: loginAction.setSafeErrorResult,
+          payload: decodedTokenResult,
         });
         return;
       }
@@ -145,24 +141,20 @@ async function handleLogin(
       const decodedTokenMaybe = decodedTokenResult.safeUnwrap();
       if (decodedTokenMaybe.none) {
         loginDispatch({
-          action: loginAction.setIsSuccessful,
-          payload: false,
-        });
-        loginDispatch({
-          action: loginAction.setErrorMessage,
-          payload: "Invalid access token received",
+          action: loginAction.setSafeErrorResult,
+          payload: createSafeErrorResult(
+            new InvariantError(
+              "Decoded token is None",
+            ),
+          ),
         });
         return;
       }
       const decodedToken = decodedTokenMaybe.safeUnwrap();
 
       loginDispatch({
-        action: loginAction.setIsSuccessful,
-        payload: true,
-      });
-      loginDispatch({
-        action: loginAction.setErrorMessage,
-        payload: "",
+        action: loginAction.setSafeErrorResult,
+        payload: null,
       });
       authDispatch({
         action: authAction.setAccessToken,
@@ -174,22 +166,24 @@ async function handleLogin(
       });
 
       navigate("/dashboard/financials");
+      return;
     },
 
     onError: (error) => {
+      if (!isComponentMountedRef.current) {
+        return;
+      }
+
       console.error("Mutation error:", error);
       loginDispatch({
         action: loginAction.setIsLoading,
         payload: false,
       });
       loginDispatch({
-        action: loginAction.setIsSuccessful,
-        payload: false,
+        action: loginAction.setSafeErrorResult,
+        payload: createSafeErrorResult(error),
       });
-      loginDispatch({
-        action: loginAction.setErrorMessage,
-        payload: error.message || "An unknown error occurred during login",
-      });
+      return;
     },
   });
 }
@@ -198,59 +192,75 @@ async function handleMessageEventCustomerMetricsWorkerToMain(
   input: {
     event: MessageEventCustomerMetricsWorkerToMain;
     isComponentMountedRef: React.RefObject<boolean>;
-    showBoundary: (error: unknown) => void;
+    loginDispatch: React.Dispatch<LoginDispatch>;
   },
-): Promise<SafeResult<string>> {
+): Promise<undefined> {
   try {
     const parsedInputResult = parseSyncSafe({
       object: input,
       zSchema: handleMessageEventCustomerMetricsWorkerToMainInputZod,
     });
     if (parsedInputResult.err) {
-      input?.showBoundary?.(parsedInputResult);
-      return parsedInputResult;
+      input?.loginDispatch?.({
+        action: loginAction.setSafeErrorResult,
+        payload: parsedInputResult,
+      });
+      return;
     }
-    if (parsedInputResult.val.none) {
-      const safeErrorResult = createSafeErrorResult(
-        new InvariantError(
-          "Unexpected None option in input parsing",
+    const parsedInputMaybe = parsedInputResult.safeUnwrap();
+    if (parsedInputMaybe.none) {
+      input?.loginDispatch?.({
+        action: loginAction.setSafeErrorResult,
+        payload: createSafeErrorResult(
+          new InvariantError(
+            "Unexpected None option in input parsing",
+          ),
         ),
-      );
-      input?.showBoundary?.(safeErrorResult);
-      return safeErrorResult;
+      });
+      return;
     }
 
     const {
       event,
       isComponentMountedRef,
-      showBoundary,
-    } = parsedInputResult.val.val;
+      loginDispatch,
+    } = parsedInputMaybe.safeUnwrap();
 
     if (!isComponentMountedRef.current) {
-      return createSafeErrorResult(
-        new InvariantError("Component is not mounted"),
-      );
+      return;
     }
 
-    const messageEventResult = event.data;
-    if (!messageEventResult) {
-      return createSafeErrorResult(
-        new InvariantError("No data received from the worker"),
-      );
+    const messageResult = event.data;
+    if (messageResult.err) {
+      loginDispatch({
+        action: loginAction.setSafeErrorResult,
+        payload: messageResult,
+      });
+      return;
     }
 
-    if (messageEventResult.err) {
-      showBoundary(messageEventResult);
-      return messageEventResult;
+    const messageMaybe = messageResult.safeUnwrap();
+    if (messageMaybe.none) {
+      loginDispatch({
+        action: loginAction.setSafeErrorResult,
+        payload: createSafeErrorResult(
+          new InvariantError("No customer metrics data found"),
+        ),
+      });
+      return;
+    }
+    const message = messageMaybe.safeUnwrap();
+    if (!message) {
+      loginDispatch({
+        action: loginAction.setSafeErrorResult,
+        payload: createSafeErrorResult(
+          new WorkerError("Unable to generate customer metrics"),
+        ),
+      });
+      return;
     }
 
-    if (messageEventResult.val.none) {
-      return createSafeErrorResult(
-        new InvariantError("No customer metrics data found"),
-      );
-    }
-
-    return messageEventResult;
+    return messageResult;
   } catch (error: unknown) {
     return catchHandlerErrorSafe(
       error,

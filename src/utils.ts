@@ -49,15 +49,26 @@ import {
     AbortError,
     type AppErrorBase,
     CacheError,
+    DatabaseError,
+    HashComparisonError,
+    HashGenerationError,
     HTTPError,
     InvariantError,
     JSONError,
+    MetricsGenerationError,
     NetworkError,
     ParseError,
     PromiseRejectionError,
+    RetryLimitExceededError,
     TimeoutError,
+    TokenCreationError,
     TokenDecodeError,
+    TokenSignatureError,
+    TokenVerificationError,
     UnknownError,
+    ValidationError,
+    WorkerError,
+    WorkerMessageError,
 } from "./components/error/classes";
 import type { SidebarNavlinks } from "./components/sidebar/types";
 import type {
@@ -148,15 +159,26 @@ function createSafeErrorResult(
         // TODO: refactor with purpose
         error instanceof AbortError ||
         error instanceof CacheError ||
+        error instanceof DatabaseError ||
+        error instanceof HashComparisonError ||
+        error instanceof HashGenerationError ||
+        error instanceof HTTPError ||
         error instanceof InvariantError ||
         error instanceof JSONError ||
+        error instanceof MetricsGenerationError ||
         error instanceof NetworkError ||
         error instanceof ParseError ||
-        error instanceof TimeoutError ||
-        error instanceof TokenDecodeError ||
         error instanceof PromiseRejectionError ||
-        error instanceof HTTPError ||
-        error instanceof UnknownError
+        error instanceof RetryLimitExceededError ||
+        error instanceof TimeoutError ||
+        error instanceof TokenCreationError ||
+        error instanceof TokenDecodeError ||
+        error instanceof TokenSignatureError ||
+        error instanceof TokenVerificationError ||
+        error instanceof UnknownError ||
+        error instanceof ValidationError ||
+        error instanceof WorkerError ||
+        error instanceof WorkerMessageError
     ) {
         return new Err({
             message: error.message,

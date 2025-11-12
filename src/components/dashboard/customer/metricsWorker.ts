@@ -5,9 +5,15 @@ import {
     createMetricsURLCacheKey,
     createSafeErrorResult,
     createSafeSuccessResult,
-    handleErrorResultAndNoneOptionInWorker,
     setCachedItemAsyncSafe,
 } from "../../../utils";
+import {
+    MetricsGenerationError,
+    NotFoundError,
+    PromiseRejectionError,
+    WorkerError,
+    WorkerMessageError,
+} from "../../error/classes";
 import type { AllStoreLocations, CustomerMetrics } from "../types";
 import {
     createAllLocationsAggregatedCustomerMetricsSafe,
@@ -15,9 +21,7 @@ import {
 } from "./generators";
 
 type MessageEventCustomerMetricsWorkerToMain = MessageEvent<
-    SafeResult<
-        string
-    >
+    SafeResult<boolean>
 >;
 type MessageEventCustomerMetricsMainToWorker = MessageEvent<
     boolean
@@ -28,7 +32,9 @@ self.onmessage = async (
 ) => {
     if (!event.data) {
         self.postMessage(
-            createSafeErrorResult("No data received"),
+            createSafeErrorResult(
+                new WorkerMessageError("No data received"),
+            ),
         );
         return;
     }
@@ -41,12 +47,6 @@ self.onmessage = async (
         ] = await Promise.allSettled(
             STORE_LOCATIONS.map(async ({ value: storeLocation }) => {
                 try {
-                    const defaultMetrics: CustomerMetrics = {
-                        lifetimeValue: 0,
-                        totalCustomers: 0,
-                        yearlyMetrics: [],
-                    };
-
                     const daysInMonthsInYearsResult =
                         createDaysInMonthsInYearsSafe({
                             storeLocation,
@@ -54,12 +54,18 @@ self.onmessage = async (
                     if (daysInMonthsInYearsResult.err) {
                         return daysInMonthsInYearsResult;
                     }
-                    if (daysInMonthsInYearsResult.val.none) {
-                        return createSafeErrorResult(defaultMetrics);
-                    }
 
-                    const daysInMonthsInYears =
-                        daysInMonthsInYearsResult.val.val;
+                    const daysInMonthsInYearsMaybe = daysInMonthsInYearsResult
+                        .safeUnwrap();
+                    if (daysInMonthsInYearsMaybe.none) {
+                        return createSafeErrorResult(
+                            new NotFoundError(
+                                `Days in months in years data not found for store location: ${storeLocation}`,
+                            ),
+                        );
+                    }
+                    const daysInMonthsInYears = daysInMonthsInYearsMaybe
+                        .safeUnwrap();
 
                     const customerMetricsResult =
                         createRandomCustomerMetricsSafe({
@@ -69,25 +75,32 @@ self.onmessage = async (
                     if (customerMetricsResult.err) {
                         return customerMetricsResult;
                     }
-                    if (customerMetricsResult.val.none) {
-                        return createSafeErrorResult(defaultMetrics);
+                    const customerMetricsMaybe = customerMetricsResult
+                        .safeUnwrap();
+                    if (customerMetricsMaybe.none) {
+                        return createSafeErrorResult(
+                            new NotFoundError(
+                                `Customer metrics data not found for store location: ${storeLocation}`,
+                            ),
+                        );
                     }
+                    const customerMetrics = customerMetricsMaybe
+                        .safeUnwrap();
 
                     const setMetricsInCacheResult =
                         await setCustomerMetricsInCache(
                             storeLocation,
-                            customerMetricsResult.val.val,
+                            customerMetrics,
                         );
                     if (setMetricsInCacheResult.err) {
                         return setMetricsInCacheResult;
                     }
-                    if (setMetricsInCacheResult.val.none) {
-                        return createSafeErrorResult(defaultMetrics);
-                    }
 
-                    return customerMetricsResult;
+                    return createSafeSuccessResult(customerMetrics);
                 } catch (error: unknown) {
-                    return createSafeErrorResult(error);
+                    return createSafeErrorResult(
+                        new MetricsGenerationError(error),
+                    );
                 }
             }),
         );
@@ -95,94 +108,170 @@ self.onmessage = async (
         if (calgaryCustomerMetricsSettledResult.status === "rejected") {
             self.postMessage(
                 createSafeErrorResult(
-                    calgaryCustomerMetricsSettledResult.reason,
+                    new PromiseRejectionError(
+                        calgaryCustomerMetricsSettledResult.reason ??
+                            "Calgary customer metrics promise rejected",
+                    ),
                 ),
             );
             return;
         }
-        const calgaryCustomerMetricsSettledOption =
-            handleErrorResultAndNoneOptionInWorker(
-                calgaryCustomerMetricsSettledResult.value,
-                "Failed to generate Calgary customer metrics",
+
+        if (calgaryCustomerMetricsSettledResult.value.err) {
+            self.postMessage(
+                createSafeErrorResult(
+                    calgaryCustomerMetricsSettledResult.value.err,
+                ),
             );
-        if (calgaryCustomerMetricsSettledOption.none) {
             return;
         }
+        const calgaryCustomerMetricsMaybe = calgaryCustomerMetricsSettledResult
+            .value.safeUnwrap();
+
+        if (calgaryCustomerMetricsMaybe.none) {
+            self.postMessage(
+                createSafeErrorResult(
+                    new NotFoundError(
+                        "Calgary customer metrics is none",
+                    ),
+                ),
+            );
+            return;
+        }
+        const calgaryCustomerMetrics = calgaryCustomerMetricsMaybe
+            .safeUnwrap();
 
         if (edmontonCustomerMetricsSettledResult.status === "rejected") {
             self.postMessage(
                 createSafeErrorResult(
-                    edmontonCustomerMetricsSettledResult.reason,
+                    new PromiseRejectionError(
+                        edmontonCustomerMetricsSettledResult.reason ??
+                            "Edmonton customer metrics promise rejected",
+                    ),
                 ),
             );
             return;
         }
-        const edmontonCustomerMetricsSettledOption =
-            handleErrorResultAndNoneOptionInWorker(
-                edmontonCustomerMetricsSettledResult.value,
-                "Failed to generate Edmonton customer metrics",
+
+        if (edmontonCustomerMetricsSettledResult.value.err) {
+            self.postMessage(
+                createSafeErrorResult(
+                    edmontonCustomerMetricsSettledResult.value.err,
+                ),
             );
-        if (edmontonCustomerMetricsSettledOption.none) {
             return;
         }
+        const edmontonCustomerMetricsMaybe =
+            edmontonCustomerMetricsSettledResult
+                .value.safeUnwrap();
+
+        if (edmontonCustomerMetricsMaybe.none) {
+            self.postMessage(
+                createSafeErrorResult(
+                    new NotFoundError(
+                        "Edmonton customer metrics is none",
+                    ),
+                ),
+            );
+            return;
+        }
+        const edmontonCustomerMetrics = edmontonCustomerMetricsMaybe
+            .safeUnwrap();
 
         if (vancouverCustomerMetricsSettledResult.status === "rejected") {
             self.postMessage(
                 createSafeErrorResult(
-                    vancouverCustomerMetricsSettledResult.reason,
+                    new PromiseRejectionError(
+                        vancouverCustomerMetricsSettledResult.reason ??
+                            "Vancouver customer metrics promise rejected",
+                    ),
                 ),
             );
             return;
         }
-        const vancouverCustomerMetricsSettledOption =
-            handleErrorResultAndNoneOptionInWorker(
-                vancouverCustomerMetricsSettledResult.value,
-                "Failed to generate Vancouver customer metrics",
+
+        if (vancouverCustomerMetricsSettledResult.value.err) {
+            self.postMessage(
+                createSafeErrorResult(
+                    vancouverCustomerMetricsSettledResult.value.err,
+                ),
             );
-        if (vancouverCustomerMetricsSettledOption.none) {
             return;
         }
+        const vancouverCustomerMetricsMaybe =
+            vancouverCustomerMetricsSettledResult
+                .value.safeUnwrap();
+
+        if (vancouverCustomerMetricsMaybe.none) {
+            self.postMessage(
+                createSafeErrorResult(
+                    new NotFoundError(
+                        "Vancouver customer metrics is none",
+                    ),
+                ),
+            );
+            return;
+        }
+        const vancouverCustomerMetrics = vancouverCustomerMetricsMaybe
+            .safeUnwrap();
 
         const allLocationsAggregatedCustomerMetricsResult =
             createAllLocationsAggregatedCustomerMetricsSafe({
-                calgaryCustomerMetrics: calgaryCustomerMetricsSettledOption.val,
-                edmontonCustomerMetrics:
-                    edmontonCustomerMetricsSettledOption.val,
-                vancouverCustomerMetrics:
-                    vancouverCustomerMetricsSettledOption.val,
+                calgaryCustomerMetrics,
+                edmontonCustomerMetrics,
+                vancouverCustomerMetrics,
             });
-        const allLocationsAggregatedCustomerMetricsOption =
-            handleErrorResultAndNoneOptionInWorker(
-                allLocationsAggregatedCustomerMetricsResult,
-                "Failed to aggregate customer metrics",
+
+        if (allLocationsAggregatedCustomerMetricsResult.err) {
+            self.postMessage(
+                createSafeErrorResult(
+                    allLocationsAggregatedCustomerMetricsResult.err,
+                ),
             );
-        if (allLocationsAggregatedCustomerMetricsOption.none) {
             return;
         }
+        const allLocationsAggregatedCustomerMetricsMaybe =
+            allLocationsAggregatedCustomerMetricsResult
+                .safeUnwrap();
+
+        if (allLocationsAggregatedCustomerMetricsMaybe.none) {
+            self.postMessage(
+                createSafeErrorResult(
+                    new NotFoundError(
+                        "All locations aggregated customer metrics is none",
+                    ),
+                ),
+            );
+            return;
+        }
+        const allLocationsAggregatedCustomerMetrics =
+            allLocationsAggregatedCustomerMetricsMaybe
+                .safeUnwrap();
 
         const setAllLocationsMetricsInCacheResult =
             await setCustomerMetricsInCache(
                 "All Locations",
-                allLocationsAggregatedCustomerMetricsOption.val,
+                allLocationsAggregatedCustomerMetrics,
             );
-        const setAllLocationsMetricsInCacheOption =
-            handleErrorResultAndNoneOptionInWorker(
-                setAllLocationsMetricsInCacheResult,
-                "Failed to set all locations customer metrics in cache",
+
+        if (setAllLocationsMetricsInCacheResult.err) {
+            self.postMessage(
+                createSafeErrorResult(
+                    setAllLocationsMetricsInCacheResult.err,
+                ),
             );
-        if (setAllLocationsMetricsInCacheOption.none) {
             return;
         }
 
         self.postMessage(
-            createSafeSuccessResult(
-                "Customer metrics successfully generated and cached",
-            ),
+            createSafeSuccessResult(true),
         );
-    } catch (error) {
+    } catch (error: unknown) {
         console.error("Customer Charts Worker error:", error);
         self.postMessage(
-            createSafeErrorResult(error),
+            createSafeErrorResult(
+                new WorkerError(error),
+            ),
         );
     }
 };
@@ -190,7 +279,9 @@ self.onmessage = async (
 self.onerror = (event: string | Event) => {
     console.error("Customer Charts Worker error:", event);
     self.postMessage(
-        createSafeErrorResult(event),
+        createSafeErrorResult(
+            new WorkerError(event),
+        ),
     );
     return true; // Prevents default logging to console
 };
@@ -198,7 +289,9 @@ self.onerror = (event: string | Event) => {
 self.addEventListener("unhandledrejection", (event: PromiseRejectionEvent) => {
     console.error("Unhandled promise rejection in worker:", event.reason);
     self.postMessage(
-        createSafeErrorResult(event),
+        createSafeErrorResult(
+            new PromiseRejectionError(event.reason),
+        ),
     );
 });
 
