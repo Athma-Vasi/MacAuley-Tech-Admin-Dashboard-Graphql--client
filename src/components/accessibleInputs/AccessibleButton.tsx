@@ -464,7 +464,6 @@ function AccessibleButton({ attributes, uniqueId }: AccessibleButtonProps) {
       {attributes.label ?? splitCamelCase(name)}
     </Text>
   );
-  console.log("leftIcon:", leftIcon);
 
   const { screenreaderTextElement } =
     createAccessibleButtonScreenreaderTextElements({

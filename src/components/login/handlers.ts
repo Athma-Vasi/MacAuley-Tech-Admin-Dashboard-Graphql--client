@@ -17,7 +17,13 @@ import type { MessageEventCustomerMetricsWorkerToMain } from "../dashboard/custo
 import type { MessageEventFinancialMetricsWorkerToMain } from "../dashboard/financial/metricsWorker";
 import type { MessageEventProductMetricsWorkerToMain } from "../dashboard/product/metricsWorker";
 import type { MessageEventRepairMetricsWorkerToMain } from "../dashboard/repair/metricsWorker";
-import { AuthError, InvariantError, WorkerError } from "../error/classes";
+import {
+  AuthError,
+  InvariantError,
+  MessageHandlerError,
+  NotFoundError,
+  WorkerError,
+} from "../error/classes";
 import type {
   LoginUserMutation$data,
 } from "./__generated__/LoginUserMutation.graphql";
@@ -143,7 +149,7 @@ async function handleLogin(
         loginDispatch({
           action: loginAction.setSafeErrorResult,
           payload: createSafeErrorResult(
-            new InvariantError(
+            new NotFoundError(
               "Decoded token is None",
             ),
           ),
@@ -200,6 +206,7 @@ async function handleMessageEventCustomerMetricsWorkerToMain(
       object: input,
       zSchema: handleMessageEventCustomerMetricsWorkerToMainInputZod,
     });
+
     if (parsedInputResult.err) {
       input?.loginDispatch?.({
         action: loginAction.setSafeErrorResult,
@@ -207,12 +214,13 @@ async function handleMessageEventCustomerMetricsWorkerToMain(
       });
       return;
     }
+
     const parsedInputMaybe = parsedInputResult.safeUnwrap();
     if (parsedInputMaybe.none) {
       input?.loginDispatch?.({
         action: loginAction.setSafeErrorResult,
         payload: createSafeErrorResult(
-          new InvariantError(
+          new NotFoundError(
             "Unexpected None option in input parsing",
           ),
         ),
@@ -244,11 +252,12 @@ async function handleMessageEventCustomerMetricsWorkerToMain(
       loginDispatch({
         action: loginAction.setSafeErrorResult,
         payload: createSafeErrorResult(
-          new InvariantError("No customer metrics data found"),
+          new NotFoundError("No customer metrics data found"),
         ),
       });
       return;
     }
+
     const message = messageMaybe.safeUnwrap();
     if (!message) {
       loginDispatch({
@@ -260,13 +269,15 @@ async function handleMessageEventCustomerMetricsWorkerToMain(
       return;
     }
 
-    return messageResult;
+    return;
   } catch (error: unknown) {
-    return catchHandlerErrorSafe(
-      error,
-      input?.isComponentMountedRef,
-      input?.showBoundary,
-    );
+    input?.loginDispatch?.({
+      action: loginAction.setSafeErrorResult,
+      payload: createSafeErrorResult(
+        new MessageHandlerError(error),
+      ),
+    });
+    return;
   }
 }
 

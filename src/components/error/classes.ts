@@ -348,6 +348,24 @@ class HTTPError extends AppErrorBase {
     }
 }
 
+class MessageHandlerError extends AppErrorBase {
+    readonly _tag = "MessageHandlerError";
+
+    constructor(
+        error?: unknown,
+        message = "Message handler error occurred",
+    ) {
+        super(
+            "MessageHandlerError",
+            error instanceof Error ? error.name : "UnknownError",
+            error instanceof Error && error.stack
+                ? error.stack
+                : "Stack trace not available",
+            message,
+        );
+    }
+}
+
 class MetricsGenerationError extends AppErrorBase {
     readonly _tag = "MetricsGenerationError";
 
@@ -422,6 +440,7 @@ export {
     HTTPError,
     InvariantError,
     JSONError,
+    MessageHandlerError,
     MetricsGenerationError,
     NetworkError,
     NotFoundError,

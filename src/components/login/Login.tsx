@@ -143,7 +143,7 @@ function Login() {
             await handleMessageEventCustomerMetricsWorkerToMain({
                 event,
                 isComponentMountedRef,
-                showBoundary,
+                loginDispatch,
             });
         };
 
@@ -205,12 +205,10 @@ function Login() {
         ) => {
             await handleMessageEventLoginForageWorkerToMain({
                 event,
-                authDispatch,
                 globalDispatch,
                 isComponentMountedRef,
                 loginDispatch,
                 navigate,
-                showBoundary,
             });
         };
 

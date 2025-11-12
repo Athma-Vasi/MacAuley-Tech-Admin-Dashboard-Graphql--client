@@ -55,6 +55,7 @@ import {
     HTTPError,
     InvariantError,
     JSONError,
+    MessageHandlerError,
     MetricsGenerationError,
     NetworkError,
     ParseError,
@@ -165,6 +166,7 @@ function createSafeErrorResult(
         error instanceof HTTPError ||
         error instanceof InvariantError ||
         error instanceof JSONError ||
+        error instanceof MessageHandlerError ||
         error instanceof MetricsGenerationError ||
         error instanceof NetworkError ||
         error instanceof ParseError ||
