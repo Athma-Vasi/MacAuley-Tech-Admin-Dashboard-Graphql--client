@@ -7,9 +7,14 @@ import {
     createSafeErrorResult,
     createSafeSuccessResult,
     getCachedItemAsyncSafe,
-    handleErrorResultAndNoneOptionInWorker,
     parseSyncSafe,
 } from "../../utils";
+import {
+    NotFoundError,
+    PromiseRejectionError,
+    WorkerError,
+    WorkerMessageError,
+} from "../error/classes";
 import { messageEventDashboardFetchMainToWorkerZod } from "./schemas";
 import type { DashboardMetricsView } from "./types";
 
@@ -31,65 +36,102 @@ type MessageEventDashboardCacheWorkerToMain = MessageEvent<
 self.onmessage = async (
     event: MessageEventDashboardCacheMainToWorker,
 ) => {
-    if (!event.data) {
-        self.postMessage(
-            createSafeErrorResult("No data received"),
-        );
-        return;
-    }
-
-    const parsedMessageResult = parseSyncSafe({
-        object: event.data,
-        zSchema: messageEventDashboardFetchMainToWorkerZod,
-    });
-    const parsedMessageOption = handleErrorResultAndNoneOptionInWorker(
-        parsedMessageResult,
-        "Error parsing message",
-    );
-    if (parsedMessageOption.none) {
-        return;
-    }
-
-    const {
-        cacheKey,
-        metricsView,
-        routesZodSchemaMapKey,
-    } = parsedMessageOption.val;
-
     try {
+        if (!event.data) {
+            self.postMessage(
+                createSafeErrorResult(
+                    new WorkerMessageError(
+                        "No data received in dashboard cache worker message",
+                    ),
+                ),
+            );
+            return;
+        }
+
+        const parsedMessageResult = parseSyncSafe({
+            object: event.data,
+            zSchema: messageEventDashboardFetchMainToWorkerZod,
+        });
+        if (parsedMessageResult.err) {
+            self.postMessage(parsedMessageResult);
+            return;
+        }
+        const parsedMessageMaybe = parsedMessageResult.safeUnwrap();
+        if (parsedMessageMaybe.none) {
+            self.postMessage(
+                createSafeErrorResult(
+                    new NotFoundError(
+                        "Parsed message is none in dashboard cache worker",
+                    ),
+                ),
+            );
+            return;
+        }
+
+        const {
+            cacheKey,
+            metricsView,
+            routesZodSchemaMapKey,
+        } = parsedMessageMaybe.safeUnwrap();
+
         const businessMetricsDocumentResult = await getCachedItemAsyncSafe<
             BusinessMetricsDocument
         >(cacheKey);
-        const businessMetricsDocumentOption =
-            handleErrorResultAndNoneOptionInWorker(
-                businessMetricsDocumentResult,
-                "Error fetching cached metrics document",
-            );
-        if (businessMetricsDocumentOption.none) {
+        if (businessMetricsDocumentResult.err) {
+            self.postMessage(businessMetricsDocumentResult);
             return;
         }
+        const businessMetricsDocumentMaybe = businessMetricsDocumentResult
+            .safeUnwrap();
+        if (businessMetricsDocumentMaybe.none) {
+            self.postMessage(
+                createSafeErrorResult(
+                    new NotFoundError(
+                        "Business metrics document is missing in cache",
+                    ),
+                ),
+            );
+            return;
+        }
+        const businessMetricsDocument = businessMetricsDocumentMaybe
+            .safeUnwrap();
 
         const parsedResult = parseSyncSafe({
-            object: businessMetricsDocumentOption.val,
+            object: businessMetricsDocument,
             zSchema: ROUTES_ZOD_SCHEMAS_MAP[routesZodSchemaMapKey],
         });
-        const parsedResultOption = handleErrorResultAndNoneOptionInWorker(
-            parsedResult,
-            "Parsed result not found",
-        );
-        if (parsedResultOption.none) {
+        if (parsedResult.err) {
+            self.postMessage(parsedResult);
             return;
         }
+        const parsedMaybe = parsedResult.safeUnwrap();
+        if (parsedMaybe.none) {
+            self.postMessage(
+                createSafeErrorResult(
+                    new NotFoundError(
+                        "Parsed business metrics document is none in dashboard cache worker",
+                    ),
+                ),
+            );
+            return;
+        }
+        const metricsDocument = parsedMaybe.safeUnwrap();
 
         self.postMessage(
             createSafeSuccessResult({
-                metricsDocument: parsedResultOption.val,
+                metricsDocument,
                 metricsView,
             }),
         );
+        return;
     } catch (error: unknown) {
         self.postMessage(
-            createSafeErrorResult(error),
+            createSafeErrorResult(
+                new WorkerError(
+                    error,
+                    "Error fetching business metrics document from cache in dashboard cache worker",
+                ),
+            ),
         );
     }
 };
@@ -97,7 +139,12 @@ self.onmessage = async (
 self.onerror = (event: string | Event) => {
     console.error("Dashboard Cache Worker error:", event);
     self.postMessage(
-        createSafeErrorResult(event),
+        createSafeErrorResult(
+            new WorkerError(
+                event,
+                "Unhandled error in dashboard cache worker",
+            ),
+        ),
     );
     return true; // Prevents default logging to console
 };
@@ -105,7 +152,12 @@ self.onerror = (event: string | Event) => {
 self.addEventListener("unhandledrejection", (event: PromiseRejectionEvent) => {
     console.error("Unhandled promise rejection in worker:", event.reason);
     self.postMessage(
-        createSafeErrorResult(event),
+        createSafeErrorResult(
+            new PromiseRejectionError(
+                event.reason,
+                "Unhandled promise rejection in dashboard cache worker",
+            ),
+        ),
     );
 });
 
