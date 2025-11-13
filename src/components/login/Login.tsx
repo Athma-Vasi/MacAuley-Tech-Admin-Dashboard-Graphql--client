@@ -65,7 +65,6 @@ import {
     Title,
 } from "@mantine/core";
 import { useEffect, useReducer, useRef } from "react";
-import { useErrorBoundary } from "react-error-boundary";
 import { TbCheck, TbUpload } from "react-icons/tb";
 import { Link, useNavigate } from "react-router-dom";
 import { COLORS_SWATCHES } from "../../constants";
@@ -115,6 +114,8 @@ function Login() {
         repairMetricsGenerated,
         repairMetricsWorker,
         username,
+        loginFetchWorker,
+        safeErrorResult,
     } = loginState;
 
     const { authDispatch } = useAuth();
@@ -123,7 +124,6 @@ function Login() {
         globalDispatch,
     } = useGlobalState();
     const navigate = useNavigate();
-    const { showBoundary } = useErrorBoundary();
     const isComponentMountedRef = useMountedRef();
 
     const usernameRef = useRef<HTMLInputElement | null>(null);
@@ -159,7 +159,6 @@ function Login() {
                 event,
                 isComponentMountedRef,
                 loginDispatch,
-                showBoundary,
             });
         };
 
@@ -175,7 +174,6 @@ function Login() {
                 event,
                 isComponentMountedRef,
                 loginDispatch,
-                showBoundary,
             });
         };
 
@@ -191,7 +189,6 @@ function Login() {
                 event,
                 isComponentMountedRef,
                 loginDispatch,
-                showBoundary,
             });
         };
 
@@ -262,8 +259,8 @@ function Login() {
         repairMetricsGenerated,
     ]);
 
-    if (isError) {
-        throw new Error(errorMessage || "Login failed");
+    if (safeErrorResult != null) {
+        throw safeErrorResult;
     }
 
     const usernameTextInput = (
@@ -278,15 +275,11 @@ function Login() {
                     action: loginAction.setUsername,
                     payload: event.currentTarget.value,
                 });
-                loginDispatch({
-                    action: loginAction.setErrorMessage,
-                    payload: "",
-                });
             }}
             onKeyDown={async (event) => {
                 if (event.key === "Enter") {
                     event.preventDefault();
-                    if (isSubmitting || !financialMetricsGenerated) {
+                    if (isLoading || !financialMetricsGenerated) {
                         return;
                     }
 
@@ -318,15 +311,11 @@ function Login() {
                     action: loginAction.setPassword,
                     payload: event.currentTarget.value,
                 });
-                loginDispatch({
-                    action: loginAction.setErrorMessage,
-                    payload: "",
-                });
             }}
             onKeyDown={async (event) => {
                 if (event.key === "Enter") {
                     event.preventDefault();
-                    if (isSubmitting || !financialMetricsGenerated) {
+                    if (isLoading || !financialMetricsGenerated) {
                         return;
                     }
 
@@ -355,7 +344,7 @@ function Login() {
             attributes={{
                 dataTestId: "login-button",
                 kind: "submit",
-                leftIcon: isSubmitting || !financialMetricsGenerated
+                leftIcon: isLoading || !financialMetricsGenerated
                     ? (
                         <Loader
                             size="xs"
