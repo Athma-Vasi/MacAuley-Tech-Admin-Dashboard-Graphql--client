@@ -8,7 +8,11 @@ import {
     getCachedItemAsyncSafe,
     parseSyncSafe,
 } from "../../utils";
-import { InvariantError } from "../error/classes";
+import {
+    NotFoundError,
+    PromiseRejectionError,
+    WorkerError,
+} from "../error/classes";
 
 type MessageEventLoginForageWorkerToMain = MessageEvent<
     SafeResult<{ financialMetricsDocument: FinancialMetricsDocument }>
@@ -24,7 +28,7 @@ self.onmessage = async (
     if (!event.data) {
         self.postMessage(
             createSafeErrorResult(
-                new InvariantError("No data received"),
+                new NotFoundError("No data received in forage worker message"),
             ),
         );
         return;
@@ -37,18 +41,16 @@ self.onmessage = async (
         },
     );
     if (parsedMessageResult.err) {
-        self.postMessage(
-            createSafeErrorResult(
-                parsedMessageResult.err,
-            ),
-        );
+        self.postMessage(parsedMessageResult.err);
         return;
     }
     const parsedMessageMaybe = parsedMessageResult.safeUnwrap();
     if (parsedMessageMaybe.none) {
         self.postMessage(
             createSafeErrorResult(
-                new InvariantError("Error parsing message"),
+                new NotFoundError(
+                    "Parsed message is none in forage worker",
+                ),
             ),
         );
         return;
@@ -72,9 +74,7 @@ self.onmessage = async (
 
         if (financialMetricsDocumentResult.err) {
             self.postMessage(
-                createSafeErrorResult(
-                    financialMetricsDocumentResult.err,
-                ),
+                financialMetricsDocumentResult.err,
             );
             return;
         }
@@ -83,7 +83,7 @@ self.onmessage = async (
         if (financialMetricsDocumentMaybe.none) {
             self.postMessage(
                 createSafeErrorResult(
-                    new InvariantError(
+                    new NotFoundError(
                         "Financial metrics document is missing in cache",
                     ),
                 ),
@@ -101,7 +101,12 @@ self.onmessage = async (
         );
     } catch (error: unknown) {
         self.postMessage(
-            createSafeErrorResult(error),
+            createSafeErrorResult(
+                new WorkerError(
+                    error,
+                    "Error in forage worker fetching financial metrics document from cache",
+                ),
+            ),
         );
     } finally {
         clearTimeout(timeout);
@@ -111,7 +116,12 @@ self.onmessage = async (
 self.onerror = (event: string | Event) => {
     console.error("Fetch Parse Worker error:", event);
     self.postMessage(
-        createSafeErrorResult(event),
+        createSafeErrorResult(
+            new WorkerError(
+                event,
+                "Unhandled error in forage worker",
+            ),
+        ),
     );
     return true; // Prevents default logging to console
 };
@@ -119,7 +129,12 @@ self.onerror = (event: string | Event) => {
 self.addEventListener("unhandledrejection", (event: PromiseRejectionEvent) => {
     console.error("Unhandled promise rejection in worker:", event.reason);
     self.postMessage(
-        createSafeErrorResult(event),
+        createSafeErrorResult(
+            new PromiseRejectionError(
+                event.reason,
+                "Unhandled promise rejection in forage worker",
+            ),
+        ),
     );
 });
 
