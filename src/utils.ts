@@ -58,6 +58,7 @@ import {
     MessageHandlerError,
     MetricsGenerationError,
     NetworkError,
+    NotFoundError,
     ParseError,
     PromiseRejectionError,
     RetryLimitExceededError,
@@ -1025,7 +1026,7 @@ function handlePromiseSettledResults(
     results: PromiseSettledResult<
         Err<SafeError> | Ok<Option<NonNullable<unknown>>>
     >[],
-): SafeResult<string> {
+): SafeResult<boolean> {
     try {
         const [successes, errors] = results.reduce<
             [Ok<Option<NonNullable<unknown>>>[], Err<SafeError>[]]
@@ -1037,14 +1038,16 @@ function handlePromiseSettledResults(
                     if (result.value.err) {
                         errors.push(result.value);
                     } else if (result.value.val.none) {
-                        errors.push(createSafeErrorResult("No data"));
+                        errors.push(createSafeErrorResult(
+                            new NotFoundError("Result is None"),
+                        ));
                     } else {
                         successes.push(result.value);
                     }
                 } else {
                     errors.push(
                         createSafeErrorResult(
-                            result.reason ?? "Unknown error",
+                            new PromiseRejectionError(result.reason),
                         ),
                     );
                 }
@@ -1067,9 +1070,7 @@ function handlePromiseSettledResults(
             return createSafeErrorResult("No successful results");
         }
 
-        return createSafeSuccessResult(
-            "All promises were fulfilled with successful results",
-        );
+        return createSafeSuccessResult(true);
     } catch (error: unknown) {
         return createSafeErrorResult(error);
     }

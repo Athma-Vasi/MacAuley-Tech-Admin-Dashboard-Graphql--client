@@ -9,11 +9,16 @@ import {
     createSafeErrorResult,
     createSafeSuccessResult,
     getCachedItemAsyncSafe,
-    handleErrorResultAndNoneOptionInWorker,
     handlePromiseSettledResults,
     removeCachedItemAsyncSafe,
     setCachedItemAsyncSafe,
 } from "../../../utils";
+import {
+    CacheError,
+    NotFoundError,
+    WorkerError,
+    WorkerMessageError,
+} from "../../error/classes";
 import type {
     AllStoreLocations,
     BusinessMetric,
@@ -28,9 +33,7 @@ import {
 } from "./generators";
 
 type MessageEventFinancialMetricsWorkerToMain = MessageEvent<
-    SafeResult<
-        boolean
-    >
+    SafeResult<boolean>
 >;
 type MessageEventFinancialMetricsMainToWorker = MessageEvent<
     boolean
@@ -41,7 +44,11 @@ self.onmessage = async (
 ) => {
     if (!event.data) {
         self.postMessage(
-            createSafeErrorResult("No data received"),
+            createSafeErrorResult(
+                new WorkerMessageError(
+                    "No data provided in message to financial metrics worker",
+                ),
+            ),
         );
         return;
     }
@@ -52,27 +59,46 @@ self.onmessage = async (
         >(
             "productMetrics",
         );
-        const productMetricsCacheOption =
-            handleErrorResultAndNoneOptionInWorker(
-                getProductMetricsCacheResult,
-                "No product metrics found in cache",
-            );
-        if (productMetricsCacheOption.none) {
+        if (getProductMetricsCacheResult.err) {
+            self.postMessage(getProductMetricsCacheResult);
             return;
         }
+
+        const productMetricsMaybe = getProductMetricsCacheResult.safeUnwrap();
+        if (productMetricsMaybe.none) {
+            self.postMessage(
+                createSafeErrorResult(
+                    new NotFoundError(
+                        "No product metrics found in cache",
+                    ),
+                ),
+            );
+            return;
+        }
+        const productMetrics = productMetricsMaybe.safeUnwrap();
 
         const getRepairMetricsCacheResult = await getCachedItemAsyncSafe<
             Record<AllStoreLocations, RepairMetric[]>
         >(
             "repairMetrics",
         );
-        const repairMetricsCacheOption = handleErrorResultAndNoneOptionInWorker(
-            getRepairMetricsCacheResult,
-            "No repair metrics found in cache",
-        );
-        if (repairMetricsCacheOption.none) {
+        if (getRepairMetricsCacheResult.err) {
+            self.postMessage(getRepairMetricsCacheResult);
             return;
         }
+
+        const repairMetricsMaybe = getRepairMetricsCacheResult.safeUnwrap();
+        if (repairMetricsMaybe.none) {
+            self.postMessage(
+                createSafeErrorResult(
+                    new NotFoundError(
+                        "No repair metrics found in cache",
+                    ),
+                ),
+            );
+            return;
+        }
+        const repairMetrics = repairMetricsMaybe.safeUnwrap();
 
         const businessMetrics: BusinessMetric[] = ALL_STORE_LOCATIONS_DATA.map(
             ({ value: storeLocation }) => {
@@ -80,11 +106,9 @@ self.onmessage = async (
                     storeLocation,
                     financialMetrics: [] as YearlyFinancialMetric[],
                     customerMetrics: {} as CustomerMetrics,
-                    productMetrics:
-                        productMetricsCacheOption.val[storeLocation] ?? [],
-                    repairMetrics:
-                        repairMetricsCacheOption.val[storeLocation] ??
-                            [],
+                    productMetrics: productMetrics[storeLocation] ?? [],
+                    repairMetrics: repairMetrics[storeLocation] ??
+                        [],
                 };
             },
         );
@@ -92,17 +116,26 @@ self.onmessage = async (
         const financialMetricsResult = createRandomFinancialMetricsSafe(
             businessMetrics,
         );
-        const financialMetricsOption = handleErrorResultAndNoneOptionInWorker(
-            financialMetricsResult,
-            "No financial metrics generated",
-        );
-        if (financialMetricsOption.none) {
+        if (financialMetricsResult.err) {
+            self.postMessage(financialMetricsResult);
             return;
         }
 
+        const financialMetricsMaybe = financialMetricsResult.safeUnwrap();
+        if (financialMetricsMaybe.none) {
+            self.postMessage(
+                createSafeErrorResult(
+                    new NotFoundError(
+                        "No financial metrics generated",
+                    ),
+                ),
+            );
+            return;
+        }
+        const financialMetrics = financialMetricsMaybe.safeUnwrap();
+
         // empty 'All Locations' financial metrics atm
-        const businessMetricsWithIncompleteFinancials = financialMetricsOption
-            .val.reduce<
+        const businessMetricsWithIncompleteFinancials = financialMetrics.reduce<
             BusinessMetric[]
         >((businessMetricsAcc, tuple) => {
             const [storeLocation, financialMetrics] = tuple as [
@@ -123,24 +156,35 @@ self.onmessage = async (
         }, businessMetrics);
 
         // aggregate financial metrics for each store location into 'All Locations' metrics
-        const allLocationsAggregatedFinancialMetrics =
+        const allLocationsAggregatedFinancialMetricsResult =
             createAllLocationsAggregatedFinancialMetricsSafe(
                 businessMetricsWithIncompleteFinancials,
             );
-        const allLocationsAggregatedFinancialMetricsOption =
-            handleErrorResultAndNoneOptionInWorker(
-                allLocationsAggregatedFinancialMetrics,
-                "Failed to aggregate financial metrics for All Locations",
-            );
-        if (allLocationsAggregatedFinancialMetricsOption.none) {
+        if (allLocationsAggregatedFinancialMetricsResult.err) {
+            self.postMessage(allLocationsAggregatedFinancialMetricsResult);
             return;
         }
+
+        const allLocationsAggregatedFinancialMetricsMaybe =
+            allLocationsAggregatedFinancialMetricsResult.safeUnwrap();
+        if (allLocationsAggregatedFinancialMetricsMaybe.none) {
+            self.postMessage(
+                createSafeErrorResult(
+                    new NotFoundError(
+                        "Failed to aggregate financial metrics for All Locations",
+                    ),
+                ),
+            );
+            return;
+        }
+        const allLocationsAggregatedFinancialMetrics =
+            allLocationsAggregatedFinancialMetricsMaybe.safeUnwrap();
 
         const completeFinancials = businessMetricsWithIncompleteFinancials.map(
             (businessMetric) => {
                 if (businessMetric.storeLocation === "All Locations") {
                     businessMetric.financialMetrics =
-                        allLocationsAggregatedFinancialMetricsOption.val;
+                        allLocationsAggregatedFinancialMetrics;
                 }
 
                 return businessMetric;
@@ -159,16 +203,17 @@ self.onmessage = async (
                         if (setMetricsResult.err) {
                             return setMetricsResult;
                         }
-                        if (setMetricsResult.val.none) {
-                            return createSafeErrorResult(
-                                `Failed to cache financial metrics for ${storeLocation}`,
-                            );
-                        }
+
                         return createSafeSuccessResult(
                             `Financial metrics for ${storeLocation} successfully cached`,
                         );
                     } catch (error: unknown) {
-                        return createSafeErrorResult(error);
+                        return createSafeErrorResult(
+                            new CacheError(
+                                error,
+                                `Failed to set financial metrics for ${storeLocation} in cache`,
+                            ),
+                        );
                     }
                 },
             ),
@@ -177,12 +222,8 @@ self.onmessage = async (
         const handledSettledResult = handlePromiseSettledResults(
             setItemsInCacheResults,
         );
-        const handledSettledResultOption =
-            handleErrorResultAndNoneOptionInWorker(
-                handledSettledResult,
-                "Unable to set financial metrics in cache",
-            );
-        if (handledSettledResultOption.none) {
+        if (handledSettledResult.err) {
+            self.postMessage(handledSettledResult);
             return;
         }
 
@@ -217,7 +258,12 @@ self.onmessage = async (
 self.onerror = (event: string | Event) => {
     console.error("Financial Charts Worker error:", event);
     self.postMessage(
-        createSafeErrorResult(event),
+        createSafeErrorResult(
+            new WorkerError(
+                event,
+                "Unhandled error in financial metrics worker",
+            ),
+        ),
     );
     return true; // Prevents default logging to console
 };
