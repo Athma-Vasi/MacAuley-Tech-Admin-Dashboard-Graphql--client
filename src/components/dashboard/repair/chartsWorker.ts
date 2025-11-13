@@ -2,9 +2,14 @@ import type { RepairMetricsDocument, SafeResult } from "../../../types";
 import {
     createSafeErrorResult,
     createSafeSuccessResult,
-    handleErrorResultAndNoneOptionInWorker,
     parseSyncSafe,
 } from "../../../utils";
+import {
+    NotFoundError,
+    PromiseRejectionError,
+    WorkerError,
+    WorkerMessageError,
+} from "../../error/classes";
 import { MONTHS } from "../constants";
 import type { DashboardCalendarView, Month, Year } from "../types";
 import { createRepairMetricsCardsSafe, type RepairMetricsCards } from "./cards";
@@ -46,38 +51,51 @@ type MessageEventRepairChartsMainToWorker = MessageEvent<
 self.onmessage = async (
     event: MessageEventRepairChartsMainToWorker,
 ) => {
-    if (!event.data) {
-        self.postMessage(
-            createSafeErrorResult("No data received"),
-        );
-        return;
-    }
-
-    const parsedMessageResult = parseSyncSafe({
-        object: event.data,
-        zSchema: messageEventRepairChartsMainToWorkerZod,
-    });
-    const parsedMessageOption = handleErrorResultAndNoneOptionInWorker(
-        parsedMessageResult,
-        "Error parsing message",
-    );
-    if (parsedMessageOption.none) {
-        return;
-    }
-
-    const {
-        calendarView,
-        grayBorderShade,
-        greenColorShade,
-        redColorShade,
-        repairMetricsDocument,
-        selectedDate,
-        selectedMonth,
-        selectedYear,
-        selectedYYYYMMDD,
-    } = parsedMessageOption.val;
-
     try {
+        if (!event.data) {
+            self.postMessage(
+                createSafeErrorResult(
+                    new WorkerMessageError(
+                        "No data received in repair charts worker message",
+                    ),
+                ),
+            );
+            return;
+        }
+
+        const parsedMessageResult = parseSyncSafe({
+            object: event.data,
+            zSchema: messageEventRepairChartsMainToWorkerZod,
+        });
+        if (parsedMessageResult.err) {
+            self.postMessage(parsedMessageResult);
+            return;
+        }
+        const parsedMessageMaybe = parsedMessageResult.safeUnwrap();
+        if (parsedMessageMaybe.none) {
+            self.postMessage(
+                createSafeErrorResult(
+                    new NotFoundError(
+                        "Parsed message is none in repair charts worker",
+                    ),
+                ),
+            );
+            return;
+        }
+        const parsedMessage = parsedMessageMaybe.safeUnwrap();
+
+        const {
+            calendarView,
+            grayBorderShade,
+            greenColorShade,
+            redColorShade,
+            repairMetricsDocument,
+            selectedDate,
+            selectedMonth,
+            selectedYear,
+            selectedYYYYMMDD,
+        } = parsedMessage;
+
         const selectedDateRepairMetricsSafeResult =
             returnSelectedDateRepairMetricsSafe({
                 repairMetricsDocument,
@@ -86,69 +104,122 @@ self.onmessage = async (
                 months: MONTHS,
                 year: selectedYear,
             });
-        const selectedDateRepairMetricsOption =
-            handleErrorResultAndNoneOptionInWorker(
+        if (selectedDateRepairMetricsSafeResult.err) {
+            self.postMessage(
                 selectedDateRepairMetricsSafeResult,
-                "No repair metrics found for the selected date",
             );
-        if (selectedDateRepairMetricsOption.none) {
             return;
         }
+        const selectedDateRepairMetricsMaybe =
+            selectedDateRepairMetricsSafeResult.safeUnwrap();
+        if (selectedDateRepairMetricsMaybe.none) {
+            self.postMessage(
+                createSafeErrorResult(
+                    new NotFoundError(
+                        "No repair metrics found for the selected date",
+                    ),
+                ),
+            );
+            return;
+        }
+        const selectedDateRepairMetrics = selectedDateRepairMetricsMaybe
+            .safeUnwrap();
 
         const createRepairMetricsCalendarChartsSafeResult =
             createRepairMetricsCalendarChartsSafe(
                 calendarView,
-                selectedDateRepairMetricsOption.val,
+                selectedDateRepairMetrics,
                 selectedYYYYMMDD,
             );
-        const repairMetricsCalendarChartsOption =
-            handleErrorResultAndNoneOptionInWorker(
+        if (createRepairMetricsCalendarChartsSafeResult.err) {
+            self.postMessage(
                 createRepairMetricsCalendarChartsSafeResult,
-                "No repair metrics calendar charts found",
             );
-        if (repairMetricsCalendarChartsOption.none) {
             return;
         }
+        const repairMetricsCalendarChartsMaybe =
+            createRepairMetricsCalendarChartsSafeResult.safeUnwrap();
+        if (repairMetricsCalendarChartsMaybe.none) {
+            self.postMessage(
+                createSafeErrorResult(
+                    new NotFoundError(
+                        "No repair metrics calendar charts found",
+                    ),
+                ),
+            );
+            return;
+        }
+        const repairMetricsCalendarCharts = repairMetricsCalendarChartsMaybe
+            .safeUnwrap();
 
         const repairMetricsChartsSafeResult = createRepairMetricsChartsSafe({
             repairMetricsDocument,
             months: MONTHS,
-            selectedDateRepairMetrics: selectedDateRepairMetricsOption.val,
+            selectedDateRepairMetrics,
         });
-        const repairMetricsChartsOption =
-            handleErrorResultAndNoneOptionInWorker(
+        if (repairMetricsChartsSafeResult.err) {
+            self.postMessage(
                 repairMetricsChartsSafeResult,
-                "No repair metrics charts found",
             );
-        if (repairMetricsChartsOption.none) {
             return;
         }
+        const repairMetricsChartsMaybe = repairMetricsChartsSafeResult
+            .safeUnwrap();
+        if (repairMetricsChartsMaybe.none) {
+            self.postMessage(
+                createSafeErrorResult(
+                    new NotFoundError(
+                        "No repair metrics charts found",
+                    ),
+                ),
+            );
+            return;
+        }
+        const repairMetricsCharts = repairMetricsChartsMaybe.safeUnwrap();
 
         const repairMetricsCardsSafeResult = createRepairMetricsCardsSafe({
             grayBorderShade,
             greenColorShade,
             redColorShade,
-            selectedDateRepairMetrics: selectedDateRepairMetricsOption.val,
+            selectedDateRepairMetrics,
         });
-        const repairMetricsCardsOption = handleErrorResultAndNoneOptionInWorker(
-            repairMetricsCardsSafeResult,
-            "No repair metrics cards found",
-        );
-        if (repairMetricsCardsOption.none) {
+        if (repairMetricsCardsSafeResult.err) {
+            self.postMessage(
+                repairMetricsCardsSafeResult,
+            );
             return;
         }
+        const repairMetricsCardsMaybe = repairMetricsCardsSafeResult
+            .safeUnwrap();
+        if (repairMetricsCardsMaybe.none) {
+            self.postMessage(
+                createSafeErrorResult(
+                    new NotFoundError(
+                        "No repair metrics cards found",
+                    ),
+                ),
+            );
+            return;
+        }
+        const repairMetricsCards = repairMetricsCardsMaybe.safeUnwrap();
 
         self.postMessage(
             createSafeSuccessResult({
-                calendarChartsData: repairMetricsCalendarChartsOption.val,
-                repairMetricsCharts: repairMetricsChartsOption.val,
-                repairMetricsCards: repairMetricsCardsOption.val,
+                calendarChartsData: repairMetricsCalendarCharts,
+                repairMetricsCharts: repairMetricsCharts,
+                repairMetricsCards: repairMetricsCards,
             }),
         );
+        return;
     } catch (error) {
         console.error("Repair Charts Worker error:", error);
         self.postMessage(
-            createSafeErrorResult(error),
+            createSafeErrorResult(
+                new WorkerError(
+                    error,
+                    "Error in repair charts worker",
+                ),
+            ),
         );
     }
 };
@@ -156,7 +227,12 @@ self.onmessage = async (
 self.onerror = (event: string | Event) => {
     console.error("Repair Charts Worker error:", event);
     self.postMessage(
-        createSafeErrorResult(event),
+        createSafeErrorResult(
+            new WorkerError(
+                event,
+                "Unhandled error in repair charts worker",
+            ),
+        ),
     );
     return true; // Prevents default logging to console
 };
@@ -164,7 +240,12 @@ self.onerror = (event: string | Event) => {
 self.addEventListener("unhandledrejection", (event: PromiseRejectionEvent) => {
     console.error("Unhandled promise rejection in worker:", event.reason);
     self.postMessage(
-        createSafeErrorResult(event),
+        createSafeErrorResult(
+            new PromiseRejectionError(
+                event.reason,
+                "Unhandled promise rejection in repair charts worker",
+            ),
+        ),
     );
 });
 
