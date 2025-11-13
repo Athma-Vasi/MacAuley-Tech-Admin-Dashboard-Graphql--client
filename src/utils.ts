@@ -58,7 +58,6 @@ import {
     MessageHandlerError,
     MetricsGenerationError,
     NetworkError,
-    NotFoundError,
     ParseError,
     PromiseRejectionError,
     RetryLimitExceededError,
@@ -1022,58 +1021,40 @@ function createDaysInMonthsInYearsSafe({
     }
 }
 
-function handlePromiseSettledResults(
+function settleManyPromisesIntoSafeResult(
     results: PromiseSettledResult<
-        Err<SafeError> | Ok<Option<NonNullable<unknown>>>
+        Err<SafeError> | Ok<None>
     >[],
-): SafeResult<boolean> {
-    try {
-        const [successes, errors] = results.reduce<
-            [Ok<Option<NonNullable<unknown>>>[], Err<SafeError>[]]
-        >(
-            (acc, result) => {
-                const [successes, errors] = acc;
+): Err<SafeError> | Ok<None> {
+    const errorMessages = results.reduce<string[]>(
+        (errorsAcc, result) => {
+            if (result.status === "rejected") {
+                errorsAcc.push(
+                    `PromiseRejectionError: ${result.reason}`,
+                );
+                return errorsAcc;
+            }
 
-                if (result.status === "fulfilled") {
-                    if (result.value.err) {
-                        errors.push(result.value);
-                    } else if (result.value.val.none) {
-                        errors.push(createSafeErrorResult(
-                            new NotFoundError("Result is None"),
-                        ));
-                    } else {
-                        successes.push(result.value);
-                    }
-                } else {
-                    errors.push(
-                        createSafeErrorResult(
-                            new PromiseRejectionError(result.reason),
-                        ),
-                    );
-                }
-                return acc;
-            },
-            [[], []],
+            const safeResult = result.value;
+            if (safeResult.err) {
+                errorsAcc.push(
+                    `${safeResult.val.name}: ${safeResult.val.message}`,
+                );
+                return errorsAcc;
+            }
+
+            return errorsAcc;
+        },
+        [],
+    );
+
+    if (errorMessages.length > 0) {
+        return createSafeErrorResult(
+            `One or more promises failed:\n${errorMessages.join("\n")}`,
         );
-
-        if (errors.length > 0) {
-            return createSafeErrorResult(
-                `Some promises were rejected: ${
-                    errors.map((error) => error.val.message ?? "unknown").join(
-                        "\n",
-                    )
-                }`,
-            );
-        }
-
-        if (successes.length === 0) {
-            return createSafeErrorResult("No successful results");
-        }
-
-        return createSafeSuccessResult(true);
-    } catch (error: unknown) {
-        return createSafeErrorResult(error);
     }
+
+    return new Ok(None);
 }
 
 type StatisticsObject = {
@@ -1256,7 +1237,6 @@ export {
     formatDate,
     getCachedItemAsyncSafe,
     handleErrorResultAndNoneOptionInWorker,
-    handlePromiseSettledResults,
     makeTransition,
     modifyImageSafe,
     parseDispatchAndSetState,
@@ -1270,6 +1250,7 @@ export {
     returnStatisticsSafe,
     returnThemeColors,
     setCachedItemAsyncSafe,
+    settleManyPromisesIntoSafeResult,
     splitCamelCase,
     splitWordIntoUpperCasedSentence,
     toFixedFloat,

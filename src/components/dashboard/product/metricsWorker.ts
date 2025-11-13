@@ -1,3 +1,4 @@
+import { None, Ok } from "ts-results";
 import { METRICS_URL, STORE_LOCATIONS } from "../../../constants";
 import type { ProductMetricsDocument, SafeResult } from "../../../types";
 import {
@@ -5,10 +6,16 @@ import {
     createMetricsURLCacheKey,
     createSafeErrorResult,
     createSafeSuccessResult,
-    handleErrorResultAndNoneOptionInWorker,
-    handlePromiseSettledResults,
     setCachedItemAsyncSafe,
+    settleManyPromisesIntoSafeResult,
 } from "../../../utils";
+import {
+    CacheError,
+    MetricsGenerationError,
+    NotFoundError,
+    PromiseRejectionError,
+    WorkerMessageError,
+} from "../../error/classes";
 import type {
     AllStoreLocations,
     ProductCategory,
@@ -33,7 +40,11 @@ self.onmessage = async (
 ) => {
     if (!event.data) {
         self.postMessage(
-            createSafeErrorResult("No data received"),
+            createSafeErrorResult(
+                new WorkerMessageError(
+                    "No data received in product metrics worker",
+                ),
+            ),
         );
         return;
     }
@@ -46,8 +57,6 @@ self.onmessage = async (
         ] = await Promise.allSettled(
             STORE_LOCATIONS.map(async ({ value: storeLocation }) => {
                 try {
-                    const defaultMetrics: ProductMetric[] = [];
-
                     const daysInMonthsInYearsResult =
                         createDaysInMonthsInYearsSafe(
                             {
@@ -57,11 +66,17 @@ self.onmessage = async (
                     if (daysInMonthsInYearsResult.err) {
                         return daysInMonthsInYearsResult;
                     }
-                    if (daysInMonthsInYearsResult.val.none) {
-                        return createSafeErrorResult(defaultMetrics);
+                    const daysInMonthsInYearsMaybe = daysInMonthsInYearsResult
+                        .safeUnwrap();
+                    if (daysInMonthsInYearsMaybe.none) {
+                        return createSafeErrorResult(
+                            new NotFoundError(
+                                "Days in Months in Years data not found",
+                            ),
+                        );
                     }
-                    const daysInMonthsInYears =
-                        daysInMonthsInYearsResult.val.val;
+                    const daysInMonthsInYears = daysInMonthsInYearsMaybe
+                        .safeUnwrap();
 
                     const productMetricsResult = createRandomProductMetricsSafe(
                         {
@@ -72,24 +87,39 @@ self.onmessage = async (
                     if (productMetricsResult.err) {
                         return productMetricsResult;
                     }
-                    if (productMetricsResult.val.none) {
-                        return createSafeErrorResult(defaultMetrics);
+                    const productMetricsMaybe = productMetricsResult
+                        .safeUnwrap();
+                    if (productMetricsMaybe.none) {
+                        return createSafeErrorResult(
+                            new NotFoundError(
+                                "Product metrics not found",
+                            ),
+                        );
                     }
+                    const productMetrics = productMetricsMaybe.safeUnwrap();
 
                     const aggregatedProductMetricsResult =
                         createAllProductsAggregatedProductMetricsSafe(
-                            productMetricsResult.val.val,
+                            productMetrics,
                         );
                     if (aggregatedProductMetricsResult.err) {
                         return aggregatedProductMetricsResult;
                     }
-                    if (aggregatedProductMetricsResult.val.none) {
-                        return createSafeErrorResult(defaultMetrics);
+                    const aggregatedProductMetricsMaybe =
+                        aggregatedProductMetricsResult.safeUnwrap();
+                    if (aggregatedProductMetricsMaybe.none) {
+                        return createSafeErrorResult(
+                            new NotFoundError(
+                                "Aggregated product metrics not found",
+                            ),
+                        );
                     }
+                    const aggregatedProductMetrics =
+                        aggregatedProductMetricsMaybe.safeUnwrap();
 
                     const concatenatedMetrics = [
-                        ...productMetricsResult.val.val,
-                        aggregatedProductMetricsResult.val.val,
+                        ...productMetrics,
+                        aggregatedProductMetrics,
                     ];
 
                     const setMetricsInCacheResult =
@@ -100,13 +130,15 @@ self.onmessage = async (
                     if (setMetricsInCacheResult.err) {
                         return setMetricsInCacheResult;
                     }
-                    if (setMetricsInCacheResult.val.none) {
-                        return createSafeErrorResult(defaultMetrics);
-                    }
 
                     return createSafeSuccessResult(concatenatedMetrics);
                 } catch (error: unknown) {
-                    return createSafeErrorResult(error);
+                    return createSafeErrorResult(
+                        new PromiseRejectionError(
+                            error,
+                            `Failed to generate product metrics for ${storeLocation}`,
+                        ),
+                    );
                 }
             }),
         );
@@ -114,80 +146,166 @@ self.onmessage = async (
         if (calgaryProductMetricsSettledResult.status === "rejected") {
             self.postMessage(
                 createSafeErrorResult(
-                    calgaryProductMetricsSettledResult.reason,
+                    new PromiseRejectionError(
+                        calgaryProductMetricsSettledResult.reason,
+                        "Calgary product metrics generation promise rejected",
+                    ),
                 ),
             );
             return;
         }
-        const calgaryProductMetricsOption =
-            handleErrorResultAndNoneOptionInWorker(
-                calgaryProductMetricsSettledResult.value,
-                "Failed to generate Calgary product metrics",
+        // const calgaryProductMetricsOption =
+        //     handleErrorResultAndNoneOptionInWorker(
+        //         calgaryProductMetricsSettledResult.value,
+        //         "Failed to generate Calgary product metrics",
+        //     );
+        // if (calgaryProductMetricsOption.none) {
+        //     return;
+        // }
+        if (calgaryProductMetricsSettledResult.value.err) {
+            self.postMessage(
+                calgaryProductMetricsSettledResult.value.err,
             );
-        if (calgaryProductMetricsOption.none) {
             return;
         }
+        const calgaryProductMetricsMaybe = calgaryProductMetricsSettledResult
+            .value.safeUnwrap();
+        if (calgaryProductMetricsMaybe.none) {
+            self.postMessage(
+                createSafeErrorResult(
+                    new NotFoundError("Calgary product metrics not found"),
+                ),
+            );
+            return;
+        }
+        const calgaryProductMetrics = calgaryProductMetricsMaybe.safeUnwrap();
 
         if (edmontonProductMetricsSettledResult.status === "rejected") {
             self.postMessage(
                 createSafeErrorResult(
-                    edmontonProductMetricsSettledResult.reason,
+                    new PromiseRejectionError(
+                        edmontonProductMetricsSettledResult.reason,
+                        "Edmonton product metrics generation promise rejected",
+                    ),
                 ),
             );
             return;
         }
-        const edmontonProductMetricsOption =
-            handleErrorResultAndNoneOptionInWorker(
-                edmontonProductMetricsSettledResult.value,
-                "Failed to generate Edmonton product metrics",
+        // const edmontonProductMetricsOption =
+        //     handleErrorResultAndNoneOptionInWorker(
+        //         edmontonProductMetricsSettledResult.value,
+        //         "Failed to generate Edmonton product metrics",
+        //     );
+        // if (edmontonProductMetricsOption.none) {
+        //     return;
+        // }
+
+        if (edmontonProductMetricsSettledResult.value.err) {
+            self.postMessage(
+                edmontonProductMetricsSettledResult.value.err,
             );
-        if (edmontonProductMetricsOption.none) {
             return;
         }
+        const edmontonProductMetricsMaybe = edmontonProductMetricsSettledResult
+            .value.safeUnwrap();
+        if (edmontonProductMetricsMaybe.none) {
+            self.postMessage(
+                createSafeErrorResult(
+                    new NotFoundError("Edmonton product metrics not found"),
+                ),
+            );
+            return;
+        }
+        const edmontonProductMetrics = edmontonProductMetricsMaybe.safeUnwrap();
 
         if (vancouverProductMetricsSettledResult.status === "rejected") {
             self.postMessage(
+                vancouverProductMetricsSettledResult.reason,
+            );
+            return;
+        }
+        // const vancouverProductMetricsOption =
+        //     handleErrorResultAndNoneOptionInWorker(
+        //         vancouverProductMetricsSettledResult.value,
+        //         "Failed to generate Vancouver product metrics",
+        //     );
+        // if (vancouverProductMetricsOption.none) {
+        //     return;
+        // }
+        if (vancouverProductMetricsSettledResult.value.err) {
+            self.postMessage(
+                vancouverProductMetricsSettledResult.value.err,
+            );
+            return;
+        }
+        const vancouverProductMetricsMaybe =
+            vancouverProductMetricsSettledResult
+                .value.safeUnwrap();
+        if (vancouverProductMetricsMaybe.none) {
+            self.postMessage(
                 createSafeErrorResult(
-                    vancouverProductMetricsSettledResult.reason,
+                    new NotFoundError("Vancouver product metrics not found"),
                 ),
             );
             return;
         }
-        const vancouverProductMetricsOption =
-            handleErrorResultAndNoneOptionInWorker(
-                vancouverProductMetricsSettledResult.value,
-                "Failed to generate Vancouver product metrics",
-            );
-        if (vancouverProductMetricsOption.none) {
-            return;
-        }
+        const vancouverProductMetrics = vancouverProductMetricsMaybe
+            .safeUnwrap();
 
         const allLocationsAggregatedProductMetricsResult =
             createAllLocationsAggregatedProductMetricsSafe({
-                calgaryProductMetrics: calgaryProductMetricsOption.val,
-                edmontonProductMetrics: edmontonProductMetricsOption.val,
-                vancouverProductMetrics: vancouverProductMetricsOption.val,
+                calgaryProductMetrics,
+                edmontonProductMetrics,
+                vancouverProductMetrics,
             });
-        const allLocationsAggregatedProductMetricsOption =
-            handleErrorResultAndNoneOptionInWorker(
-                allLocationsAggregatedProductMetricsResult,
-                "Failed to aggregate all locations product metrics",
+        // const allLocationsAggregatedProductMetricsOption =
+        //     handleErrorResultAndNoneOptionInWorker(
+        //         allLocationsAggregatedProductMetricsResult,
+        //         "Failed to aggregate all locations product metrics",
+        //     );
+        // if (allLocationsAggregatedProductMetricsOption.none) {
+        //     return;
+        // }
+        if (allLocationsAggregatedProductMetricsResult.err) {
+            self.postMessage(
+                allLocationsAggregatedProductMetricsResult.err,
             );
-        if (allLocationsAggregatedProductMetricsOption.none) {
             return;
         }
+        const allLocationsAggregatedProductMetricsMaybe =
+            allLocationsAggregatedProductMetricsResult
+                .safeUnwrap();
+        if (allLocationsAggregatedProductMetricsMaybe.none) {
+            self.postMessage(
+                createSafeErrorResult(
+                    new NotFoundError(
+                        "All Locations aggregated product metrics not found",
+                    ),
+                ),
+            );
+            return;
+        }
+        const allLocationsAggregatedProductMetrics =
+            allLocationsAggregatedProductMetricsMaybe
+                .safeUnwrap();
 
         const setAllLocationsMetricsInCacheResult =
             await setProductMetricsInCache(
                 "All Locations",
-                allLocationsAggregatedProductMetricsOption.val,
+                allLocationsAggregatedProductMetrics,
             );
-        const setAllLocationsMetricsInCacheOption =
-            handleErrorResultAndNoneOptionInWorker(
-                setAllLocationsMetricsInCacheResult,
-                "Failed to set All Locations product metrics in cache",
+        // const setAllLocationsMetricsInCacheOption =
+        //     handleErrorResultAndNoneOptionInWorker(
+        //         setAllLocationsMetricsInCacheResult,
+        //         "Failed to set All Locations product metrics in cache",
+        //     );
+        // if (setAllLocationsMetricsInCacheOption.none) {
+        //     return;
+        // }
+        if (setAllLocationsMetricsInCacheResult.err) {
+            self.postMessage(
+                setAllLocationsMetricsInCacheResult.err,
             );
-        if (setAllLocationsMetricsInCacheOption.none) {
             return;
         }
 
@@ -195,10 +313,10 @@ self.onmessage = async (
         const setProductMetricsCacheResult = await setCachedItemAsyncSafe(
             "productMetrics",
             {
-                Calgary: calgaryProductMetricsOption.val,
-                Edmonton: edmontonProductMetricsOption.val,
-                Vancouver: vancouverProductMetricsOption.val,
-                "All Locations": allLocationsAggregatedProductMetricsOption.val,
+                Calgary: calgaryProductMetrics,
+                Edmonton: edmontonProductMetrics,
+                Vancouver: vancouverProductMetrics,
+                "All Locations": allLocationsAggregatedProductMetrics,
             },
         );
         if (setProductMetricsCacheResult.err) {
@@ -212,7 +330,12 @@ self.onmessage = async (
     } catch (error) {
         console.error("Product Charts Worker error:", error);
         self.postMessage(
-            createSafeErrorResult(error),
+            createSafeErrorResult(
+                new MetricsGenerationError(
+                    error,
+                    "Failed to generate product metrics in worker",
+                ),
+            ),
         );
     }
 };
@@ -220,7 +343,12 @@ self.onmessage = async (
 self.onerror = (event: string | Event) => {
     console.error("Product Charts Worker error:", event);
     self.postMessage(
-        createSafeErrorResult(event),
+        createSafeErrorResult(
+            new MetricsGenerationError(
+                event,
+                "Unhandled error in product metrics worker",
+            ),
+        ),
     );
     return true; // Prevents default logging to console
 };
@@ -228,7 +356,12 @@ self.onerror = (event: string | Event) => {
 self.addEventListener("unhandledrejection", (event: PromiseRejectionEvent) => {
     console.error("Unhandled promise rejection in worker:", event.reason);
     self.postMessage(
-        createSafeErrorResult(event),
+        createSafeErrorResult(
+            new PromiseRejectionError(
+                event.reason,
+                "Unhandled promise rejection in product metrics worker",
+            ),
+        ),
     );
 });
 
@@ -262,7 +395,7 @@ function createProductMetricsDocument(
 async function setProductMetricsInCache(
     storeLocation: AllStoreLocations,
     metrics: ProductMetric[],
-): Promise<SafeResult<string>> {
+): Promise<SafeResult<None>> {
     try {
         const setItemResults = await Promise.allSettled(
             metrics.map(
@@ -291,26 +424,33 @@ async function setProductMetricsInCache(
                             return setItemResult;
                         }
 
-                        return createSafeSuccessResult(true);
+                        return new Ok(None);
                     } catch (error) {
-                        return createSafeErrorResult(error);
+                        return createSafeErrorResult(
+                            new PromiseRejectionError(
+                                error,
+                                `Failed to set product metrics in cache at ${storeLocation}`,
+                            ),
+                        );
                     }
                 },
             ),
         );
 
-        const handledSettledResult = handlePromiseSettledResults(
+        const handledSettledResult = settleManyPromisesIntoSafeResult(
             setItemResults,
         );
         if (handledSettledResult.err) {
             return handledSettledResult;
         }
-        if (handledSettledResult.val.none) {
-            return createSafeErrorResult("No product metrics set in cache");
-        }
 
         return handledSettledResult;
     } catch (error: unknown) {
-        return createSafeErrorResult(error);
+        return createSafeErrorResult(
+            new CacheError(
+                error,
+                `Failed to set product metrics in cache at ${storeLocation}`,
+            ),
+        );
     }
 }

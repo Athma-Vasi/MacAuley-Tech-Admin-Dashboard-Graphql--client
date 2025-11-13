@@ -183,7 +183,7 @@ class TimeoutError extends AppErrorBase {
 class PromiseRejectionError extends AppErrorBase {
     readonly _tag = "PromiseRejectionError";
 
-    constructor(message = "Unhandled promise rejection", error?: unknown) {
+    constructor(error?: unknown, message = "Unhandled promise rejection") {
         super(
             "PromiseRejectionError",
             error instanceof Error ? error.name : "UnknownError",
