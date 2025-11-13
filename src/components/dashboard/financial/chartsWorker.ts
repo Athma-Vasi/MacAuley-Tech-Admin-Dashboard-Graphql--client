@@ -2,9 +2,14 @@ import type { FinancialMetricsDocument, SafeResult } from "../../../types";
 import {
     createSafeErrorResult,
     createSafeSuccessResult,
-    handleErrorResultAndNoneOptionInWorker,
     parseSyncSafe,
 } from "../../../utils";
+import {
+    NotFoundError,
+    PromiseRejectionError,
+    WorkerError,
+    WorkerMessageError,
+} from "../../error/classes";
 import { MONTHS } from "../constants";
 import type { DashboardCalendarView, Month, Year } from "../types";
 import {
@@ -49,38 +54,50 @@ type MessageEventFinancialChartsMainToWorker = MessageEvent<
 self.onmessage = async (
     event: MessageEventFinancialChartsMainToWorker,
 ) => {
-    if (!event.data) {
-        self.postMessage(
-            createSafeErrorResult("No data received"),
-        );
-        return;
-    }
-
-    const parsedMessageResult = parseSyncSafe({
-        object: event.data,
-        zSchema: messageEventFinancialChartsMainToWorkerZod,
-    });
-    const parsedMessageOption = handleErrorResultAndNoneOptionInWorker(
-        parsedMessageResult,
-        "Error parsing message",
-    );
-    if (parsedMessageOption.none) {
-        return;
-    }
-
-    const {
-        calendarView,
-        grayBorderShade,
-        greenColorShade,
-        redColorShade,
-        financialMetricsDocument,
-        selectedDate,
-        selectedMonth,
-        selectedYear,
-        selectedYYYYMMDD,
-    } = parsedMessageOption.val;
-
     try {
+        if (!event.data) {
+            self.postMessage(
+                createSafeErrorResult(
+                    new WorkerMessageError(
+                        "No data received in financial charts worker message",
+                    ),
+                ),
+            );
+            return;
+        }
+
+        const parsedMessageResult = parseSyncSafe({
+            object: event.data,
+            zSchema: messageEventFinancialChartsMainToWorkerZod,
+        });
+        if (parsedMessageResult.err) {
+            self.postMessage(parsedMessageResult);
+            return;
+        }
+        const parsedMessageMaybe = parsedMessageResult.safeUnwrap();
+        if (parsedMessageMaybe.none) {
+            self.postMessage(
+                createSafeErrorResult(
+                    new NotFoundError(
+                        "Parsed message is none in financial charts worker",
+                    ),
+                ),
+            );
+            return;
+        }
+
+        const {
+            calendarView,
+            grayBorderShade,
+            greenColorShade,
+            redColorShade,
+            financialMetricsDocument,
+            selectedDate,
+            selectedMonth,
+            selectedYear,
+            selectedYYYYMMDD,
+        } = parsedMessageMaybe.safeUnwrap();
+
         const selectedDateFinancialMetricsSafeResult =
             returnSelectedDateFinancialMetricsSafe({
                 financialMetricsDocument,
@@ -89,75 +106,117 @@ self.onmessage = async (
                 months: MONTHS,
                 year: selectedYear,
             });
-        const selectedDateFinancialMetricsOption =
-            handleErrorResultAndNoneOptionInWorker(
-                selectedDateFinancialMetricsSafeResult,
-                "No financial metrics found for the selected date",
-            );
-        if (selectedDateFinancialMetricsOption.none) {
+        if (selectedDateFinancialMetricsSafeResult.err) {
+            self.postMessage(selectedDateFinancialMetricsSafeResult);
             return;
         }
+        const selectedDateFinancialMetricsMaybe =
+            selectedDateFinancialMetricsSafeResult.safeUnwrap();
+        if (selectedDateFinancialMetricsMaybe.none) {
+            self.postMessage(
+                createSafeErrorResult(
+                    new NotFoundError(
+                        "Selected date financial metrics is none in financial charts worker",
+                    ),
+                ),
+            );
+            return;
+        }
+        const selectedDateFinancialMetrics = selectedDateFinancialMetricsMaybe
+            .safeUnwrap();
 
         const financialMetricsCalendarChartsSafeResult =
             createFinancialMetricsCalendarChartsSafe(
                 calendarView,
-                selectedDateFinancialMetricsOption.val,
+                selectedDateFinancialMetrics,
                 selectedYYYYMMDD,
             );
-        const financialMetricsCalendarChartsOption =
-            handleErrorResultAndNoneOptionInWorker(
-                financialMetricsCalendarChartsSafeResult,
-                "No financial metrics calendar charts found",
-            );
-        if (financialMetricsCalendarChartsOption.none) {
+        if (financialMetricsCalendarChartsSafeResult.err) {
+            self.postMessage(financialMetricsCalendarChartsSafeResult);
             return;
         }
+        const financialMetricsCalendarChartsMaybe =
+            financialMetricsCalendarChartsSafeResult.safeUnwrap();
+        if (financialMetricsCalendarChartsMaybe.none) {
+            self.postMessage(
+                createSafeErrorResult(
+                    new NotFoundError(
+                        "No financial metrics calendar charts found",
+                    ),
+                ),
+            );
+            return;
+        }
+        const financialMetricsCalendarCharts =
+            financialMetricsCalendarChartsMaybe.safeUnwrap();
 
         const financialMetricsChartsSafeResult =
             createFinancialMetricsChartsSafe({
                 financialMetricsDocument,
                 months: MONTHS,
-                selectedDateFinancialMetrics:
-                    selectedDateFinancialMetricsOption.val,
+                selectedDateFinancialMetrics,
             });
-        const financialMetricsChartsOption =
-            handleErrorResultAndNoneOptionInWorker(
-                financialMetricsChartsSafeResult,
-                "No financial metrics charts found",
-            );
-        if (financialMetricsChartsOption.none) {
+        if (financialMetricsChartsSafeResult.err) {
+            self.postMessage(financialMetricsChartsSafeResult);
             return;
         }
+        const financialMetricsChartsMaybe = financialMetricsChartsSafeResult
+            .safeUnwrap();
+        if (financialMetricsChartsMaybe.none) {
+            self.postMessage(
+                createSafeErrorResult(
+                    new NotFoundError(
+                        "No financial metrics charts found",
+                    ),
+                ),
+            );
+            return;
+        }
+        const financialMetricsCharts = financialMetricsChartsMaybe.safeUnwrap();
 
         const financialMetricsCardsSafeResult = createFinancialMetricsCardsSafe(
             {
                 grayBorderShade,
                 greenColorShade,
                 redColorShade,
-                selectedDateFinancialMetrics:
-                    selectedDateFinancialMetricsOption.val,
+                selectedDateFinancialMetrics,
             },
         );
-        const financialMetricsCardsOption =
-            handleErrorResultAndNoneOptionInWorker(
-                financialMetricsCardsSafeResult,
-                "No financial metrics cards found",
-            );
-        if (financialMetricsCardsOption.none) {
+        if (financialMetricsCardsSafeResult.err) {
+            self.postMessage(financialMetricsCardsSafeResult);
             return;
         }
+        const financialMetricsCardsMaybe = financialMetricsCardsSafeResult
+            .safeUnwrap();
+        if (financialMetricsCardsMaybe.none) {
+            self.postMessage(
+                createSafeErrorResult(
+                    new NotFoundError(
+                        "No financial metrics cards found",
+                    ),
+                ),
+            );
+            return;
+        }
+        const financialMetricsCards = financialMetricsCardsMaybe.safeUnwrap();
 
         self.postMessage(
             createSafeSuccessResult({
-                calendarChartsData: financialMetricsCalendarChartsOption.val,
-                financialMetricsCharts: financialMetricsChartsOption.val,
-                financialMetricsCards: financialMetricsCardsOption.val,
+                calendarChartsData: financialMetricsCalendarCharts,
+                financialMetricsCharts,
+                financialMetricsCards,
             }),
         );
+        return;
     } catch (error) {
         console.error("Financial Charts Worker error:", error);
         self.postMessage(
-            createSafeErrorResult(error),
+            createSafeErrorResult(
+                new WorkerError(
+                    error,
+                    "Error in Financial Charts Worker",
+                ),
+            ),
         );
     }
 };
@@ -165,7 +224,12 @@ self.onmessage = async (
 self.onerror = (event: string | Event) => {
     console.error("Financial Charts Worker error:", event);
     self.postMessage(
-        createSafeErrorResult(event),
+        createSafeErrorResult(
+            new WorkerError(
+                event,
+                "Unhandled error in Financial Charts Worker",
+            ),
+        ),
     );
     return true; // Prevents default logging to console
 };
@@ -173,7 +237,12 @@ self.onerror = (event: string | Event) => {
 self.addEventListener("unhandledrejection", (event: PromiseRejectionEvent) => {
     console.error("Unhandled promise rejection in worker:", event.reason);
     self.postMessage(
-        createSafeErrorResult(event),
+        createSafeErrorResult(
+            new PromiseRejectionError(
+                event.reason,
+                "Unhandled promise rejection in Financial Charts Worker",
+            ),
+        ),
     );
 });
 
