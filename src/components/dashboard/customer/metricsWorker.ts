@@ -1,5 +1,10 @@
+import { Err, None, Ok } from "ts-results";
 import { METRICS_URL, STORE_LOCATIONS } from "../../../constants";
-import type { CustomerMetricsDocument, SafeResult } from "../../../types";
+import type {
+    CustomerMetricsDocument,
+    SafeError,
+    SafeResult,
+} from "../../../types";
 import {
     createDaysInMonthsInYearsSafe,
     createMetricsURLCacheKey,
@@ -8,10 +13,10 @@ import {
     setCachedItemAsyncSafe,
 } from "../../../utils";
 import {
+    CacheError,
     MetricsGenerationError,
     NotFoundError,
     PromiseRejectionError,
-    WorkerError,
     WorkerMessageError,
 } from "../../error/classes";
 import type { AllStoreLocations, CustomerMetrics } from "../types";
@@ -21,7 +26,7 @@ import {
 } from "./generators";
 
 type MessageEventCustomerMetricsWorkerToMain = MessageEvent<
-    SafeResult<boolean>
+    Err<SafeError> | Ok<None>
 >;
 type MessageEventCustomerMetricsMainToWorker = MessageEvent<
     boolean
@@ -33,7 +38,9 @@ self.onmessage = async (
     if (!event.data) {
         self.postMessage(
             createSafeErrorResult(
-                new WorkerMessageError("No data received"),
+                new WorkerMessageError(
+                    "No data received in customer metrics worker",
+                ),
             ),
         );
         return;
@@ -99,7 +106,10 @@ self.onmessage = async (
                     return createSafeSuccessResult(customerMetrics);
                 } catch (error: unknown) {
                     return createSafeErrorResult(
-                        new MetricsGenerationError(error),
+                        new MetricsGenerationError(
+                            error,
+                            `Failed to generate customer metrics for store location: ${storeLocation}`,
+                        ),
                     );
                 }
             }),
@@ -109,8 +119,8 @@ self.onmessage = async (
             self.postMessage(
                 createSafeErrorResult(
                     new PromiseRejectionError(
-                        calgaryCustomerMetricsSettledResult.reason ??
-                            "Calgary customer metrics promise rejected",
+                        calgaryCustomerMetricsSettledResult.reason,
+                        "Calgary customer metrics promise rejected",
                     ),
                 ),
             );
@@ -119,9 +129,7 @@ self.onmessage = async (
 
         if (calgaryCustomerMetricsSettledResult.value.err) {
             self.postMessage(
-                createSafeErrorResult(
-                    calgaryCustomerMetricsSettledResult.value.err,
-                ),
+                calgaryCustomerMetricsSettledResult.value,
             );
             return;
         }
@@ -145,8 +153,8 @@ self.onmessage = async (
             self.postMessage(
                 createSafeErrorResult(
                     new PromiseRejectionError(
-                        edmontonCustomerMetricsSettledResult.reason ??
-                            "Edmonton customer metrics promise rejected",
+                        edmontonCustomerMetricsSettledResult.reason,
+                        "Edmonton customer metrics promise rejected",
                     ),
                 ),
             );
@@ -155,9 +163,7 @@ self.onmessage = async (
 
         if (edmontonCustomerMetricsSettledResult.value.err) {
             self.postMessage(
-                createSafeErrorResult(
-                    edmontonCustomerMetricsSettledResult.value.err,
-                ),
+                edmontonCustomerMetricsSettledResult.value,
             );
             return;
         }
@@ -182,8 +188,8 @@ self.onmessage = async (
             self.postMessage(
                 createSafeErrorResult(
                     new PromiseRejectionError(
-                        vancouverCustomerMetricsSettledResult.reason ??
-                            "Vancouver customer metrics promise rejected",
+                        vancouverCustomerMetricsSettledResult.reason,
+                        "Vancouver customer metrics promise rejected",
                     ),
                 ),
             );
@@ -192,9 +198,7 @@ self.onmessage = async (
 
         if (vancouverCustomerMetricsSettledResult.value.err) {
             self.postMessage(
-                createSafeErrorResult(
-                    vancouverCustomerMetricsSettledResult.value.err,
-                ),
+                vancouverCustomerMetricsSettledResult.value,
             );
             return;
         }
@@ -224,9 +228,7 @@ self.onmessage = async (
 
         if (allLocationsAggregatedCustomerMetricsResult.err) {
             self.postMessage(
-                createSafeErrorResult(
-                    allLocationsAggregatedCustomerMetricsResult.err,
-                ),
+                allLocationsAggregatedCustomerMetricsResult.err,
             );
             return;
         }
@@ -256,21 +258,20 @@ self.onmessage = async (
 
         if (setAllLocationsMetricsInCacheResult.err) {
             self.postMessage(
-                createSafeErrorResult(
-                    setAllLocationsMetricsInCacheResult.err,
-                ),
+                setAllLocationsMetricsInCacheResult.err,
             );
             return;
         }
 
-        self.postMessage(
-            createSafeSuccessResult(true),
-        );
+        self.postMessage(new Ok(None));
     } catch (error: unknown) {
         console.error("Customer Charts Worker error:", error);
         self.postMessage(
             createSafeErrorResult(
-                new WorkerError(error),
+                new MetricsGenerationError(
+                    error,
+                    "Failed to generate customer metrics in worker",
+                ),
             ),
         );
     }
@@ -280,7 +281,10 @@ self.onerror = (event: string | Event) => {
     console.error("Customer Charts Worker error:", event);
     self.postMessage(
         createSafeErrorResult(
-            new WorkerError(event),
+            new MetricsGenerationError(
+                event,
+                "Unhandled error in customer metrics worker",
+            ),
         ),
     );
     return true; // Prevents default logging to console
@@ -290,7 +294,10 @@ self.addEventListener("unhandledrejection", (event: PromiseRejectionEvent) => {
     console.error("Unhandled promise rejection in worker:", event.reason);
     self.postMessage(
         createSafeErrorResult(
-            new PromiseRejectionError(event.reason),
+            new PromiseRejectionError(
+                event.reason,
+                "Unhandled promise rejection in customer metrics worker",
+            ),
         ),
     );
 });
@@ -323,7 +330,7 @@ function createCustomerMetricsDocument(
 async function setCustomerMetricsInCache(
     storeLocation: AllStoreLocations,
     metrics: CustomerMetrics,
-): Promise<SafeResult<string>> {
+): Promise<SafeResult<None>> {
     try {
         const metricCacheKey = createMetricsURLCacheKey(
             {
@@ -345,10 +352,13 @@ async function setCustomerMetricsInCache(
             return setMetricsResult;
         }
 
-        return createSafeSuccessResult(
-            `Customer metrics for ${storeLocation} successfully cached`,
-        );
+        return new Ok(None);
     } catch (error: unknown) {
-        return createSafeErrorResult(error);
+        return createSafeErrorResult(
+            new CacheError(
+                error,
+                `Failed to set customer metrics in cache for store location: ${storeLocation}`,
+            ),
+        );
     }
 }
