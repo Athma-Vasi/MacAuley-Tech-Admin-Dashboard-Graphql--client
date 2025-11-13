@@ -6,9 +6,7 @@ import {
   type GlobalDispatch,
 } from "../../context/globalProvider";
 import { relayEnvironment } from "../../environment-single";
-import type { SafeResult } from "../../types";
 import {
-  catchHandlerErrorSafe,
   createSafeErrorResult,
   decodeJWTSafe,
   parseSyncSafe,
@@ -19,10 +17,8 @@ import type { MessageEventProductMetricsWorkerToMain } from "../dashboard/produc
 import type { MessageEventRepairMetricsWorkerToMain } from "../dashboard/repair/metricsWorker";
 import {
   AuthError,
-  InvariantError,
   MessageHandlerError,
   NotFoundError,
-  WorkerError,
 } from "../error/classes";
 import type {
   LoginUserMutation$data,
@@ -187,7 +183,12 @@ async function handleLogin(
       });
       loginDispatch({
         action: loginAction.setSafeErrorResult,
-        payload: createSafeErrorResult(error),
+        payload: createSafeErrorResult(
+          new AuthError(
+            error,
+            "Network error during login mutation",
+          ),
+        ),
       });
       return;
     },
@@ -247,34 +248,15 @@ async function handleMessageEventCustomerMetricsWorkerToMain(
       return;
     }
 
-    const messageMaybe = messageResult.safeUnwrap();
-    if (messageMaybe.none) {
-      loginDispatch({
-        action: loginAction.setSafeErrorResult,
-        payload: createSafeErrorResult(
-          new NotFoundError("No customer metrics data found"),
-        ),
-      });
-      return;
-    }
-
-    const message = messageMaybe.safeUnwrap();
-    if (!message) {
-      loginDispatch({
-        action: loginAction.setSafeErrorResult,
-        payload: createSafeErrorResult(
-          new WorkerError("Unable to generate customer metrics"),
-        ),
-      });
-      return;
-    }
-
     return;
   } catch (error: unknown) {
     input?.loginDispatch?.({
       action: loginAction.setSafeErrorResult,
       payload: createSafeErrorResult(
-        new MessageHandlerError(error),
+        new MessageHandlerError(
+          error,
+          "Unhandled error in customer metrics worker message handler",
+        ),
       ),
     });
     return;
@@ -285,58 +267,51 @@ async function handleMessageEventProductMetricsWorkerToMain(input: {
   event: MessageEventProductMetricsWorkerToMain;
   loginDispatch: React.Dispatch<LoginDispatch>;
   isComponentMountedRef: React.RefObject<boolean>;
-  showBoundary: (error: unknown) => void;
-}): Promise<SafeResult<boolean>> {
+}): Promise<undefined> {
   try {
     const parsedInputResult = parseSyncSafe({
       object: input,
       zSchema: handleMessageEventProductMetricsWorkerToMainInputZod,
     });
     if (parsedInputResult.err) {
-      input?.showBoundary?.(parsedInputResult);
-      return parsedInputResult;
+      input?.loginDispatch?.({
+        action: loginAction.setSafeErrorResult,
+        payload: parsedInputResult,
+      });
+      return;
     }
-    if (parsedInputResult.val.none) {
+
+    const parsedInputMaybe = parsedInputResult.safeUnwrap();
+    if (parsedInputMaybe.none) {
       const safeErrorResult = createSafeErrorResult(
-        new InvariantError(
+        new NotFoundError(
           "Unexpected None option in input parsing",
         ),
       );
-      input?.showBoundary?.(safeErrorResult);
-      return safeErrorResult;
+      input?.loginDispatch?.({
+        action: loginAction.setSafeErrorResult,
+        payload: safeErrorResult,
+      });
+      return;
     }
 
     const {
       event,
       loginDispatch,
       isComponentMountedRef,
-      showBoundary,
-    } = parsedInputResult.val.val;
+    } = parsedInputMaybe.safeUnwrap();
 
     if (!isComponentMountedRef.current) {
-      return createSafeErrorResult(
-        new InvariantError("Component unmounted"),
-      );
+      return;
     }
 
     const messageEventResult = event.data;
-    if (!messageEventResult) {
-      return createSafeErrorResult(
-        new InvariantError("No data received from the worker"),
-      );
-    }
-
     if (messageEventResult.err) {
-      showBoundary(messageEventResult);
-      return messageEventResult;
-    }
-
-    if (messageEventResult.val.none) {
-      const safeErrorResult = createSafeErrorResult(
-        new InvariantError("No product metrics data found"),
-      );
-      showBoundary(safeErrorResult);
-      return safeErrorResult;
+      loginDispatch({
+        action: loginAction.setSafeErrorResult,
+        payload: messageEventResult,
+      });
+      return;
     }
 
     loginDispatch({
@@ -344,13 +319,18 @@ async function handleMessageEventProductMetricsWorkerToMain(input: {
       payload: true,
     });
 
-    return messageEventResult;
+    return;
   } catch (error: unknown) {
-    return catchHandlerErrorSafe(
-      error,
-      input?.isComponentMountedRef,
-      input?.showBoundary,
-    );
+    input?.loginDispatch?.({
+      action: loginAction.setSafeErrorResult,
+      payload: createSafeErrorResult(
+        new MessageHandlerError(
+          error,
+          "Unhandled error in product metrics worker message handler",
+        ),
+      ),
+    });
+    return;
   }
 }
 
@@ -358,58 +338,50 @@ async function handleMessageEventRepairMetricsWorkerToMain(input: {
   event: MessageEventRepairMetricsWorkerToMain;
   loginDispatch: React.Dispatch<LoginDispatch>;
   isComponentMountedRef: React.RefObject<boolean>;
-  showBoundary: (error: unknown) => void;
-}): Promise<SafeResult<boolean>> {
+}): Promise<undefined> {
   try {
     const parsedInputResult = parseSyncSafe({
       object: input,
       zSchema: handleMessageEventRepairMetricsWorkerToMainInputZod,
     });
     if (parsedInputResult.err) {
-      input?.showBoundary?.(parsedInputResult);
-      return parsedInputResult;
+      input?.loginDispatch?.({
+        action: loginAction.setSafeErrorResult,
+        payload: parsedInputResult,
+      });
+      return;
     }
-    if (parsedInputResult.val.none) {
+    const parsedInputMaybe = parsedInputResult.safeUnwrap();
+    if (parsedInputMaybe.none) {
       const safeErrorResult = createSafeErrorResult(
-        new InvariantError(
+        new NotFoundError(
           "Unexpected None option in input parsing",
         ),
       );
-      input?.showBoundary?.(safeErrorResult);
-      return safeErrorResult;
+      input?.loginDispatch?.({
+        action: loginAction.setSafeErrorResult,
+        payload: safeErrorResult,
+      });
+      return;
     }
 
     const {
       event,
       loginDispatch,
       isComponentMountedRef,
-      showBoundary,
-    } = parsedInputResult.val.val;
+    } = parsedInputMaybe.safeUnwrap();
 
     if (!isComponentMountedRef.current) {
-      return createSafeErrorResult(
-        new InvariantError("Component is not mounted"),
-      );
+      return;
     }
 
     const messageEventResult = event.data;
-    if (!messageEventResult) {
-      return createSafeErrorResult(
-        new InvariantError("No data received from the worker"),
-      );
-    }
-
     if (messageEventResult.err) {
-      showBoundary(messageEventResult);
-      return messageEventResult;
-    }
-
-    if (messageEventResult.val.none) {
-      const safeErrorResult = createSafeErrorResult(
-        new InvariantError("No repair metrics data found"),
-      );
-      showBoundary(safeErrorResult);
-      return safeErrorResult;
+      loginDispatch({
+        action: loginAction.setSafeErrorResult,
+        payload: messageEventResult,
+      });
+      return;
     }
 
     loginDispatch({
@@ -417,13 +389,18 @@ async function handleMessageEventRepairMetricsWorkerToMain(input: {
       payload: true,
     });
 
-    return messageEventResult;
+    return;
   } catch (error: unknown) {
-    return catchHandlerErrorSafe(
-      error,
-      input?.isComponentMountedRef,
-      input?.showBoundary,
-    );
+    input?.loginDispatch?.({
+      action: loginAction.setSafeErrorResult,
+      payload: createSafeErrorResult(
+        new MessageHandlerError(
+          error,
+          "Unhandled error in repair metrics worker message handler",
+        ),
+      ),
+    });
+    return;
   }
 }
 
@@ -431,58 +408,50 @@ async function handleMessageEventFinancialMetricsWorkerToMain(input: {
   event: MessageEventFinancialMetricsWorkerToMain;
   loginDispatch: React.Dispatch<LoginDispatch>;
   isComponentMountedRef: React.RefObject<boolean>;
-  showBoundary: (error: unknown) => void;
-}): Promise<SafeResult<boolean>> {
+}): Promise<undefined> {
   try {
     const parsedInputResult = parseSyncSafe({
       object: input,
       zSchema: handleMessageEventFinancialMetricsWorkerToMainInputZod,
     });
     if (parsedInputResult.err) {
-      input?.showBoundary?.(parsedInputResult);
-      return parsedInputResult;
+      input?.loginDispatch?.({
+        action: loginAction.setSafeErrorResult,
+        payload: parsedInputResult,
+      });
+      return;
     }
-    if (parsedInputResult.val.none) {
+    const parsedInputMaybe = parsedInputResult.safeUnwrap();
+    if (parsedInputMaybe.none) {
       const safeErrorResult = createSafeErrorResult(
-        new InvariantError(
+        new NotFoundError(
           "Unexpected None option in input parsing",
         ),
       );
-      input?.showBoundary?.(safeErrorResult);
-      return safeErrorResult;
+      input?.loginDispatch?.({
+        action: loginAction.setSafeErrorResult,
+        payload: safeErrorResult,
+      });
+      return;
     }
 
     const {
       event,
       loginDispatch,
       isComponentMountedRef,
-      showBoundary,
-    } = parsedInputResult.val.val;
+    } = parsedInputMaybe.safeUnwrap();
 
     if (!isComponentMountedRef.current) {
-      return createSafeErrorResult(
-        new InvariantError("Component is not mounted"),
-      );
+      return;
     }
 
     const messageEventResult = event.data;
-    if (!messageEventResult) {
-      return createSafeErrorResult(
-        new InvariantError("No data received from the worker"),
-      );
-    }
-
     if (messageEventResult.err) {
-      showBoundary(messageEventResult);
-      return messageEventResult;
-    }
-
-    if (messageEventResult.val.none) {
-      const safeErrorResult = createSafeErrorResult(
-        new InvariantError("No financial metrics data found"),
-      );
-      showBoundary(safeErrorResult);
-      return safeErrorResult;
+      loginDispatch({
+        action: loginAction.setSafeErrorResult,
+        payload: messageEventResult,
+      });
+      return;
     }
 
     loginDispatch({
@@ -490,13 +459,18 @@ async function handleMessageEventFinancialMetricsWorkerToMain(input: {
       payload: true,
     });
 
-    return messageEventResult;
+    return;
   } catch (error: unknown) {
-    return catchHandlerErrorSafe(
-      error,
-      input?.isComponentMountedRef,
-      input?.showBoundary,
-    );
+    input?.loginDispatch?.({
+      action: loginAction.setSafeErrorResult,
+      payload: createSafeErrorResult(
+        new MessageHandlerError(
+          error,
+          "Unhandled error in financial metrics worker message handler",
+        ),
+      ),
+    });
+    return;
   }
 }
 
@@ -526,7 +500,7 @@ async function handleMessageEventLoginForageWorkerToMain(
     const parsedInputMaybe = parsedInputResult.safeUnwrap();
     if (parsedInputMaybe.none) {
       const safeErrorResult = createSafeErrorResult(
-        new InvariantError(
+        new NotFoundError(
           "Unexpected None option in input parsing",
         ),
       );
@@ -562,7 +536,7 @@ async function handleMessageEventLoginForageWorkerToMain(
       loginDispatch({
         action: loginAction.setSafeErrorResult,
         payload: createSafeErrorResult(
-          new InvariantError("No data received from the worker"),
+          new NotFoundError("No data received from the worker"),
         ),
       });
       return;
@@ -590,7 +564,12 @@ async function handleMessageEventLoginForageWorkerToMain(
   } catch (error: unknown) {
     input?.loginDispatch?.({
       action: loginAction.setSafeErrorResult,
-      payload: createSafeErrorResult(error),
+      payload: createSafeErrorResult(
+        new MessageHandlerError(
+          error,
+          "Unhandled error in login forage worker message handler",
+        ),
+      ),
     });
     return;
   }

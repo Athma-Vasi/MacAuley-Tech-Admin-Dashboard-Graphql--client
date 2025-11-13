@@ -119,21 +119,18 @@ const handleMessageEventProductMetricsWorkerToMainInputZod = z.object({
     event: z.instanceof(MessageEvent),
     loginDispatch: z.function(),
     isComponentMountedRef: z.object({ current: z.boolean() }),
-    showBoundary: z.function(),
 });
 
 const handleMessageEventRepairMetricsWorkerToMainInputZod = z.object({
     event: z.instanceof(MessageEvent),
     loginDispatch: z.function(),
     isComponentMountedRef: z.object({ current: z.boolean() }),
-    showBoundary: z.function(),
 });
 
 const handleMessageEventFinancialMetricsWorkerToMainInputZod = z.object({
     event: z.instanceof(MessageEvent),
     loginDispatch: z.function(),
     isComponentMountedRef: z.object({ current: z.boolean() }),
-    showBoundary: z.function(),
 });
 
 const handleMessageEventTriggerPrefetchWorkerToMainInputZod = z.object({
