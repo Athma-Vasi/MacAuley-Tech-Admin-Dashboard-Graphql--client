@@ -1,14 +1,25 @@
+import { Err, None, Ok } from "ts-results";
 import { METRICS_URL, STORE_LOCATIONS } from "../../../constants";
-import type { RepairMetricsDocument, SafeResult } from "../../../types";
+import type {
+    RepairMetricsDocument,
+    SafeError,
+    SafeResult,
+} from "../../../types";
 import {
     createDaysInMonthsInYearsSafe,
     createMetricsURLCacheKey,
     createSafeErrorResult,
     createSafeSuccessResult,
-    handleErrorResultAndNoneOptionInWorker,
-    handlePromiseSettledResults,
     setCachedItemAsyncSafe,
+    settleManyPromisesIntoSafeResult,
 } from "../../../utils";
+import {
+    CacheError,
+    MetricsGenerationError,
+    NotFoundError,
+    PromiseRejectionError,
+    WorkerMessageError,
+} from "../../error/classes";
 import type {
     AllStoreLocations,
     RepairCategory,
@@ -22,7 +33,7 @@ import {
 } from "./generators";
 
 type MessageEventRepairMetricsWorkerToMain = MessageEvent<
-    SafeResult<boolean>
+    Err<SafeError> | Ok<None>
 >;
 type MessageEventRepairMetricsMainToWorker = MessageEvent<
     boolean
@@ -33,7 +44,9 @@ self.onmessage = async (
 ) => {
     if (!event.data) {
         self.postMessage(
-            createSafeErrorResult("No data received"),
+            createSafeErrorResult(
+                new WorkerMessageError("No data received in worker message"),
+            ),
         );
         return;
     }
@@ -46,8 +59,6 @@ self.onmessage = async (
         ] = await Promise.allSettled(
             STORE_LOCATIONS.map(async ({ value: storeLocation }) => {
                 try {
-                    const defaultMetrics: RepairMetric[] = [];
-
                     const daysInMonthsInYearsResult =
                         createDaysInMonthsInYearsSafe(
                             {
@@ -57,11 +68,17 @@ self.onmessage = async (
                     if (daysInMonthsInYearsResult.err) {
                         return daysInMonthsInYearsResult;
                     }
-                    if (daysInMonthsInYearsResult.val.none) {
-                        return createSafeErrorResult(defaultMetrics);
+                    const daysInMonthsInYearsMaybe = daysInMonthsInYearsResult
+                        .safeUnwrap();
+                    if (daysInMonthsInYearsMaybe.none) {
+                        return createSafeErrorResult(
+                            new NotFoundError(
+                                `DaysInMonthsInYears data not found for store location: ${storeLocation}`,
+                            ),
+                        );
                     }
-                    const daysInMonthsInYears =
-                        daysInMonthsInYearsResult.val.val;
+                    const daysInMonthsInYears = daysInMonthsInYearsMaybe
+                        .safeUnwrap();
 
                     const repairMetricsResult = createRandomRepairMetricsSafe(
                         {
@@ -72,24 +89,40 @@ self.onmessage = async (
                     if (repairMetricsResult.err) {
                         return repairMetricsResult;
                     }
-                    if (repairMetricsResult.val.none) {
-                        return createSafeErrorResult(defaultMetrics);
+                    const repairMetricsMaybe = repairMetricsResult
+                        .safeUnwrap();
+                    if (repairMetricsMaybe.none) {
+                        return createSafeErrorResult(
+                            new NotFoundError(
+                                `Repair metrics data not found for store location: ${storeLocation}`,
+                            ),
+                        );
                     }
+                    const repairMetrics = repairMetricsMaybe
+                        .safeUnwrap();
 
                     const aggregatedRepairMetricsResult =
                         createAllRepairsAggregatedRepairMetricsSafe(
-                            repairMetricsResult.val.val,
+                            repairMetrics,
                         );
                     if (aggregatedRepairMetricsResult.err) {
                         return aggregatedRepairMetricsResult;
                     }
-                    if (aggregatedRepairMetricsResult.val.none) {
-                        return createSafeErrorResult(defaultMetrics);
+                    const aggregatedRepairMetricsMaybe =
+                        aggregatedRepairMetricsResult.safeUnwrap();
+                    if (aggregatedRepairMetricsMaybe.none) {
+                        return createSafeErrorResult(
+                            new NotFoundError(
+                                `Aggregated repair metrics data not found for store location: ${storeLocation}`,
+                            ),
+                        );
                     }
+                    const aggregatedRepairMetrics = aggregatedRepairMetricsMaybe
+                        .safeUnwrap();
 
                     const concatenatedMetrics = [
-                        ...repairMetricsResult.val.val,
-                        aggregatedRepairMetricsResult.val.val,
+                        ...repairMetrics,
+                        aggregatedRepairMetrics,
                     ];
 
                     const setMetricsInCacheResult =
@@ -100,13 +133,15 @@ self.onmessage = async (
                     if (setMetricsInCacheResult.err) {
                         return setMetricsInCacheResult;
                     }
-                    if (setMetricsInCacheResult.val.none) {
-                        return createSafeErrorResult(defaultMetrics);
-                    }
 
                     return createSafeSuccessResult(concatenatedMetrics);
                 } catch (error: unknown) {
-                    return createSafeErrorResult(error);
+                    return createSafeErrorResult(
+                        new PromiseRejectionError(
+                            error,
+                            `Failed to generate repair metrics for store location: ${storeLocation}`,
+                        ),
+                    );
                 }
             }),
         );
@@ -114,80 +149,127 @@ self.onmessage = async (
         if (calgaryRepairMetricsSettledResult.status === "rejected") {
             self.postMessage(
                 createSafeErrorResult(
-                    calgaryRepairMetricsSettledResult.reason,
+                    new PromiseRejectionError(
+                        calgaryRepairMetricsSettledResult.reason,
+                        "Calgary repair metrics generation promise rejected",
+                    ),
                 ),
             );
             return;
         }
-        const calgaryRepairMetricsOption =
-            handleErrorResultAndNoneOptionInWorker(
+        if (calgaryRepairMetricsSettledResult.value.err) {
+            self.postMessage(
                 calgaryRepairMetricsSettledResult.value,
-                "Failed to generate Calgary repair metrics",
             );
-        if (calgaryRepairMetricsOption.none) {
             return;
         }
+        const calgaryRepairMetricsMaybe = calgaryRepairMetricsSettledResult
+            .value.safeUnwrap();
+        if (calgaryRepairMetricsMaybe.none) {
+            self.postMessage(
+                createSafeErrorResult(
+                    new NotFoundError("Calgary repair metrics not found"),
+                ),
+            );
+            return;
+        }
+        const calgaryRepairMetrics = calgaryRepairMetricsMaybe.safeUnwrap();
 
         if (edmontonRepairMetricsSettledResult.status === "rejected") {
             self.postMessage(
                 createSafeErrorResult(
-                    edmontonRepairMetricsSettledResult.reason,
+                    new PromiseRejectionError(
+                        edmontonRepairMetricsSettledResult.reason,
+                        "Edmonton repair metrics generation promise rejected",
+                    ),
                 ),
             );
             return;
         }
-        const edmontonRepairMetricsOption =
-            handleErrorResultAndNoneOptionInWorker(
+        if (edmontonRepairMetricsSettledResult.value.err) {
+            self.postMessage(
                 edmontonRepairMetricsSettledResult.value,
-                "Failed to generate Edmonton repair metrics",
             );
-        if (edmontonRepairMetricsOption.none) {
             return;
         }
+        const edmontonRepairMetricsMaybe = edmontonRepairMetricsSettledResult
+            .value.safeUnwrap();
+        if (edmontonRepairMetricsMaybe.none) {
+            self.postMessage(
+                createSafeErrorResult(
+                    new NotFoundError("Edmonton repair metrics not found"),
+                ),
+            );
+            return;
+        }
+        const edmontonRepairMetrics = edmontonRepairMetricsMaybe
+            .safeUnwrap();
 
         if (vancouverRepairMetricsSettledResult.status === "rejected") {
             self.postMessage(
                 createSafeErrorResult(
-                    vancouverRepairMetricsSettledResult.reason,
+                    new PromiseRejectionError(
+                        vancouverRepairMetricsSettledResult.reason,
+                        "Vancouver repair metrics generation promise rejected",
+                    ),
                 ),
             );
             return;
         }
-        const vancouverRepairMetricsOption =
-            handleErrorResultAndNoneOptionInWorker(
+        if (vancouverRepairMetricsSettledResult.value.err) {
+            self.postMessage(
                 vancouverRepairMetricsSettledResult.value,
-                "Failed to generate Vancouver repair metrics",
             );
-        if (vancouverRepairMetricsOption.none) {
             return;
         }
+        const vancouverRepairMetricsMaybe = vancouverRepairMetricsSettledResult
+            .value.safeUnwrap();
+        if (vancouverRepairMetricsMaybe.none) {
+            self.postMessage(
+                createSafeErrorResult(
+                    new NotFoundError("Vancouver repair metrics not found"),
+                ),
+            );
+            return;
+        }
+        const vancouverRepairMetrics = vancouverRepairMetricsMaybe
+            .safeUnwrap();
 
         const allLocationsAggregatedRepairMetricsResult =
             createAllLocationsAggregatedRepairMetricsSafe({
-                calgaryRepairMetrics: calgaryRepairMetricsOption.val,
-                edmontonRepairMetrics: edmontonRepairMetricsOption.val,
-                vancouverRepairMetrics: vancouverRepairMetricsOption.val,
+                calgaryRepairMetrics,
+                edmontonRepairMetrics,
+                vancouverRepairMetrics,
             });
-        const allLocationsAggregatedRepairMetricsOption =
-            handleErrorResultAndNoneOptionInWorker(
+        if (allLocationsAggregatedRepairMetricsResult.err) {
+            self.postMessage(
                 allLocationsAggregatedRepairMetricsResult,
-                "Failed to aggregate all locations repair metrics",
             );
-        if (allLocationsAggregatedRepairMetricsOption.none) {
             return;
         }
+        const allLocationsAggregatedRepairMetricsMaybe =
+            allLocationsAggregatedRepairMetricsResult.safeUnwrap();
+        if (allLocationsAggregatedRepairMetricsMaybe.none) {
+            self.postMessage(
+                createSafeErrorResult(
+                    new NotFoundError(
+                        "All Locations aggregated repair metrics not found",
+                    ),
+                ),
+            );
+            return;
+        }
+        const allLocationsAggregatedRepairMetrics =
+            allLocationsAggregatedRepairMetricsMaybe
+                .safeUnwrap();
 
         const setAllLocationsMetricsInCacheResult =
             await setRepairMetricsInCache(
                 "All Locations",
-                allLocationsAggregatedRepairMetricsOption.val,
+                allLocationsAggregatedRepairMetrics,
             );
-        const setAllLocationsMetricsInCacheOption =
-            handleErrorResultAndNoneOptionInWorker(
-                setAllLocationsMetricsInCacheResult,
-                "Failed to set All Locations repair metrics in cache",
-            );
-        if (setAllLocationsMetricsInCacheOption.none) {
+        if (setAllLocationsMetricsInCacheResult.err) {
+            self.postMessage(setAllLocationsMetricsInCacheResult);
             return;
         }
 
@@ -195,10 +277,10 @@ self.onmessage = async (
         const setRepairMetricsCacheResult = await setCachedItemAsyncSafe(
             "repairMetrics",
             {
-                Calgary: calgaryRepairMetricsOption.val,
-                Edmonton: edmontonRepairMetricsOption.val,
-                Vancouver: vancouverRepairMetricsOption.val,
-                "All Locations": allLocationsAggregatedRepairMetricsOption.val,
+                Calgary: calgaryRepairMetrics,
+                Edmonton: edmontonRepairMetrics,
+                Vancouver: vancouverRepairMetrics,
+                "All Locations": allLocationsAggregatedRepairMetrics,
             },
         );
         if (setRepairMetricsCacheResult.err) {
@@ -206,13 +288,16 @@ self.onmessage = async (
             return;
         }
 
-        self.postMessage(
-            createSafeSuccessResult(true),
-        );
+        self.postMessage(new Ok(None));
     } catch (error) {
         console.error("Repair Charts Worker error:", error);
         self.postMessage(
-            createSafeErrorResult(error),
+            createSafeErrorResult(
+                new MetricsGenerationError(
+                    error,
+                    "Error in Repair Metrics Worker",
+                ),
+            ),
         );
     }
 };
@@ -220,7 +305,12 @@ self.onmessage = async (
 self.onerror = (event: string | Event) => {
     console.error("Repair Charts Worker error:", event);
     self.postMessage(
-        createSafeErrorResult(event),
+        createSafeErrorResult(
+            new MetricsGenerationError(
+                event,
+                "Unhandled error in Repair Metrics Worker",
+            ),
+        ),
     );
     return true; // Prevents default logging to console
 };
@@ -228,7 +318,12 @@ self.onerror = (event: string | Event) => {
 self.addEventListener("unhandledrejection", (event: PromiseRejectionEvent) => {
     console.error("Unhandled promise rejection in worker:", event.reason);
     self.postMessage(
-        createSafeErrorResult(event),
+        createSafeErrorResult(
+            new PromiseRejectionError(
+                event.reason,
+                "Unhandled promise rejection in Repair Metrics Worker",
+            ),
+        ),
     );
 });
 
@@ -262,7 +357,7 @@ function createRepairMetricsDocument(
 async function setRepairMetricsInCache(
     storeLocation: AllStoreLocations,
     metrics: RepairMetric[],
-): Promise<SafeResult<string>> {
+): Promise<SafeResult<None>> {
     try {
         const setItemResults = await Promise.allSettled(
             metrics.map(
@@ -291,26 +386,34 @@ async function setRepairMetricsInCache(
                             return setItemResult;
                         }
 
-                        return createSafeSuccessResult(true);
+                        return new Ok(None);
                     } catch (error) {
-                        return createSafeErrorResult(error);
+                        return createSafeErrorResult(
+                            new PromiseRejectionError(
+                                error,
+                                `Failed to set repair metric in cache for store location: ${storeLocation}, 
+                                metric category: ${metric.name}`,
+                            ),
+                        );
                     }
                 },
             ),
         );
 
-        const handledSettledResult = handlePromiseSettledResults(
+        const handledSettledResult = settleManyPromisesIntoSafeResult(
             setItemResults,
         );
         if (handledSettledResult.err) {
             return handledSettledResult;
         }
-        if (handledSettledResult.val.none) {
-            return createSafeErrorResult("No repair metrics set in cache");
-        }
 
         return handledSettledResult;
     } catch (error: unknown) {
-        return createSafeErrorResult(error);
+        return createSafeErrorResult(
+            new CacheError(
+                error,
+                `Failed to set repair metrics in cache for store location: ${storeLocation}`,
+            ),
+        );
     }
 }

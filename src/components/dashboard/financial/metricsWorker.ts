@@ -1,21 +1,23 @@
+import { Err, None, Ok } from "ts-results";
 import { ALL_STORE_LOCATIONS_DATA, METRICS_URL } from "../../../constants";
 import type {
     FinancialMetricsDocument,
+    SafeError,
     SafeResult,
     StoreLocation,
 } from "../../../types";
 import {
     createMetricsURLCacheKey,
     createSafeErrorResult,
-    createSafeSuccessResult,
     getCachedItemAsyncSafe,
-    handlePromiseSettledResults,
     removeCachedItemAsyncSafe,
     setCachedItemAsyncSafe,
+    settleManyPromisesIntoSafeResult,
 } from "../../../utils";
 import {
     CacheError,
     NotFoundError,
+    PromiseRejectionError,
     WorkerError,
     WorkerMessageError,
 } from "../../error/classes";
@@ -33,7 +35,7 @@ import {
 } from "./generators";
 
 type MessageEventFinancialMetricsWorkerToMain = MessageEvent<
-    SafeResult<boolean>
+    Err<SafeError> | Ok<None>
 >;
 type MessageEventFinancialMetricsMainToWorker = MessageEvent<
     boolean
@@ -204,9 +206,7 @@ self.onmessage = async (
                             return setMetricsResult;
                         }
 
-                        return createSafeSuccessResult(
-                            `Financial metrics for ${storeLocation} successfully cached`,
-                        );
+                        return new Ok(None);
                     } catch (error: unknown) {
                         return createSafeErrorResult(
                             new CacheError(
@@ -219,7 +219,7 @@ self.onmessage = async (
             ),
         );
 
-        const handledSettledResult = handlePromiseSettledResults(
+        const handledSettledResult = settleManyPromisesIntoSafeResult(
             setItemsInCacheResults,
         );
         if (handledSettledResult.err) {
@@ -243,14 +243,17 @@ self.onmessage = async (
             return;
         }
 
-        self.postMessage(
-            createSafeSuccessResult(true),
-        );
+        self.postMessage(new Ok(None));
         return;
     } catch (error) {
         console.error("Financial Charts Worker error:", error);
         self.postMessage(
-            createSafeErrorResult(error),
+            createSafeErrorResult(
+                new WorkerError(
+                    error,
+                    "Error processing financial metrics in worker",
+                ),
+            ),
         );
     }
 };
@@ -271,7 +274,12 @@ self.onerror = (event: string | Event) => {
 self.addEventListener("unhandledrejection", (event: PromiseRejectionEvent) => {
     console.error("Unhandled promise rejection in worker:", event.reason);
     self.postMessage(
-        createSafeErrorResult(event),
+        createSafeErrorResult(
+            new PromiseRejectionError(
+                event.reason,
+                "Unhandled promise rejection in financial metrics worker",
+            ),
+        ),
     );
 });
 
@@ -303,7 +311,7 @@ function createFinancialMetricsDocument(
 async function setFinancialMetricsInCache(
     storeLocation: AllStoreLocations,
     metrics: YearlyFinancialMetric[],
-): Promise<SafeResult<string>> {
+): Promise<SafeResult<None>> {
     try {
         const metricCacheKey = createMetricsURLCacheKey(
             {
@@ -325,10 +333,13 @@ async function setFinancialMetricsInCache(
             return setMetricsResult;
         }
 
-        return createSafeSuccessResult(
-            `Financial metrics for ${storeLocation} successfully cached`,
-        );
+        return new Ok(None);
     } catch (error: unknown) {
-        return createSafeErrorResult(error);
+        return createSafeErrorResult(
+            new CacheError(
+                error,
+                `Failed to set financial metrics for ${storeLocation} in cache`,
+            ),
+        );
     }
 }

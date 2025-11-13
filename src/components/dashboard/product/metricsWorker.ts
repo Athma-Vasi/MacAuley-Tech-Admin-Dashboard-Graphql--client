@@ -1,6 +1,10 @@
-import { None, Ok } from "ts-results";
+import { Err, None, Ok } from "ts-results";
 import { METRICS_URL, STORE_LOCATIONS } from "../../../constants";
-import type { ProductMetricsDocument, SafeResult } from "../../../types";
+import type {
+    ProductMetricsDocument,
+    SafeError,
+    SafeResult,
+} from "../../../types";
 import {
     createDaysInMonthsInYearsSafe,
     createMetricsURLCacheKey,
@@ -29,7 +33,7 @@ import {
 } from "./generators";
 
 type MessageEventProductMetricsWorkerToMain = MessageEvent<
-    SafeResult<boolean>
+    Err<SafeError> | Ok<None>
 >;
 type MessageEventProductMetricsMainToWorker = MessageEvent<
     boolean
@@ -154,20 +158,14 @@ self.onmessage = async (
             );
             return;
         }
-        // const calgaryProductMetricsOption =
-        //     handleErrorResultAndNoneOptionInWorker(
-        //         calgaryProductMetricsSettledResult.value,
-        //         "Failed to generate Calgary product metrics",
-        //     );
-        // if (calgaryProductMetricsOption.none) {
-        //     return;
-        // }
+
         if (calgaryProductMetricsSettledResult.value.err) {
             self.postMessage(
                 calgaryProductMetricsSettledResult.value.err,
             );
             return;
         }
+
         const calgaryProductMetricsMaybe = calgaryProductMetricsSettledResult
             .value.safeUnwrap();
         if (calgaryProductMetricsMaybe.none) {
@@ -178,8 +176,8 @@ self.onmessage = async (
             );
             return;
         }
-        const calgaryProductMetrics = calgaryProductMetricsMaybe.safeUnwrap();
 
+        const calgaryProductMetrics = calgaryProductMetricsMaybe.safeUnwrap();
         if (edmontonProductMetricsSettledResult.status === "rejected") {
             self.postMessage(
                 createSafeErrorResult(
@@ -191,14 +189,6 @@ self.onmessage = async (
             );
             return;
         }
-        // const edmontonProductMetricsOption =
-        //     handleErrorResultAndNoneOptionInWorker(
-        //         edmontonProductMetricsSettledResult.value,
-        //         "Failed to generate Edmonton product metrics",
-        //     );
-        // if (edmontonProductMetricsOption.none) {
-        //     return;
-        // }
 
         if (edmontonProductMetricsSettledResult.value.err) {
             self.postMessage(
@@ -206,6 +196,7 @@ self.onmessage = async (
             );
             return;
         }
+
         const edmontonProductMetricsMaybe = edmontonProductMetricsSettledResult
             .value.safeUnwrap();
         if (edmontonProductMetricsMaybe.none) {
@@ -216,28 +207,22 @@ self.onmessage = async (
             );
             return;
         }
-        const edmontonProductMetrics = edmontonProductMetricsMaybe.safeUnwrap();
 
+        const edmontonProductMetrics = edmontonProductMetricsMaybe.safeUnwrap();
         if (vancouverProductMetricsSettledResult.status === "rejected") {
             self.postMessage(
                 vancouverProductMetricsSettledResult.reason,
             );
             return;
         }
-        // const vancouverProductMetricsOption =
-        //     handleErrorResultAndNoneOptionInWorker(
-        //         vancouverProductMetricsSettledResult.value,
-        //         "Failed to generate Vancouver product metrics",
-        //     );
-        // if (vancouverProductMetricsOption.none) {
-        //     return;
-        // }
+
         if (vancouverProductMetricsSettledResult.value.err) {
             self.postMessage(
                 vancouverProductMetricsSettledResult.value.err,
             );
             return;
         }
+
         const vancouverProductMetricsMaybe =
             vancouverProductMetricsSettledResult
                 .value.safeUnwrap();
@@ -258,20 +243,14 @@ self.onmessage = async (
                 edmontonProductMetrics,
                 vancouverProductMetrics,
             });
-        // const allLocationsAggregatedProductMetricsOption =
-        //     handleErrorResultAndNoneOptionInWorker(
-        //         allLocationsAggregatedProductMetricsResult,
-        //         "Failed to aggregate all locations product metrics",
-        //     );
-        // if (allLocationsAggregatedProductMetricsOption.none) {
-        //     return;
-        // }
+
         if (allLocationsAggregatedProductMetricsResult.err) {
             self.postMessage(
                 allLocationsAggregatedProductMetricsResult.err,
             );
             return;
         }
+
         const allLocationsAggregatedProductMetricsMaybe =
             allLocationsAggregatedProductMetricsResult
                 .safeUnwrap();
@@ -294,14 +273,7 @@ self.onmessage = async (
                 "All Locations",
                 allLocationsAggregatedProductMetrics,
             );
-        // const setAllLocationsMetricsInCacheOption =
-        //     handleErrorResultAndNoneOptionInWorker(
-        //         setAllLocationsMetricsInCacheResult,
-        //         "Failed to set All Locations product metrics in cache",
-        //     );
-        // if (setAllLocationsMetricsInCacheOption.none) {
-        //     return;
-        // }
+
         if (setAllLocationsMetricsInCacheResult.err) {
             self.postMessage(
                 setAllLocationsMetricsInCacheResult.err,
@@ -324,9 +296,7 @@ self.onmessage = async (
             return;
         }
 
-        self.postMessage(
-            createSafeSuccessResult(true),
-        );
+        self.postMessage(new Ok(None));
     } catch (error) {
         console.error("Product Charts Worker error:", error);
         self.postMessage(
@@ -429,7 +399,7 @@ async function setProductMetricsInCache(
                         return createSafeErrorResult(
                             new PromiseRejectionError(
                                 error,
-                                `Failed to set product metrics in cache at ${storeLocation}`,
+                                `Failed to set product metric ${metric.name} in cache at ${storeLocation}`,
                             ),
                         );
                     }
