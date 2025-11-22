@@ -263,7 +263,7 @@ type SafeError = {
     original: Option<string>;
     stack: Option<string>;
     status: Option<number>;
-    timestamp: number;
+    timestamp: string;
 };
 
 type ResponseKind = "error" | "success";

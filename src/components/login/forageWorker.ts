@@ -12,6 +12,7 @@ import {
     NotFoundError,
     PromiseRejectionError,
     WorkerError,
+    WorkerMessageError,
 } from "../error/classes";
 
 type MessageEventLoginForageWorkerToMain = MessageEvent<
@@ -28,7 +29,9 @@ self.onmessage = async (
     if (!event.data) {
         self.postMessage(
             createSafeErrorResult(
-                new NotFoundError("No data received in forage worker message"),
+                new WorkerMessageError(
+                    "No data received in forage worker message",
+                ),
             ),
         );
         return;

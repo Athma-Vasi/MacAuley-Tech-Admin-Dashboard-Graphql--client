@@ -1,9 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import html2canvas from "html2canvas";
 import jwtDecode from "jwt-decode";
 import { Err, ErrImpl, None, Ok, type Option, Some } from "ts-results";
-import { v4 as uuidv4 } from "uuid";
 import {
     type ColorsSwatches,
     PROPERTY_DESCRIPTOR,
@@ -99,7 +97,7 @@ function createSafeErrorResult(
         fileName: trace?.fileName ? Some(trace.fileName) : None,
         lineNumber: trace?.lineNumber ? Some(trace.lineNumber) : None,
         columnNumber: trace?.columnNumber ? Some(trace.columnNumber) : None,
-        timestamp: Date.now(),
+        timestamp: new Date().toISOString(),
     };
 
     if (error instanceof Error) {
@@ -128,7 +126,6 @@ function createSafeErrorResult(
         try {
             const serializedData = JSON.stringify(data, null, 2);
             return Some(serializedData);
-            // eslint-disable-next-line @typescript-eslint/no-unused-vars
         } catch (_error: unknown) {
             return Some("Unserializable data");
         }
