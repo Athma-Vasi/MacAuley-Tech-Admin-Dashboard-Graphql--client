@@ -22,8 +22,8 @@ const setUsernameLoginDispatchZod = z.object({
     action: z.literal(loginAction.setUsername),
     payload: z.string(),
 });
-const setLoginFetchWorkerLoginDispatchZod = z.object({
-    action: z.literal(loginAction.setLoginFetchWorker),
+const setLoginForageWorkerLoginDispatchZod = z.object({
+    action: z.literal(loginAction.setLoginForageWorker),
     payload: z.instanceof(Worker),
 });
 
@@ -80,7 +80,7 @@ type LoginDispatch =
     | z.infer<typeof setIsLoadingLoginDispatchZod>
     | z.infer<typeof setIsSubmittingLoginDispatchZod>
     | z.infer<typeof setIsErrorLoginDispatchZod>
-    | z.infer<typeof setLoginFetchWorkerLoginDispatchZod>
+    | z.infer<typeof setLoginForageWorkerLoginDispatchZod>
     | z.infer<typeof setPasswordLoginDispatchZod>
     | z.infer<typeof setProductMetricsGeneratedLoginDispatchZod>
     | z.infer<typeof setProductMetricsWorkerLoginDispatchZod>
@@ -94,7 +94,7 @@ const handleLoginClickInputZod = z.object({
     isSubmitting: z.boolean(),
     isSuccessful: z.boolean(),
     loginDispatch: z.function(),
-    loginFetchWorker: z.instanceof(Worker),
+    loginForageWorker: z.instanceof(Worker),
     schema: z.object({
         username: z.string(),
         password: z.string(),
@@ -171,7 +171,7 @@ export {
     setIsErrorLoginDispatchZod,
     setIsLoadingLoginDispatchZod,
     setIsSubmittingLoginDispatchZod,
-    setLoginFetchWorkerLoginDispatchZod,
+    setLoginForageWorkerLoginDispatchZod,
     setPasswordLoginDispatchZod,
     setProductMetricsGeneratedLoginDispatchZod,
     setProductMetricsWorkerLoginDispatchZod,

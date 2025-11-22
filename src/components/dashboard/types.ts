@@ -1,4 +1,5 @@
-import type { StoreLocation } from "../../types";
+import type { Err } from "ts-results";
+import type { SafeError, StoreLocation } from "../../types";
 import type { DashboardAction } from "./actions";
 import type {
   FinancialMetricsBarLineChartsKey,
@@ -28,6 +29,7 @@ type DashboardState = {
   dashboardCacheWorker: Worker | null;
   isLoading: boolean;
   loadingMessage: string;
+  safeErrorResult: Err<SafeError> | null;
 };
 
 type DashboardDispatch =
@@ -50,6 +52,10 @@ type DashboardDispatch =
   | {
     action: DashboardAction["setCalendarView"];
     payload: DashboardCalendarView;
+  }
+  | {
+    action: DashboardAction["setSafeErrorResult"];
+    payload: Err<SafeError> | null;
   };
 
 type Month =

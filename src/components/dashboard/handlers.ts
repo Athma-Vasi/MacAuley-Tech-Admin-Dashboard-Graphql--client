@@ -17,7 +17,11 @@ import {
     makeTransition,
     parseSyncSafe,
 } from "../../utils";
-import { InvariantError } from "../error/classes";
+import {
+    InvariantError,
+    MessageHandlerError,
+    NotFoundError,
+} from "../error/classes";
 import { dashboardAction } from "./actions";
 import type { MessageEventDashboardCacheWorkerToMain } from "./cacheWorker";
 import type { ProductMetricCategory } from "./product/types";
@@ -109,26 +113,31 @@ async function handleMessageEventDashboardCacheWorkerToMain(
         event: MessageEventDashboardCacheWorkerToMain;
         globalDispatch: React.Dispatch<GlobalDispatch>;
         isComponentMountedRef: React.RefObject<boolean>;
-        showBoundary: (error: unknown) => void;
     },
-): Promise<SafeResult<string>> {
+): Promise<undefined> {
     try {
         const parsedInputResult = parseSyncSafe({
             object: input,
             zSchema: handleMessageEventDashboardCacheWorkerToMainInputZod,
         });
         if (parsedInputResult.err) {
-            input?.showBoundary?.(parsedInputResult);
-            return parsedInputResult;
+            input?.dashboardDispatch?.({
+                action: dashboardAction.setSafeErrorResult,
+                payload: parsedInputResult,
+            });
+            return;
         }
-        if (parsedInputResult.val.none) {
-            const safeErrorResult = createSafeErrorResult(
-                new InvariantError(
-                    "Unexpected None option in input parsing",
+        const parsedInputMaybe = parsedInputResult.safeUnwrap();
+        if (parsedInputMaybe.none) {
+            input?.dashboardDispatch?.({
+                action: dashboardAction.setSafeErrorResult,
+                payload: createSafeErrorResult(
+                    new NotFoundError(
+                        "Parsed input is none in dashboard cache worker to main handler",
+                    ),
                 ),
-            );
-            input?.showBoundary?.(safeErrorResult);
-            return safeErrorResult;
+            });
+            return;
         }
 
         const {
@@ -136,36 +145,39 @@ async function handleMessageEventDashboardCacheWorkerToMain(
             event,
             globalDispatch,
             isComponentMountedRef,
-            showBoundary,
-        } = parsedInputResult.val.val;
+        } = parsedInputMaybe.safeUnwrap();
 
         if (!isComponentMountedRef.current) {
-            return createSafeErrorResult(
-                new InvariantError("Component is not mounted"),
-            );
+            return;
         }
 
         const messageEventResult = event.data;
-        if (!messageEventResult) {
-            return createSafeErrorResult(
-                new InvariantError("No data received from the worker"),
-            );
-        }
-
         if (messageEventResult.err) {
-            showBoundary(messageEventResult);
-            return messageEventResult;
+            dashboardDispatch({
+                action: dashboardAction.setSafeErrorResult,
+                payload: messageEventResult,
+            });
+            return;
+        }
+        const messageEventMaybe = messageEventResult.safeUnwrap();
+        if (messageEventMaybe.none) {
+            dashboardDispatch({
+                action: dashboardAction.setSafeErrorResult,
+                payload: createSafeErrorResult(
+                    new NotFoundError(
+                        "Message event data is none in dashboard cache worker to main handler",
+                    ),
+                ),
+            });
+            return;
         }
 
-        if (messageEventResult.val.none) {
-            const safeErrorResult = createSafeErrorResult(
-                new InvariantError("No data received from the worker"),
-            );
-            showBoundary(safeErrorResult);
-            return safeErrorResult;
-        }
+        const { metricsDocument, metricsView } = messageEventMaybe.safeUnwrap();
 
-        const { metricsDocument, metricsView } = messageEventResult.val.val;
+        console.group("Dashboard Cache Worker to Main Handler");
+        console.log("metricsView:", metricsView);
+        console.log("metricsDocument:", metricsDocument);
+        console.groupEnd();
 
         if (metricsView === "financials") {
             makeTransition(() => {
@@ -210,13 +222,25 @@ async function handleMessageEventDashboardCacheWorkerToMain(
             });
         });
 
-        return createSafeSuccessResult("Data fetching completed");
+        makeTransition(() => {
+            dashboardDispatch({
+                action: dashboardAction.setSafeErrorResult,
+                payload: null,
+            });
+        });
+
+        return;
     } catch (error: unknown) {
-        return catchHandlerErrorSafe(
-            error,
-            input?.isComponentMountedRef,
-            input?.showBoundary,
-        );
+        input?.dashboardDispatch?.({
+            action: dashboardAction.setSafeErrorResult,
+            payload: createSafeErrorResult(
+                new MessageHandlerError(
+                    error,
+                    "Error in handling message event from dashboard cache worker to main",
+                ),
+            ),
+        });
+        return;
     }
 }
 

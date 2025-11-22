@@ -14,6 +14,7 @@ const dashboardAction: DashboardAction = {
   setDashboardCacheWorker: "setDashboardCacheWorker",
   setIsLoading: "setIsLoading",
   setLoadingMessage: "setLoadingMessage",
+  setSafeErrorResult: "setSafeErrorResult",
 };
 
 export { dashboardAction };

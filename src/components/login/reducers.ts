@@ -10,7 +10,7 @@ import {
     setIsErrorLoginDispatchZod,
     setIsLoadingLoginDispatchZod,
     setIsSubmittingLoginDispatchZod,
-    setLoginFetchWorkerLoginDispatchZod,
+    setLoginForageWorkerLoginDispatchZod,
     setPasswordLoginDispatchZod,
     setProductMetricsGeneratedLoginDispatchZod,
     setProductMetricsWorkerLoginDispatchZod,
@@ -86,8 +86,8 @@ const loginReducersMap: Map<
         loginReducer_setCustomerMetricsWorker,
     ],
     [
-        loginAction.setLoginFetchWorker,
-        loginReducer_setLoginFetchWorker,
+        loginAction.setLoginForageWorker,
+        loginReducer_setLoginForageWorker,
     ],
     [
         loginAction.setSafeErrorResult,
@@ -251,15 +251,15 @@ function loginReducer_setCustomerMetricsWorker(
     });
 }
 
-function loginReducer_setLoginFetchWorker(
+function loginReducer_setLoginForageWorker(
     state: LoginState,
     dispatch: LoginDispatch,
 ): LoginState {
     return parseDispatchAndSetState({
         dispatch,
-        key: "loginFetchWorker",
+        key: "loginForageWorker",
         state,
-        zSchema: setLoginFetchWorkerLoginDispatchZod,
+        zSchema: setLoginForageWorkerLoginDispatchZod,
     });
 }
 

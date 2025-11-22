@@ -202,6 +202,11 @@ function globalReducer_setFinancialMetricsDocument(
   state: GlobalState,
   dispatch: GlobalDispatch,
 ): GlobalState {
+  console.group("globalReducer_setFinancialMetricsDocument");
+  console.log("Dispatch:", dispatch);
+  console.log("State before:", state);
+  console.groupEnd();
+
   return parseDispatchAndSetState({
     dispatch,
     key: "financialMetricsDocument",
@@ -214,6 +219,11 @@ function globalReducer_setProductMetricsDocument(
   state: GlobalState,
   dispatch: GlobalDispatch,
 ): GlobalState {
+  console.group("globalReducer_setProductMetricsDocument");
+  console.log("Dispatch:", dispatch);
+  console.log("State before:", state);
+  console.groupEnd();
+
   return parseDispatchAndSetState({
     dispatch,
     key: "productMetricsDocument",
@@ -226,6 +236,11 @@ function globalReducer_setCustomerMetricsDocument(
   state: GlobalState,
   dispatch: GlobalDispatch,
 ): GlobalState {
+  console.group("globalReducer_setCustomerMetricsDocument");
+  console.log("Dispatch:", dispatch);
+  console.log("State before:", state);
+  console.groupEnd();
+
   return parseDispatchAndSetState({
     dispatch,
     key: "customerMetricsDocument",
@@ -238,6 +253,11 @@ function globalReducer_setRepairMetricsDocument(
   state: GlobalState,
   dispatch: GlobalDispatch,
 ): GlobalState {
+  console.group("globalReducer_setRepairMetricsDocument");
+  console.log("Dispatch:", dispatch);
+  console.log("State before:", state);
+  console.groupEnd();
+
   return parseDispatchAndSetState({
     dispatch,
     key: "repairMetricsDocument",

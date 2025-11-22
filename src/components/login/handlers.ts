@@ -39,14 +39,12 @@ async function handleLogin(
     authDispatch,
     isComponentMountedRef,
     loginDispatch,
-    navigate,
     password,
     username,
   }: {
     authDispatch: React.Dispatch<AuthDispatch>;
     isComponentMountedRef: React.RefObject<boolean>;
     loginDispatch: React.Dispatch<LoginDispatch>;
-    navigate: NavigateFunction;
     password: string;
     username: string;
   },
@@ -167,7 +165,6 @@ async function handleLogin(
         payload: decodedToken,
       });
 
-      navigate("/dashboard/financials");
       return;
     },
 
@@ -510,6 +507,11 @@ async function handleMessageEventLoginForageWorkerToMain(
       });
       return;
     }
+    const parsedInput = parsedInputMaybe.safeUnwrap();
+
+    console.group("Login Forage Worker - Message Event to Main Handler");
+    console.log("Parsed Input:", parsedInput);
+    console.groupEnd();
 
     const {
       event,
@@ -517,14 +519,19 @@ async function handleMessageEventLoginForageWorkerToMain(
       isComponentMountedRef,
       loginDispatch,
       navigate,
-    } = parsedInputMaybe.safeUnwrap();
+    } = parsedInput;
 
     if (!isComponentMountedRef.current) {
+      console.log("Component is unmounted; ignoring worker message");
       return;
     }
 
     const messageEventResult = event.data;
     if (messageEventResult.err) {
+      console.log(
+        "Error received from login forage worker:",
+        messageEventResult,
+      );
       loginDispatch({
         action: loginAction.setSafeErrorResult,
         payload: messageEventResult,
@@ -533,6 +540,7 @@ async function handleMessageEventLoginForageWorkerToMain(
     }
     const messageEventMaybe = messageEventResult.safeUnwrap();
     if (messageEventMaybe.none) {
+      console.log("No data received from login forage worker");
       loginDispatch({
         action: loginAction.setSafeErrorResult,
         payload: createSafeErrorResult(
@@ -543,6 +551,12 @@ async function handleMessageEventLoginForageWorkerToMain(
     }
 
     const { financialMetricsDocument } = messageEventMaybe.safeUnwrap();
+
+    console.group(
+      "Login Forage Worker - Financial Metrics Document Retrieved",
+    );
+    console.log("Financial Metrics Document:", financialMetricsDocument);
+    console.groupEnd();
 
     globalDispatch({
       action: globalAction.setFinancialMetricsDocument,

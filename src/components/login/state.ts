@@ -15,7 +15,7 @@ type LoginState = {
     repairMetricsWorker: Worker | null;
     errorMessage: string;
     customerMetricsWorker: Worker | null;
-    loginFetchWorker: Worker | null;
+    loginForageWorker: Worker | null;
     safeErrorResult: Err<SafeError> | null;
 };
 
@@ -33,7 +33,7 @@ const initialLoginState: LoginState = {
     repairMetricsWorker: null,
     errorMessage: "",
     customerMetricsWorker: null,
-    loginFetchWorker: null,
+    loginForageWorker: null,
     safeErrorResult: null,
 };
 

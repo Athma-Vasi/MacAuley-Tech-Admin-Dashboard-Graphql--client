@@ -24,7 +24,7 @@ const loginAction: LoginAction = {
     setRepairMetricsWorker: "setRepairMetricsWorker",
     setErrorMessage: "setErrorMessage",
     setCustomerMetricsWorker: "setCustomerMetricsWorker",
-    setLoginFetchWorker: "setLoginFetchWorker",
+    setLoginForageWorker: "setLoginForageWorker",
     setSafeErrorResult: "setSafeErrorResult",
 };
 

@@ -26,7 +26,7 @@ createRoot(document.getElementById("root")!).render(
           </Routes>
         </BrowserRouter>
       </GlobalProvider>
-    </AuthProvider>
+    </AuthProvider>,
   </RelayEnvironmentProvider>,
   // </StrictMode>,
 );

@@ -40,6 +40,7 @@ import { AccessibleSelectInput } from "../accessibleInputs/AccessibleSelectInput
 import { dashboardAction } from "./actions";
 import type { MessageEventDashboardCacheWorkerToMain } from "./cacheWorker";
 import DashboardCacheWorker from "./cacheWorker?worker";
+
 import {
   CALENDAR_VIEW_DATA,
   MONTHS,
@@ -76,7 +77,7 @@ function Dashboard() {
   );
   const { windowWidth } = useWindowSize();
   const { authState: { userDocument } } = useAuth();
-  const { metricsView } = useParams();
+  const { metricsView = "" } = useParams();
   const { showBoundary } = useErrorBoundary();
   const {
     globalState: {
@@ -97,25 +98,18 @@ function Dashboard() {
     globalDispatch,
   } = useGlobalState();
 
-  console.group("Dashboard render");
-  console.log("customermetricsdocument:", customerMetricsDocument);
-  console.log("financialmetricsdocument:", financialMetricsDocument);
-  console.log("productmetricsdocument:", productMetricsDocument);
-  console.log("repairmetricsdocument:", repairMetricsDocument);
-  console.groupEnd();
-
-  // const deferredCustomerMetricsDocument = React.useDeferredValue(
-  //   customerMetricsDocument,
-  // );
-  // const deferredFinancialMetricsDocument = React.useDeferredValue(
-  //   financialMetricsDocument,
-  // );
-  // const deferredProductMetricsDocument = React.useDeferredValue(
-  //   productMetricsDocument,
-  // );
-  // const deferredRepairMetricsDocument = React.useDeferredValue(
-  //   repairMetricsDocument,
-  // );
+  const deferredCustomerMetricsDocument = React.useDeferredValue(
+    customerMetricsDocument,
+  );
+  const deferredFinancialMetricsDocument = React.useDeferredValue(
+    financialMetricsDocument,
+  );
+  const deferredProductMetricsDocument = React.useDeferredValue(
+    productMetricsDocument,
+  );
+  const deferredRepairMetricsDocument = React.useDeferredValue(
+    repairMetricsDocument,
+  );
 
   const { bgGradient, stickyHeaderBgGradient } = returnThemeColors(
     {
@@ -150,7 +144,6 @@ function Dashboard() {
         event,
         globalDispatch,
         isComponentMountedRef,
-        showBoundary,
       });
     };
 
@@ -158,7 +151,49 @@ function Dashboard() {
       isComponentMountedRef.current = false;
       newDashboardCacheWorker.terminate();
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  useEffect(() => {
+    console.group("dashboard documents");
+    console.log({
+      customerMetricsDocument,
+      financialMetricsDocument,
+      productMetricsDocument,
+      repairMetricsDocument,
+    });
+    console.groupEnd();
+  }, [
+    customerMetricsDocument,
+    financialMetricsDocument,
+    productMetricsDocument,
+    repairMetricsDocument,
+  ]);
+
+  useEffect(() => {
+    console.group("dashboard deferred documents");
+    console.log({
+      deferredCustomerMetricsDocument,
+      deferredFinancialMetricsDocument,
+      deferredProductMetricsDocument,
+      deferredRepairMetricsDocument,
+    });
+    console.groupEnd();
+  }, [
+    deferredCustomerMetricsDocument,
+    deferredFinancialMetricsDocument,
+    deferredProductMetricsDocument,
+    deferredRepairMetricsDocument,
+  ]);
+
+  // if (
+  //   !deferredCustomerMetricsDocument || !deferredFinancialMetricsDocument ||
+  //   !deferredProductMetricsDocument || !deferredRepairMetricsDocument
+  // ) {
+  //   return null;
+  // }
+
+  useEffect(() => {}, []);
 
   const { selectedDate, selectedMonth, selectedYear } =
     splitSelectedCalendarDate({
@@ -458,7 +493,7 @@ function Dashboard() {
       <FinancialMetrics
         calendarView={calendarView}
         financialMetricCategory={financialMetricCategory}
-        financialMetricsDocument={financialMetricsDocument as FinancialMetricsDocument}
+        financialMetricsDocument={deferredFinancialMetricsDocument as FinancialMetricsDocument}
         selectedDate={selectedDate}
         selectedMonth={selectedMonth}
         storeLocation={storeLocation}
@@ -471,7 +506,7 @@ function Dashboard() {
       <CustomerMetrics
         calendarView={calendarView}
         customerMetricsCategory={customerMetricsCategory}
-        customerMetricsDocument={customerMetricsDocument as CustomerMetricsDocument}
+        customerMetricsDocument={deferredCustomerMetricsDocument as CustomerMetricsDocument}
         selectedDate={selectedDate}
         selectedMonth={selectedMonth}
         storeLocation={storeLocation}
@@ -484,7 +519,7 @@ function Dashboard() {
       <ProductMetrics
         calendarView={calendarView}
         productMetricCategory={productMetricCategory}
-        productMetricsDocument={productMetricsDocument as ProductMetricsDocument}
+        productMetricsDocument={deferredProductMetricsDocument as ProductMetricsDocument}
         productSubMetricCategory={productSubMetricCategory}
         selectedDate={selectedDate}
         selectedMonth={selectedMonth}
@@ -497,7 +532,7 @@ function Dashboard() {
       <RepairMetrics
         calendarView={calendarView}
         repairMetricCategory={repairMetricCategory}
-        repairMetricsDocument={repairMetricsDocument as RepairMetricsDocument}
+        repairMetricsDocument={deferredRepairMetricsDocument as RepairMetricsDocument}
         selectedDate={selectedDate}
         selectedMonth={selectedMonth}
         selectedYYYYMMDD={selectedYYYYMMDD}

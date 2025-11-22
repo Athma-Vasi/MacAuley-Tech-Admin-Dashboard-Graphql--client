@@ -1,3 +1,4 @@
+import { ErrImpl } from "ts-results";
 import { z } from "zod";
 import {
     allStoreLocationsZod,
@@ -32,6 +33,11 @@ const setCurrentSelectedInputDashboardDispatchZod = z.object({
     payload: z.string(),
 });
 
+const setSafeErrorResultDashboardDispatchZod = z.object({
+    action: z.literal(dashboardAction.setSafeErrorResult),
+    payload: z.instanceof(ErrImpl).nullable(),
+});
+
 const handleStoreAndCategoryClicksInputZod = z.object({
     dashboardDispatch: z.function(),
     dashboardCacheWorker: z.instanceof(Worker),
@@ -49,13 +55,12 @@ const handleMessageEventDashboardCacheWorkerToMainInputZod = z.object({
     event: z.instanceof(MessageEvent),
     globalDispatch: z.function(),
     isComponentMountedRef: z.object({ current: z.boolean() }),
-    showBoundary: z.function(),
 });
 
 const messageEventDashboardFetchMainToWorkerZod = z.object({
     metricsView: metricsViewZod,
     routesZodSchemaMapKey: z.string(),
-    cacheKey: z.string().url(),
+    cacheKey: z.string(),
 });
 
 export {
@@ -67,4 +72,5 @@ export {
     setDashboardCacheWorkerDashboardDispatchZod,
     setIsLoadingDashboardDispatchZod,
     setLoadingMessageDashboardDispatchZod,
+    setSafeErrorResultDashboardDispatchZod,
 };

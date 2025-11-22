@@ -1,9 +1,8 @@
 import { Box, Loader } from "@mantine/core";
 import React, { Suspense } from "react";
-import { ErrorBoundary, useErrorBoundary } from "react-error-boundary";
+import { ErrorBoundary } from "react-error-boundary";
 import { Outlet } from "react-router-dom";
 import { COLORS_SWATCHES } from "../../constants";
-import { useWindowErrorHandler } from "../../hooks";
 import { useGlobalState } from "../../hooks/useGlobalState";
 import { returnThemeColors } from "../../utils";
 import ErrorFallback from "../error/ErrorFallback";
@@ -13,8 +12,6 @@ import Sidebar from "../sidebar";
 function Home() {
   const [opened, setOpened] = React.useState(false);
   const { globalState: { themeObject } } = useGlobalState();
-  const { showBoundary } = useErrorBoundary();
-  useWindowErrorHandler(showBoundary);
 
   const { bgGradient } = returnThemeColors({
     colorsSwatches: COLORS_SWATCHES,

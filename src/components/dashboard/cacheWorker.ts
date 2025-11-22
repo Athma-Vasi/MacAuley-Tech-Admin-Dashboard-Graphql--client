@@ -96,6 +96,14 @@ self.onmessage = async (
         const businessMetricsDocument = businessMetricsDocumentMaybe
             .safeUnwrap();
 
+        console.group(
+            "Dashboard Cache Worker - Fetched Business Metrics Document from Cache",
+        );
+        console.log("Metrics View:", metricsView);
+        console.log("Routes Zod Schema Map Key:", routesZodSchemaMapKey);
+        console.log("Business Metrics Document:", businessMetricsDocument);
+        console.groupEnd();
+
         const parsedResult = parseSyncSafe({
             object: businessMetricsDocument,
             zSchema: ROUTES_ZOD_SCHEMAS_MAP[routesZodSchemaMapKey],
@@ -117,12 +125,17 @@ self.onmessage = async (
         }
         const metricsDocument = parsedMaybe.safeUnwrap();
 
+        console.group("Dashboard Cache Worker - Parsed Metrics Document");
+        console.log("Metrics Document:", metricsDocument);
+        console.groupEnd();
+
         self.postMessage(
             createSafeSuccessResult({
                 metricsDocument,
                 metricsView,
             }),
         );
+        console.log("Posted success result from dashboard cache worker");
         return;
     } catch (error: unknown) {
         self.postMessage(
@@ -146,7 +159,7 @@ self.onerror = (event: string | Event) => {
             ),
         ),
     );
-    return true; // Prevents default logging to console
+    // return true; // Prevents default logging to console
 };
 
 self.addEventListener("unhandledrejection", (event: PromiseRejectionEvent) => {

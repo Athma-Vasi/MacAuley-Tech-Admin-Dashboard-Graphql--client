@@ -18,7 +18,7 @@ import {
 } from "../../../../constants";
 import { useGlobalState } from "../../../../hooks/useGlobalState";
 import type { ScreenshotImageType } from "../../../../types";
-import { captureScreenshot, returnThemeColors } from "../../../../utils";
+import { returnThemeColors } from "../../../../utils";
 import { AccessibleButton } from "../../../accessibleInputs/AccessibleButton";
 import { AccessibleSelectInput } from "../../../accessibleInputs/AccessibleSelectInput";
 import { AccessibleSliderInput } from "../../../accessibleInputs/AccessibleSliderInput";
@@ -31,6 +31,7 @@ import {
 import ChartsAndGraphsControlsStacker from "../../display/ChartsAndControlsStacker";
 import type { NivoChartTitlePosition } from "../../types";
 import { createChartHeaderStyles } from "../../utils";
+import { captureScreenshot } from "../../../domUtils";
 
 type ChartOptionsAction = {
   setChartTitle: "setChartTitle";

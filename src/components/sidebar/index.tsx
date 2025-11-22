@@ -89,6 +89,7 @@ function Sidebar({ opened, setOpened }: SidebarProps) {
       isComponentMountedRef.current = false;
       newMetricsCacheWorker.terminate();
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const productsNavlink = (

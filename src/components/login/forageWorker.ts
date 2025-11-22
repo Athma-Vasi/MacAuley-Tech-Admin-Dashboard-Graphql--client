@@ -94,6 +94,12 @@ self.onmessage = async (
         const financialMetricsDocument = financialMetricsDocumentMaybe
             .safeUnwrap();
 
+        console.group(
+            "Forage Worker - Fetched Financial Metrics Document from Cache",
+        );
+        console.log("Financial Metrics Document:", financialMetricsDocument);
+        console.groupEnd();
+
         self.postMessage(
             createSafeSuccessResult({
                 financialMetricsDocument,

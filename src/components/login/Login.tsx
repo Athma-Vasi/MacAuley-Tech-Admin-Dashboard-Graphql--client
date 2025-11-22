@@ -67,11 +67,18 @@ import {
 import { useEffect, useReducer, useRef } from "react";
 import { TbCheck, TbUpload } from "react-icons/tb";
 import { Link, useNavigate } from "react-router-dom";
-import { COLORS_SWATCHES } from "../../constants";
+import { COLORS_SWATCHES, METRICS_URL } from "../../constants";
+import { globalAction } from "../../context/globalProvider";
 import { useMountedRef } from "../../hooks";
 import { useAuth } from "../../hooks/useAuth";
 import { useGlobalState } from "../../hooks/useGlobalState";
-import { returnThemeColors } from "../../utils";
+import type { FinancialMetricsDocument } from "../../types";
+import {
+    createMetricsURLCacheKey,
+    createSafeErrorResult,
+    getCachedItemAsyncSafe,
+    returnThemeColors,
+} from "../../utils";
 import { AccessibleButton } from "../accessibleInputs/AccessibleButton";
 import type { MessageEventCustomerMetricsWorkerToMain } from "../dashboard/customer/metricsWorker";
 import CustomerMetricsWorker from "../dashboard/customer/metricsWorker?worker";
@@ -81,6 +88,7 @@ import type { MessageEventProductMetricsWorkerToMain } from "../dashboard/produc
 import ProductMetricsWorker from "../dashboard/product/metricsWorker?worker";
 import type { MessageEventRepairMetricsWorkerToMain } from "../dashboard/repair/metricsWorker";
 import RepairMetricsWorker from "../dashboard/repair/metricsWorker?worker";
+import { NotFoundError } from "../error/classes";
 import { loginAction } from "./actions";
 import type { MessageEventLoginForageWorkerToMain } from "./forageWorker";
 import LoginForageWorker from "./forageWorker?worker";
@@ -114,7 +122,7 @@ function Login() {
         repairMetricsGenerated,
         repairMetricsWorker,
         username,
-        loginFetchWorker,
+        loginForageWorker,
         safeErrorResult,
     } = loginState;
 
@@ -194,7 +202,7 @@ function Login() {
 
         const newLoginForageWorker = new LoginForageWorker();
         loginDispatch({
-            action: loginAction.setLoginFetchWorker,
+            action: loginAction.setLoginForageWorker,
             payload: newLoginForageWorker,
         });
         newLoginForageWorker.onmessage = async (
@@ -283,11 +291,10 @@ function Login() {
                         return;
                     }
 
-                    handleLogin({
+                    await handleLogin({
                         authDispatch,
                         isComponentMountedRef,
                         loginDispatch,
-                        navigate,
                         password,
                         username,
                     });
@@ -319,11 +326,10 @@ function Login() {
                         return;
                     }
 
-                    handleLogin({
+                    await handleLogin({
                         authDispatch,
                         isComponentMountedRef,
                         loginDispatch,
-                        navigate,
                         password,
                         username,
                     });
@@ -370,14 +376,59 @@ function Login() {
                 ) => {
                     event.preventDefault();
 
-                    handleLogin({
+                    await handleLogin({
                         authDispatch,
                         isComponentMountedRef,
                         loginDispatch,
-                        navigate,
                         password,
                         username,
                     });
+
+                    // grab created metrics stored in forage
+                    const getFinancialMetricsDocumentResult =
+                        await getCachedItemAsyncSafe<FinancialMetricsDocument>(
+                            createMetricsURLCacheKey({
+                                metricsUrl: METRICS_URL,
+                                metricsView: "financials",
+                                productMetricCategory: "All Products",
+                                repairMetricCategory: "All Repairs",
+                                storeLocation: "All Locations",
+                            }),
+                        );
+                    if (getFinancialMetricsDocumentResult.err) {
+                        loginDispatch({
+                            action: loginAction.setSafeErrorResult,
+                            payload: getFinancialMetricsDocumentResult,
+                        });
+                        return;
+                    }
+                    const financialMetricsDocumentMaybe =
+                        getFinancialMetricsDocumentResult.safeUnwrap();
+                    if (financialMetricsDocumentMaybe.none) {
+                        loginDispatch({
+                            action: loginAction.setSafeErrorResult,
+                            payload: createSafeErrorResult(
+                                new NotFoundError(
+                                    "Financial metrics document is missing in forage after login",
+                                ),
+                            ),
+                        });
+                        return;
+                    }
+                    const financialMetricsDocument =
+                        financialMetricsDocumentMaybe.safeUnwrap();
+
+                    console.log(
+                        "Financial metrics document from forage after login:",
+                        financialMetricsDocument,
+                    );
+
+                    globalDispatch({
+                        action: globalAction.setFinancialMetricsDocument,
+                        payload: financialMetricsDocument,
+                    });
+
+                    navigate("/dashboard/financials");
                 },
             }}
         />

@@ -6,6 +6,7 @@ import {
   setDashboardCacheWorkerDashboardDispatchZod,
   setIsLoadingDashboardDispatchZod,
   setLoadingMessageDashboardDispatchZod,
+  setSafeErrorResultDashboardDispatchZod,
 } from "./schemas";
 import type {
   DashboardAction,
@@ -35,6 +36,10 @@ const dashboardReducersMap = new Map<
   [
     dashboardAction.setCurrentSelectedInput,
     dashboardReducer_setCurrentSelectedInput,
+  ],
+  [
+    dashboardAction.setSafeErrorResult,
+    dashboardReducer_setSafeErrorResult,
   ],
 ]);
 
@@ -98,10 +103,24 @@ function dashboardReducer_setCurrentSelectedInput(
   });
 }
 
+function dashboardReducer_setSafeErrorResult(
+  state: DashboardState,
+  dispatch: DashboardDispatch,
+): DashboardState {
+  return parseDispatchAndSetState({
+    dispatch,
+    key: "safeErrorResult",
+    state,
+    zSchema: setSafeErrorResultDashboardDispatchZod,
+  });
+}
+
 export {
   dashboardReducer,
   dashboardReducer_setCalendarView,
+  dashboardReducer_setCurrentSelectedInput,
   dashboardReducer_setDashboardCacheWorker,
   dashboardReducer_setIsLoading,
   dashboardReducer_setLoadingMessage,
+  dashboardReducer_setSafeErrorResult,
 };

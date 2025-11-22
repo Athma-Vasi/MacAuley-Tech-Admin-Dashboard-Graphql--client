@@ -595,7 +595,7 @@ const ACCORDION_BREAKPOINT = 1112;
 
 const PROTOCOL = "http";
 const DOMAIN_NAME = "://localhost";
-const PORT = 5000;
+const PORT = 5173;
 
 const BASE_URL = `${PROTOCOL}${DOMAIN_NAME}:${PORT}`;
 const AUTH_URL = `${PROTOCOL}${DOMAIN_NAME}:${PORT}/auth`;
